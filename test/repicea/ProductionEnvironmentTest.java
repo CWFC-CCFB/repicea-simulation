@@ -3,7 +3,7 @@ package repicea;
 import org.junit.Assert;
 import org.junit.Test;
 
-import repicea.math.Matrix;
+import repicea.simulation.GrowthModel;
 
 
 public class ProductionEnvironmentTest {
@@ -14,7 +14,7 @@ public class ProductionEnvironmentTest {
 	 */
 	@Test 
 	public void makeSurePackageIsRunningFromJAR() {
-		String resourceURL = Matrix.class.getResource("Matrix.class").toString();
+		String resourceURL = GrowthModel.class.getResource("GrowthModel.class").toString();
 		Assert.assertTrue(resourceURL.startsWith("jar:"));
 	}
 }
