@@ -26,7 +26,8 @@ public interface LandUseProvider {
 
 	public static enum LandUse {
 		WoodProduction,
-		Others;
+		Unproductive,
+		Conservation;
 	}
 	
 	/**
