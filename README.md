@@ -1,14 +1,17 @@
 
+<!-- badges: start -->
+[![Java CI](https://github.com/CWFC-CCFB/repicea-simulation/actions/workflows/gradle.yml/badge.svg)](https://github.com/CWFC-CCFB/repicea-simulation/actions/workflows/gradle.yml)
+<!-- badges: end -->
 
 
 The repicea-simulation library
 =====================================
 
-A extension of repicea for simulation.
+An extension of repicea for simulation.
 
 Copyright (C) 2009-2021 Mathieu Fortin for Rouge Epicea.
 
-Copyright (C) 2021-2023 His Majesty the King in right of Canada (authors: Mathieu Fortin and Jean-Francois Lavoie (CWFC-CCFB, Canadian Forest Service)
+Copyright (C) 2021-2023 His Majesty the King in right of Canada (authors: Mathieu Fortin and Jean-François Lavoie (CWFC-CCFB, Canadian Forest Service)
 
 Email: mathieu.fortin.re@gmail.com
 
