@@ -1,5 +1,5 @@
 /*
- * This file is part of the repicea library.
+ * This file is part of the repicea-simulation library.
  *
  * Copyright (C) 2009-2019 Mathieu Fortin for Rouge-Epicea
  *
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import repicea.simulation.climate.REpiceaClimateVariableMap.ClimateVariable;
 
+@SuppressWarnings("serial")
 public class REpiceaClimateChangeTrend extends ArrayList<REpiceaClimateChangeTrendSegment> {
 
 	public void addSegment(int startDateYr, int endDateYr, REpiceaClimateVariableChangeMap changeMap) {
@@ -61,9 +62,9 @@ public class REpiceaClimateChangeTrend extends ArrayList<REpiceaClimateChangeTre
 	}
 	
 	/**
-	 * Provides the change in the variable between the start and the end dates.
-	 * @param startDateYr
-	 * @param endDateYr
+	 * Provide the change in the variable between the start and the end dates.
+	 * @param startDateYr the start date
+	 * @param endDateYr the end date
 	 * @param variable a ClimateVariable enum
 	 * @return the change
 	 */
@@ -84,10 +85,10 @@ public class REpiceaClimateChangeTrend extends ArrayList<REpiceaClimateChangeTre
 	}
 	
 	/**
-	 * Return the average change over a particular time interval with respect to a reference date.
-	 * @param referenceDateYr
-	 * @param startDateYr
-	 * @param endDateYr
+	 * Provide the average change over a particular time interval with respect to a reference date.
+	 * @param referenceDateYr the reference date
+	 * @param startDateYr the start date
+	 * @param endDateYr the end date
 	 * @param variable a ClimateVariable enum
 	 * @return the average change
 	 */

@@ -48,7 +48,8 @@ public abstract class AbstractStemTaperPredictor extends REpiceaPredictor {
 	
 	/**
 	 * This method computes the stem taper.
-	 * @param stemTaperSegments a List of StemTaperSegment instances
+	 * @param tree a BasicStemTaperTree instance
+ 	 * @param stemTaperSegments a List of StemTaperSegment instances
 	 * @return a StemTaperEstimate instance with the cross section diameter
 	 */
 	public AbstractStemTaperEstimate getPredictedTaperForTheseSegments(BasicStemTaperTree tree, StemTaperSegmentList stemTaperSegments) {		

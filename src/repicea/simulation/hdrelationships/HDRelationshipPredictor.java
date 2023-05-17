@@ -132,6 +132,7 @@ public abstract class HDRelationshipPredictor<Stand extends HDRelationshipStand,
 	/**
 	 * This method accounts for a random deviate if the residual variability is enabled. Otherwise, it returns 0d. 
 	 * @param tree a HDRelationshipTree instance
+	 * @param predictedHeightWithoutResidual the predicted height
 	 * @return a simulated residual (double)
 	 */
 	protected double residualImplementation(Tree tree, double predictedHeightWithoutResidual) {
@@ -268,6 +269,7 @@ public abstract class HDRelationshipPredictor<Stand extends HDRelationshipStand,
 	 * @param stand a Stand instance
 	 * @param t a Tree instance
 	 * @param beta a Matrix that contains the parameters
+	 * @return a RegressionElements instance
 	 */
 	protected abstract RegressionElements fixedEffectsPrediction(Stand stand, Tree t, Matrix beta);
 

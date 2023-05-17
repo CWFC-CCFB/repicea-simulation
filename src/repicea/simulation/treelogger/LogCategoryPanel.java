@@ -68,6 +68,7 @@ public abstract class LogCategoryPanel<T extends LogCategory> extends REpiceaPan
 
 	/**
 	 * General constructor for all the TreeLogCategoryPanel-derived classes.
+	 * @param logCategory the LogCategory instance this panel depends on
 	 */
 	protected LogCategoryPanel(T logCategory) {
 		super();

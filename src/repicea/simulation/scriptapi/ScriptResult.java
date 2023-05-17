@@ -1,5 +1,5 @@
 /*
- * This file is part of the repicea library.
+ * This file is part of the repicea-simulation library.
  *
  * Copyright (C) 2009-2021 Mathieu Fortin for Rouge Epicea.
  *
@@ -51,7 +51,7 @@ public class ScriptResult {
 	
 	/**
 	 * Constructor.
-	 * @param nbRealizations the number of realizations (0 if deterministic or >0 if stochastic)
+	 * @param nbRealizations the number of realizations (0 if deterministic or &#62; 0 if stochastic)
 	 * @param nbPlots the number of plots used in the projection
 	 * @param climateChangeScenario a ClimateChangeScenario enum
 	 * @param growthModel the model name

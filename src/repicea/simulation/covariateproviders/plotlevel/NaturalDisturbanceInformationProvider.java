@@ -28,15 +28,16 @@ import repicea.simulation.disturbances.DisturbanceTypeProvider.DisturbanceType;
 public interface NaturalDisturbanceInformationProvider {
 
 	/**
-	 * This method returns the time since the last disturbance or null if this time is unknown.
+	 * Provide the time since the last disturbance or null if this time is unknown.
+	 * @param type a DisturbanceType enum
 	 * @param currentDateYrs the current date
 	 * @return an Integer instance or null
 	 */
 	public Integer getTimeSinceLastDisturbanceYrs(DisturbanceType type, int currentDateYrs);
 	
 	/**
-	 * This method returns the time since the first known date. This is a work-around if the 
-	 * getTimeSinceLastDisturbanceYrs method returns null.
+	 * Provide the time since the first known date. <p>
+	 * This is a work-around if the getTimeSinceLastDisturbanceYrs method returns null.
 	 * @param currentDateYrs the current date
 	 * @return a positive integer
 	 */

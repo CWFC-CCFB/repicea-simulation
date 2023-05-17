@@ -31,30 +31,34 @@ import repicea.app.GenericTask;
 import repicea.gui.genericwindows.REpiceaProgressBarDialog;
 
 /**
- * The TreeLogger abstract class is the class from which a the tree loggers must inherit. Among others,
- * this class contains <br>
- * <br>
- * <li> a Collection of LoggableTree instances that defines the trees to be processed;</li>
- * <li> a SetMap that contains the LoggableTree as key and the resulting WoodPiece instances as values; </li> 
- * <li> a TreeLoggerParameter instance which sets the parameter of the logger.</li><br>
- * <br>
- * The class can be used either in GUI or in script mode this way:<br>
- * <br>
- * {@code MyTreeLogger treeLogger = new MyTreeLogger();} </br>
- * {@code treeLogger.init(MyCollectionOfLoggableTreeInstances);} </br>
- * <br>
- * {@code treeLogger.setTreeLoggerParameters(MyTreeLoggerParameters);		// in script mode} </br>
- * or<br>
- * {@code treeLogger.setTreeLoggerParameters();		// in Gui mode, a dialog will come out} </br>
- * <br>
- * and to process the trees...<br>
- * <br>
- * {@code treeLogger.run(); } <br>
- * <br>
+ * The TreeLogger abstract class is the class from which a the tree loggers must inherit. <p>
+ * 
+ * Among others, this class contains: 
+ * <ul>
+ * <li> a Collection of LoggableTree instances that defines the trees to be processed;
+ * <li> a SetMap that contains the LoggableTree as key and the resulting WoodPiece instances as values; 
+ * <li> a TreeLoggerParameter instance which sets the parameter of the logger. 
+ * </ul>
+ * <p>
+ * The class can be used either in GUI or in script mode this way:<p>
+ * 
+ * <code>
+ * MyTreeLogger treeLogger = new MyTreeLogger(); <br>
+ * treeLogger.init(MyCollectionOfLoggableTreeInstances); <br>
+ * treeLogger.setTreeLoggerParameters(MyTreeLoggerParameters);	// in script mode <br>
+ * treeLogger.setTreeLoggerParameters();		// in GUI mode, a dialog will pop out <br>
+ * </code><p>
+ * 
+ * and to process the trees...<p>
+ * 
+ * <code>
+ * treeLogger.run(); <br>
+ * </code><p>
+ * 
  * This class implements the logging process in a TreeLoggerTask instance which extends the SwingWorker class and can fire events 
  * to eventual listeners. The return type is simply object. If the thread ended
- * correctly, the get() method returns TreeLogger.CORRECTLY_TERMINATED. Otherwise, it returns an exception.<br>
- * <br>
+ * correctly, the get() method returns TreeLogger.CORRECTLY_TERMINATED. Otherwise, it returns an exception.<p>
+ * 
  * @param <Parameter> the class that defines the parameters of this tree logger. It must be a TreeLoggerParameters instance.
  * @author Mathieu Fortin - April 2010
  */
@@ -151,7 +155,8 @@ public abstract class TreeLogger<Parameter extends TreeLoggerParameters<? extend
 	}
 	
 	/**
-	 * This method process the trees into logs. It has to be defined in the derived class.
+	 * Process the tree into logs.<p>
+	 * @param tree a Tree instance
 	 */
 	protected abstract void logThisTree(Tree tree);
 
@@ -199,9 +204,8 @@ public abstract class TreeLogger<Parameter extends TreeLoggerParameters<? extend
 
 	
 	/**
-	 * This method returns the SetMap object that contains the trees in keys and their 
-	 * associated wood pieces once they are processed.
-	 * @return a Map<LoggableTree, Collection<WoodPiece>> instance
+	 * Provide the wood pieces from the collection of LoggableTree instances.
+	 * @return a Map instance with trees as keys and collections of WoodPiece instances as values
 	 */
 	public Map<LoggableTree, Collection<WoodPiece>> getWoodPieces() {return woodPieces;}
 

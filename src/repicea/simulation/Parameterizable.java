@@ -32,7 +32,7 @@ public interface Parameterizable {
 	/**
 	 * This method reads the parameters of the instance in a file.
 	 * @param filename the path of the file 
-	 * @throws IOException
+	 * @throws IOException if an I/O error has occurred
 	 */
 	public void loadFromFile(String filename) throws IOException;
 	

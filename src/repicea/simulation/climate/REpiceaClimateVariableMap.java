@@ -1,5 +1,5 @@
 /*
- * This file is part of the repicea library.
+ * This file is part of the repicea-simulation library.
  *
  * Copyright (C) 2009-2019 Mathieu Fortin for Rouge-Epicea
  *
@@ -73,6 +73,7 @@ public class REpiceaClimateVariableMap extends HashMap<ClimateVariable, Double> 
 		 * Performs the change on the climate variable following a linear extrapolation pattern.
 		 * @param climateChangeTrend a REpiceaClimateChangeTrend instance
 		 * @param dateYr the current date (years)
+		 * @return an REpiceaClimateVariableMap instance
 		 */
 		public REpiceaClimateVariableMap getUpdatedClimateVariableMap(REpiceaClimateChangeTrend climateChangeTrend, int dateYr);
 		

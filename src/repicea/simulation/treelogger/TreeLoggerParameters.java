@@ -97,6 +97,7 @@ public abstract class TreeLoggerParameters<LC extends LogCategory>	implements Me
 	
 	/**
 	 * General constructor all the TreeLoggerParameters-derived classes.
+	 * @param treeLoggerClass an instance deriving from the TreeLogger class
 	 */
 	protected TreeLoggerParameters(Class<? extends TreeLogger<?,?>> treeLoggerClass) {
 		this.treeLoggerClass = treeLoggerClass.getName();
@@ -218,6 +219,7 @@ public abstract class TreeLoggerParameters<LC extends LogCategory>	implements Me
 	/**
 	 * This method makes it possible to specify whether or not the parameter
 	 * initialization in GUI mode has been aborted.
+	 * @param b a boolean
 	 */
 	public void setParameterDialogCanceled(boolean b) {
 		isParameterDialogCanceled = b;
@@ -258,7 +260,7 @@ public abstract class TreeLoggerParameters<LC extends LogCategory>	implements Me
 	
 	/**
 	 * This method saves the parameters in the current filename.
-	 * @throws IOException
+	 * @throws IOException if an I/O error has occurred
 	 */
 	protected void save() throws IOException {
 		save(getFilename());
@@ -350,7 +352,7 @@ public abstract class TreeLoggerParameters<LC extends LogCategory>	implements Me
 	
 	/**
 	 * This method returns a TreeLogger instance adapted to these parameters.
-	 * @return a TreeLogger<?,?> instance
+	 * @return a TreeLogger instance
 	 */
 	@SuppressWarnings("unchecked")
 	public TreeLogger<TreeLoggerParameters<?>,?> createTreeLoggerInstance() {
@@ -385,18 +387,14 @@ public abstract class TreeLoggerParameters<LC extends LogCategory>	implements Me
 	/**
 	 * This method creates a TreeLoggerParameters instance from a previously saved .xml file
 	 * @param filename the path of the xml file
-	 * @return a TreeLoggerParameter<?> instance
-	 * @throws IOException
+	 * @return a TreeLoggerParameter instance
+	 * @throws XmlMarshallException if an error has occurred during the unmarshalling
 	 */
-	public static TreeLoggerParameters<?> loadFromFile(String filename) throws IOException {
+	public static TreeLoggerParameters<?> loadFromFile(String filename) throws XmlMarshallException {
 		XmlDeserializer deserializer = new XmlDeserializer(filename);
-		try {
-			TreeLoggerParameters<?> treeLoggerParameters = (TreeLoggerParameters<?>) deserializer.readObject();
-			treeLoggerParameters.setFilename(filename);
-			return treeLoggerParameters;
-		} catch (XmlMarshallException e) {
-			throw new IOException("Error while unmarshalling the XML file!");
-		}
+		TreeLoggerParameters<?> treeLoggerParameters = (TreeLoggerParameters<?>) deserializer.readObject();
+		treeLoggerParameters.setFilename(filename);
+		return treeLoggerParameters;
 	}
 
 	

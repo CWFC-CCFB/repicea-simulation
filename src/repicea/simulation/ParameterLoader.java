@@ -31,7 +31,8 @@ import repicea.math.Matrix;
 public class ParameterLoader {
 	
 	/**
-	 * This method reads a file and retrieve a vector of parameters.
+	 * Read the csv file and retrieve a vector of parameters.
+	 * @param numberOfIndices the number of indices in the file (typically 0, 1, or 2)
 	 * @param filename the path of the file to be read (*.csv)
 	 * @return a ParameterMap instance
 	 * @throws IOException if something goes wrong while reading the file.

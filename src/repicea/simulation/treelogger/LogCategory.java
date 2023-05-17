@@ -59,13 +59,14 @@ public abstract class LogCategory implements Serializable, REpiceaUIObject {
 	}
 	
 	/**
-	 * This method returns the name of this tree log category.
+	 * Provide the name of this tree log category.
 	 * @return a String
 	 */
 	public String getName() {return name;}
 	
 	/**
-	 * This method sets the name of this tree log category.
+	 * Set the name of this tree log category.
+	 * @param str the name
 	 */
 	public void setName(String str) {name = str;}
 
@@ -78,8 +79,8 @@ public abstract class LogCategory implements Serializable, REpiceaUIObject {
 	 * This method returns the yield of this piece, i.e. the volume of end use products with respect
 	 * to the initial volume of this piece.
 	 * @param piece a WoodPiece instance
-	 * @return a Double
-	 * @throws Exception
+	 * @return the yield of the piece
+	 * @throws Exception if an error has occurred
 	 */
 	public abstract double getYieldFromThisPiece(WoodPiece piece) throws Exception;
 

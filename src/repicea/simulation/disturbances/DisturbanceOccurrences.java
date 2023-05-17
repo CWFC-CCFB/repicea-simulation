@@ -34,7 +34,7 @@ public class DisturbanceOccurrences {
 	
 	/**
 	 * Constructor for multiple occurrences
-	 * @param parms
+	 * @param parms a DisturbanceAffectedProvider instance
 	 * @param datesYr a List of dates (integers)
 	 */
 	public DisturbanceOccurrences(DisturbanceAffectedProvider parms, List<Integer> datesYr) {
@@ -47,7 +47,7 @@ public class DisturbanceOccurrences {
 	
 	/**
 	 * Basic constructor
-	 * @param parms
+	 * @param parms a DisturbanceAffectedProvider instance
 	 */
 	public DisturbanceOccurrences(DisturbanceAffectedProvider parms) {
 		this.parms = parms;
@@ -57,8 +57,8 @@ public class DisturbanceOccurrences {
 	
 	/**
 	 * Constructor for single occurrences
-	 * @param parms
-	 * @param dateYr
+	 * @param parms a DisturbanceAffectedProvider instance
+	 * @param dateYr the date of occurrence
 	 */
 	public DisturbanceOccurrences(DisturbanceAffectedProvider parms, int dateYr) {
 		this(parms);
