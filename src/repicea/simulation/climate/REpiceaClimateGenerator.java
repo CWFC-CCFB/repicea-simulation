@@ -20,9 +20,6 @@ package repicea.simulation.climate;
 
 import java.security.InvalidParameterException;
 
-import repicea.simulation.climate.REpiceaClimateGenerator.ClimateChangeOption;
-import repicea.simulation.climate.REpiceaClimateGenerator.ClimateChangeScenario;
-import repicea.simulation.climate.REpiceaClimateGenerator.RepresentativeConcentrationPathway;
 import repicea.simulation.covariateproviders.plotlevel.GeographicalCoordinatesProvider;
 import repicea.util.REpiceaTranslator;
 import repicea.util.REpiceaTranslator.TextableEnum;
@@ -40,12 +37,17 @@ public interface REpiceaClimateGenerator<P extends GeographicalCoordinatesProvid
 	 */
 	public interface ClimateChangeScenario extends TextableEnum {}
 	
+	/**
+	 * An interface to ensure the instance can provide is climate change scenario.
+	 * @author Mathieu Fortin - September 2021
+	 */
 	public interface ClimateChangeScenarioProvider {
-		ClimateChangeScenario getClimageChangeScenario();
+		public ClimateChangeScenario getClimageChangeScenario();
 	}
 	
 	
 	public static enum RepresentativeConcentrationPathway implements ClimateChangeScenario {
+		NO_CHANGE("No change", "Aucun changement"),
 		RCP2_6("RCP 2.6", "RCP 2.6"),
 		RCP4_5("RCP 4.5", "RCP 4.5"),
 		RCP6_0("RCP 6.0", "RCP 6.0"),
