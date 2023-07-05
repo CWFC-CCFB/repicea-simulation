@@ -42,7 +42,12 @@ public interface REpiceaClimateGenerator<P extends GeographicalCoordinatesProvid
 	 * @author Mathieu Fortin - September 2021
 	 */
 	public interface ClimateChangeScenarioProvider {
-		public ClimateChangeScenario getClimageChangeScenario();
+		
+		/**
+		 * Ensure the instance can provide its climate change scenario.
+		 * @return a ClimateChangeScenario instance
+		 */
+		public ClimateChangeScenario getClimateChangeScenario();
 	}
 	
 	
