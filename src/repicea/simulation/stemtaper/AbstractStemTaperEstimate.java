@@ -23,12 +23,12 @@ import java.util.List;
 
 import repicea.math.Matrix;
 import repicea.math.SymmetricMatrix;
+import repicea.math.integral.TrapezoidalRule;
 import repicea.stats.CentralMomentsSettable;
 import repicea.stats.Distribution;
 import repicea.stats.distributions.GaussianDistribution;
 import repicea.stats.estimates.Estimate;
 import repicea.stats.estimates.GaussianEstimate;
-import repicea.stats.integral.TrapezoidalRule;
 
 /**
  * The StemTaperEstimate class extends the Estimate class. It handles MonteCarlo or maximum likelihood based estimates.

@@ -22,9 +22,9 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
-import repicea.stats.integral.CompositeSimpsonRule;
-import repicea.stats.integral.AbstractNumericalIntegrationMethod;
-import repicea.stats.integral.TrapezoidalRule;
+import repicea.math.integral.AbstractNumericalIntegrationMethod;
+import repicea.math.integral.CompositeSimpsonRule;
+import repicea.math.integral.TrapezoidalRule;
 
 /**
  * The StemTaperSegment class represents a segment in the tree. It
