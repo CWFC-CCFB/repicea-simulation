@@ -83,23 +83,17 @@ public abstract class HDRelationshipPredictor<Stand extends HDRelationshipStand,
 
 	@Override
 	public double predictHeightM(Stand stand, Tree tree) {
-		try {
-			if (!hasSubjectBeenTestedForBlups(stand)) {
-				predictHeightRandomEffects(stand);	// this method now deals with the blups and the residual error so that if observed height is greater than 1.3 m there is no need to avoid predicting the height
-			}
-			RegressionElements regElement = fixedEffectsPrediction(stand, tree, getParametersForThisRealization(stand));
-			double predictedHeight = regElement.fixedPred;
-			predictedHeight += blupImplementation(stand, regElement);
-			predictedHeight += residualImplementation(tree, predictedHeight);
-			if (predictedHeight < 1.3) {
-				predictedHeight = 1.3;
-			}
-			return predictedHeight;
-		} catch (Exception e) {
-			System.out.println("Error while estimating tree height for tree " + tree.toString());
-			e.printStackTrace();
-			return -1d;
+		if (!hasSubjectBeenTestedForBlups(stand)) {
+			predictHeightRandomEffects(stand);	// this method now deals with the blups and the residual error so that if observed height is greater than 1.3 m there is no need to avoid predicting the height
 		}
+		RegressionElements regElement = fixedEffectsPrediction(stand, tree, getParametersForThisRealization(stand));
+		double predictedHeight = regElement.fixedPred;
+		predictedHeight += blupImplementation(stand, regElement);
+		predictedHeight += residualImplementation(tree, predictedHeight);
+		if (predictedHeight < 1.3) {
+			predictedHeight = 1.3;
+		}
+		return predictedHeight;
 	}
 
 	/**
