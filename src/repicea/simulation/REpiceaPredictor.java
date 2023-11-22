@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import repicea.math.Matrix;
+import repicea.math.SymmetricMatrix;
 import repicea.simulation.REpiceaPredictorEvent.ModelBasedSimulatorEventProperty;
 import repicea.stats.distributions.GaussianErrorTerm;
 import repicea.stats.distributions.GaussianErrorTermList;
@@ -125,8 +126,8 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 		
 	protected Matrix oXVector;
 
-	final Map<String, Estimate<? extends StandardGaussianDistribution>> defaultRandomEffects;
-	final Map<String, Map<String, Estimate<? extends StandardGaussianDistribution>>> blupsRandomEffects; // key1: hierarchical level, key2: subject id
+	final Map<String, Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution>> defaultRandomEffects;
+	final Map<String, Map<String, Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution>>> blupsRandomEffects; // key1: hierarchical level, key2: subject id
 	final Map<String, List<String>> subjectTestedForBlups; // key: hierarchical level
 	
 	private final Map<String, Map<String, Matrix>> simulatedRandomEffects;	// refers to the subject + realization ids
@@ -150,8 +151,8 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 		this.isRandomEffectsVariabilityEnabled = isRandomEffectsVariabilityEnabled;
 		this.isResidualVariabilityEnabled = isResidualVariabilityEnabled;
 		
-		defaultRandomEffects = new HashMap<String, Estimate<? extends StandardGaussianDistribution>>();
-		blupsRandomEffects = new HashMap<String, Map<String, Estimate<? extends StandardGaussianDistribution>>>();
+		defaultRandomEffects = new HashMap<String, Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution>>();
+		blupsRandomEffects = new HashMap<String, Map<String, Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution>>>();
 		subjectTestedForBlups = new HashMap<String, List<String>>();		
 		
 		simulatedRandomEffects = new HashMap<String, Map<String, Matrix>>();
@@ -171,7 +172,7 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 	 */
 	protected abstract void init();
 	
-	protected Map<String, Estimate<? extends StandardGaussianDistribution>> getDefaultRandomEffects() {
+	protected Map<String, Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution>> getDefaultRandomEffects() {
 		return defaultRandomEffects;
 	}
 
@@ -187,13 +188,13 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 //		return (ModelParameterEstimates) super.getParameterEstimates();
 //	}
 
-	protected void setDefaultRandomEffects(HierarchicalLevel level, Estimate<? extends StandardGaussianDistribution> newEstimate) {
-		Estimate<? extends StandardGaussianDistribution> formerEstimate = defaultRandomEffects.get(level.getName());
+	protected void setDefaultRandomEffects(HierarchicalLevel level, Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution> newEstimate) {
+		Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution> formerEstimate = defaultRandomEffects.get(level.getName());
 		defaultRandomEffects.put(level.getName(), newEstimate);
 		fireModelBasedSimulatorEvent(new REpiceaPredictorEvent(ModelBasedSimulatorEventProperty.DEFAULT_RANDOM_EFFECT_AT_THIS_LEVEL_JUST_SET, null, new Object[]{level, formerEstimate, newEstimate}, this));
 	}
 	
-	protected Estimate<? extends StandardGaussianDistribution> getDefaultRandomEffects(HierarchicalLevel level) {return defaultRandomEffects.get(level.getName());}
+	protected Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution> getDefaultRandomEffects(HierarchicalLevel level) {return defaultRandomEffects.get(level.getName());}
 	
 	protected void setDefaultResidualError(Enum<?> enumVar, GaussianErrorTermEstimate estimate) {
 		defaultResidualError.put(enumVar, estimate);
@@ -275,7 +276,7 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 		HierarchicalLevel subjectLevel = subject.getHierarchicalLevel();
 		
 		Matrix randomDeviates;
-		Estimate<? extends StandardGaussianDistribution> originalRandomEffects;
+		Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution> originalRandomEffects;
 		if (doBlupsExistForThisSubject(subject)) {
 			simulateDeviatesForRandomEffectsOfThisSubject(subject, getBlupsForThisSubject(subject));
 		} else {
@@ -286,7 +287,7 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 	}
 	
 	protected void fireRandomEffectDeviateGeneratedEvent(MonteCarloSimulationCompliantObject subject,
-			Estimate<? extends StandardGaussianDistribution> originalRandomEffects,
+			Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution> originalRandomEffects,
 			Matrix randomDeviates) {
 		REpiceaPredictorEvent event = new REpiceaPredictorEvent(ModelBasedSimulatorEventProperty.RANDOM_EFFECT_DEVIATE_JUST_GENERATED, 
 				null, 
@@ -303,7 +304,8 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 	 * @param randomEffectsEstimate the estimate from which the random deviates are generated
 	 * @return the random deviates as a Matrix instance (a copy of it)
 	 */
-	protected Matrix simulateDeviatesForRandomEffectsOfThisSubject(MonteCarloSimulationCompliantObject subject, Estimate<?> randomEffectsEstimate) {
+	protected Matrix simulateDeviatesForRandomEffectsOfThisSubject(MonteCarloSimulationCompliantObject subject, 
+			Estimate<Matrix, SymmetricMatrix, ?> randomEffectsEstimate) {
 		Matrix randomDeviates = randomEffectsEstimate.getRandomDeviate();
 		setDeviatesForRandomEffectsOfThisSubject(subject, randomDeviates);
 		return randomDeviates.getDeepClone();
@@ -341,7 +343,7 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 			}
 			return simulatedRandomEffects.get(subjectLevel.getName()).get(getSubjectPlusMonteCarloSpecificId(subject));
 		} else {
-			Estimate<? extends StandardGaussianDistribution> blups = getBlupsForThisSubject(subject);
+			Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution> blups = getBlupsForThisSubject(subject);
 			if (blups != null) {
 				return blups.getMean();
 			} else {
@@ -471,7 +473,7 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 	 * @param subject a MonteCarloSimulationCompliantObject instance
 	 * @return an Estimate instance or null
 	 */
-	protected Estimate<? extends StandardGaussianDistribution> getBlupsForThisSubject(MonteCarloSimulationCompliantObject subject) {
+	protected Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution> getBlupsForThisSubject(MonteCarloSimulationCompliantObject subject) {
 		if (blupsRandomEffects.containsKey(subject.getHierarchicalLevel().getName())) {
 			if (blupsRandomEffects.get(subject.getHierarchicalLevel().getName()).containsKey(subject.getSubjectId())) {
 				return blupsRandomEffects.get(subject.getHierarchicalLevel().getName()).get(subject.getSubjectId());
@@ -480,9 +482,10 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 		return null;
 	}
 
-	protected final void setBlupsForThisSubject(MonteCarloSimulationCompliantObject subject, Estimate<? extends StandardGaussianDistribution> blups) {
+	protected final void setBlupsForThisSubject(MonteCarloSimulationCompliantObject subject, 
+			Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution> blups) {
 		if (!blupsRandomEffects.containsKey(subject.getHierarchicalLevel().getName())) {
-			blupsRandomEffects.put(subject.getHierarchicalLevel().getName(), new HashMap<String, Estimate<? extends StandardGaussianDistribution>>());
+			blupsRandomEffects.put(subject.getHierarchicalLevel().getName(), new HashMap<String, Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution>>());
 		}
 		blupsRandomEffects.get(subject.getHierarchicalLevel().getName()).put(subject.getSubjectId(), blups);
 		

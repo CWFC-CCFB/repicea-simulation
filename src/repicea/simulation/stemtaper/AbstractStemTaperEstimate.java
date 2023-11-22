@@ -28,6 +28,7 @@ import repicea.stats.CentralMomentsSettable;
 import repicea.stats.Distribution;
 import repicea.stats.distributions.GaussianDistribution;
 import repicea.stats.estimates.Estimate;
+import repicea.stats.estimates.Estimate.EstimatorType;
 import repicea.stats.estimates.GaussianEstimate;
 
 /**
@@ -37,11 +38,11 @@ import repicea.stats.estimates.GaussianEstimate;
  * @author Mathieu Fortin - March 2012
  * @author Mathieu Fortin - December 2016 (Refactoring)
  */
-@SuppressWarnings({ "rawtypes", "serial" })
-public abstract class AbstractStemTaperEstimate extends Estimate<Distribution> implements CentralMomentsSettable  {
+@SuppressWarnings({"serial"})
+public abstract class AbstractStemTaperEstimate extends Estimate<Matrix, SymmetricMatrix, GaussianDistribution> implements CentralMomentsSettable  {
 		
 	private List<Double> heights;
-	private Estimate<?> volumeEstimate;
+	private GaussianEstimate volumeEstimate;
 
 
 	/**
@@ -101,7 +102,7 @@ public abstract class AbstractStemTaperEstimate extends Estimate<Distribution> i
 	 * in the heights member.
 	 * @return an Estimate instance 
 	 */
-	public Estimate<?> getVolumeEstimate() {
+	public GaussianEstimate getVolumeEstimate() {
 		return getVolumeEstimate(null);
 	}
 	
@@ -112,7 +113,7 @@ public abstract class AbstractStemTaperEstimate extends Estimate<Distribution> i
 	 * all along the heights, by default)
 	 * @return an Estimate instance 
 	 */
-	public Estimate<?> getVolumeEstimate(StemTaperSegmentList segments) {
+	public GaussianEstimate getVolumeEstimate(StemTaperSegmentList segments) {
 		if (segments == null) {	// means it has to be integrated all along the sections
 			if (volumeEstimate == null) {
 				segments = getDefaultSegments();
@@ -137,7 +138,7 @@ public abstract class AbstractStemTaperEstimate extends Estimate<Distribution> i
 	 * @param segments a StemTaperSegmentList instance
 	 * @return an Estimate instance 
 	 */
-	private Estimate<?> getVolumeEstimateForTheseSegments(StemTaperSegmentList segments) {
+	private GaussianEstimate getVolumeEstimateForTheseSegments(StemTaperSegmentList segments) {
 		if (!heights.containsAll(segments.getHeights())) {
 			throw new InvalidParameterException("There is a mismatch between the requested sections and the heights that have been computed!");
 		}
@@ -147,23 +148,23 @@ public abstract class AbstractStemTaperEstimate extends Estimate<Distribution> i
 		Matrix volumeFactor = rescalingFactors.elementWiseMultiply(weights).scalarMultiply(getScalingFactor());
 		Matrix varianceFactor = volumeFactor.multiply(volumeFactor.transpose());
 
-		Estimate result = new GaussianEstimate();
-		((GaussianEstimate) result).setMean(null);
-		((GaussianEstimate) result).setVariance(null);
+		GaussianEstimate result = new GaussianEstimate();
+		result.setMean(null);
+		result.setVariance(null);
 
 		SymmetricMatrix variance;
 
 		Matrix taper = getSquaredDiameters(reshapeMatrixAccordingToSegments(segments, getMean()));
 
 		Matrix volumeEstim = taper.elementWiseMultiply(volumeFactor);
-		((GaussianEstimate) result).setMean(volumeEstim);
+		result.setMean(volumeEstim);
 		if (getVariance() != null) {
 			variance = getVarianceOfSquaredDiameter(
 					SymmetricMatrix.convertToSymmetricIfPossible(
 							reshapeMatrixAccordingToSegments(segments, getVariance())));
 			Matrix scaledVariance = variance.elementWiseMultiply(varianceFactor);
 			if (scaledVariance instanceof SymmetricMatrix) {
-				((GaussianEstimate) result).setVariance((SymmetricMatrix) scaledVariance);
+				result.setVariance((SymmetricMatrix) scaledVariance);
 			} else {
 				throw new UnsupportedOperationException("The scaledVariance object is not a SymmetricMatrix instance!");
 			}
