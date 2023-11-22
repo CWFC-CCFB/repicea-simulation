@@ -126,7 +126,7 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 		
 	protected Matrix oXVector;
 
-	final Map<String, Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution>> defaultRandomEffects;
+	final Map<String, Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution>> defaultRandomEffects;
 	final Map<String, Map<String, Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution>>> blupsRandomEffects; // key1: hierarchical level, key2: subject id
 	final Map<String, List<String>> subjectTestedForBlups; // key: hierarchical level
 	
@@ -151,7 +151,7 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 		this.isRandomEffectsVariabilityEnabled = isRandomEffectsVariabilityEnabled;
 		this.isResidualVariabilityEnabled = isResidualVariabilityEnabled;
 		
-		defaultRandomEffects = new HashMap<String, Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution>>();
+		defaultRandomEffects = new HashMap<String, Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution>>();
 		blupsRandomEffects = new HashMap<String, Map<String, Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution>>>();
 		subjectTestedForBlups = new HashMap<String, List<String>>();		
 		
@@ -172,7 +172,7 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 	 */
 	protected abstract void init();
 	
-	protected Map<String, Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution>> getDefaultRandomEffects() {
+	protected Map<String, Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution>> getDefaultRandomEffects() {
 		return defaultRandomEffects;
 	}
 
@@ -188,13 +188,13 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 //		return (ModelParameterEstimates) super.getParameterEstimates();
 //	}
 
-	protected void setDefaultRandomEffects(HierarchicalLevel level, Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution> newEstimate) {
-		Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution> formerEstimate = defaultRandomEffects.get(level.getName());
+	protected void setDefaultRandomEffects(HierarchicalLevel level, Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution> newEstimate) {
+		Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution> formerEstimate = defaultRandomEffects.get(level.getName());
 		defaultRandomEffects.put(level.getName(), newEstimate);
 		fireModelBasedSimulatorEvent(new REpiceaPredictorEvent(ModelBasedSimulatorEventProperty.DEFAULT_RANDOM_EFFECT_AT_THIS_LEVEL_JUST_SET, null, new Object[]{level, formerEstimate, newEstimate}, this));
 	}
 	
-	protected Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution> getDefaultRandomEffects(HierarchicalLevel level) {return defaultRandomEffects.get(level.getName());}
+	protected Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution> getDefaultRandomEffects(HierarchicalLevel level) {return defaultRandomEffects.get(level.getName());}
 	
 	protected void setDefaultResidualError(Enum<?> enumVar, GaussianErrorTermEstimate estimate) {
 		defaultResidualError.put(enumVar, estimate);
@@ -276,7 +276,7 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 		HierarchicalLevel subjectLevel = subject.getHierarchicalLevel();
 		
 		Matrix randomDeviates;
-		Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution> originalRandomEffects;
+		Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution> originalRandomEffects;
 		if (doBlupsExistForThisSubject(subject)) {
 			simulateDeviatesForRandomEffectsOfThisSubject(subject, getBlupsForThisSubject(subject));
 		} else {
@@ -287,7 +287,7 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 	}
 	
 	protected void fireRandomEffectDeviateGeneratedEvent(MonteCarloSimulationCompliantObject subject,
-			Estimate<Matrix, SymmetricMatrix, StandardGaussianDistribution> originalRandomEffects,
+			Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution> originalRandomEffects,
 			Matrix randomDeviates) {
 		REpiceaPredictorEvent event = new REpiceaPredictorEvent(ModelBasedSimulatorEventProperty.RANDOM_EFFECT_DEVIATE_JUST_GENERATED, 
 				null, 
