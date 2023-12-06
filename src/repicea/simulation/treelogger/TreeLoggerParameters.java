@@ -38,6 +38,7 @@ import repicea.gui.permissions.DefaultREpiceaGUIPermission;
 import repicea.gui.permissions.REpiceaGUIPermission;
 import repicea.gui.permissions.REpiceaGUIPermissionProvider;
 import repicea.io.IOUserInterfaceableObject;
+import repicea.io.REpiceaFileFilterList;
 import repicea.serial.Memorizable;
 import repicea.serial.MemorizerPackage;
 import repicea.serial.xml.PostXmlUnmarshalling;
@@ -146,7 +147,7 @@ public abstract class TreeLoggerParameters<LC extends LogCategory>	implements Me
 	public abstract boolean isCorrect();
 
 	@Override
-	public FileFilter getFileFilter() {return TreeLoggerFileFilter;}
+	public REpiceaFileFilterList getFileFilters() {return new REpiceaFileFilterList(TreeLoggerFileFilter);}
 
 	/**
 	 * This method returns the list of the log category names. IMPORTANT: the list is
