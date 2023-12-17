@@ -39,12 +39,13 @@ import repicea.gui.permissions.REpiceaGUIPermission;
 import repicea.gui.permissions.REpiceaGUIPermissionProvider;
 import repicea.io.IOUserInterfaceableObject;
 import repicea.io.REpiceaFileFilterList;
+import repicea.serial.MarshallingException;
+import repicea.serial.MarshallingUtilities;
 import repicea.serial.Memorizable;
 import repicea.serial.MemorizerPackage;
+import repicea.serial.UnmarshallingException;
 import repicea.serial.xml.PostXmlUnmarshalling;
 import repicea.serial.xml.XmlDeserializer;
-import repicea.serial.xml.XmlMarshallException;
-import repicea.serial.xml.XmlMarshallingUtilities;
 import repicea.serial.xml.XmlSerializer;
 import repicea.simulation.treelogger.TreeLoggerParametersDialog.MessageID;
 import repicea.util.ExtendedFileFilter;
@@ -274,7 +275,7 @@ public abstract class TreeLoggerParameters<LC extends LogCategory>	implements Me
 			serializer.writeObject(this);
 			setFilename(filename);
 			fireEvent();
-		} catch (XmlMarshallException e) {
+		} catch (MarshallingException e) {
 			e.printStackTrace();
 			throw new IOException("Error while marshalling XML file!"); 
 		}
@@ -389,9 +390,9 @@ public abstract class TreeLoggerParameters<LC extends LogCategory>	implements Me
 	 * This method creates a TreeLoggerParameters instance from a previously saved .xml file
 	 * @param filename the path of the xml file
 	 * @return a TreeLoggerParameter instance
-	 * @throws XmlMarshallException if an error has occurred during the unmarshalling
+	 * @throws UnmarshallingException if an error has occurred during the unmarshalling
 	 */
-	public static TreeLoggerParameters<?> loadFromFile(String filename) throws XmlMarshallException {
+	public static TreeLoggerParameters<?> loadFromFile(String filename) throws UnmarshallingException {
 		XmlDeserializer deserializer = new XmlDeserializer(filename);
 		TreeLoggerParameters<?> treeLoggerParameters = (TreeLoggerParameters<?>) deserializer.readObject();
 		treeLoggerParameters.setFilename(filename);
@@ -406,7 +407,7 @@ public abstract class TreeLoggerParameters<LC extends LogCategory>	implements Me
 				logCategory.setSpecies(species);
 			}
 		}
-		treeLoggerClass = XmlMarshallingUtilities.getClassName(treeLoggerClass);	// replace the tree logger class if it has been changed mean while
+		treeLoggerClass = MarshallingUtilities.getClassName(treeLoggerClass);	// replace the tree logger class if it has been changed mean while
 	}
 	
 	@Override
