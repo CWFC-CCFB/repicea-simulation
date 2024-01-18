@@ -43,7 +43,7 @@ public enum Request {
 	 */
 	ProportionHarvestedAreaPerTreatment(false, null, null),
 	/**
-	 * Volume of alive trees (m3/ha)
+	 * Volume of living trees (m3/ha)
 	 */
 	AliveVolume(true, StatusClass.alive, VariableForEstimation.V),
 	/**
@@ -58,11 +58,26 @@ public enum Request {
 	 * Volume of windthown trees (m3/ha)
 	 */
 	WindfallVolume(true, StatusClass.windfall, VariableForEstimation.V),
-	
 	/**
-	 * Biomass (Mg)
+	 * Basal area of living trees (m2/ha)
 	 */
-	AliveAboveGroundBiomass(true, StatusClass.alive, VariableForEstimation.B);
+	AliveBasalArea(true, StatusClass.alive, VariableForEstimation.G),
+	/**
+	 * Biomass of living trees (Mg/ha)
+	 */
+	AliveAboveGroundBiomass(true, StatusClass.alive, VariableForEstimation.B),
+	/**
+	 * Stem density of living trees (stems/ha) 
+	 */
+	AliveStemDensity(true, StatusClass.alive, VariableForEstimation.N),
+	/**
+	 * Stem density of living trees (stems/ha) 
+	 */
+	AliveDominantHeight(true, StatusClass.alive, VariableForEstimation.HDOM);
+	
+	
+	
+	
 	
 	final StatusClass statusClass;
 	final VariableForEstimation variableForEstimation;
