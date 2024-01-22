@@ -65,7 +65,7 @@ public interface CapsisWebAPICompatibleScript {
 	/**
 	 * Run the simulation.
 	 * @return a ScriptResult instance containing the results of the simulation.
-	 * @throws Exception
+	 * @throws Exception if an error occurred during the simulation
 	 */
 	public ScriptResult runSimulation() throws Exception;
 
