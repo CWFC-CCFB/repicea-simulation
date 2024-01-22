@@ -116,4 +116,11 @@ public interface CapsisWebAPICompatibleScript {
 	 * @return a List of Request enums
 	 */
 	public List<Request> getPossibleRequests();
+	
+	
+	/**
+	 * Provide a double between 0 and 1, which indicates the progress of the simulation.
+	 * @return a double
+	 */
+	public double getSimulationProgress();
 }
