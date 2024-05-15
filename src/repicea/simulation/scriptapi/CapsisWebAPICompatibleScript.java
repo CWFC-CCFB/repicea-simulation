@@ -123,4 +123,11 @@ public interface CapsisWebAPICompatibleScript {
 	 * @return a double
 	 */
 	public double getSimulationProgress();
+	
+	/**
+	 * Provide the scope of the model.<p>
+	 * The keys refer to the attribute and the values to the possible values.
+	 * @return a Map instance
+	 */
+	public LinkedHashMap<String, Object> getScope();
 }
