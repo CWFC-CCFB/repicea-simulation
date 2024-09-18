@@ -1,7 +1,7 @@
 /*
  * This file is part of the repicea library.
  *
- * Copyright (C) 2009-2019 Mathieu Fortin for Rouge-Epicea
+ * Copyright (C) 2009-2012 Mathieu Fortin for Rouge-Epicea
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,17 +19,16 @@
 package repicea.simulation.covariateproviders.plotlevel;
 
 /**
- * This interface ensures the plot or the stand instance can provide its seasonal temperature over the interval.
- * @author Mathieu Fortin - July 2019
- *
+ * This interface ensures the stand instance can provide its mean 
+ * annual temperature.
+ * @author Mathieu Fortin - November 2012
  */
-public interface MeanSeasonalTemperatureProvider {
+public interface MeanAnnualTemperatureCelsiusProvider {
 
-	
 	/**
-	 * Returns the monthly mean temperature above 6 degrees Celsius.
-	 * @return a double
+	 * Provide the mean annual temperature.
+	 * @return the temperature (&deg;C)
 	 */
-	public double getMeanAnnualTempAbove6C();
+	public double getMeanAnnualTemperatureCelsius();
 
 }
