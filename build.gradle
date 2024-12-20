@@ -97,6 +97,11 @@ dependencies {
     implementation group: 'io.github.cwfc-ccfb', name: 'repicea', version: '[1.13.0,)'    
     implementation group: 'io.github.cwfc-ccfb', name: 'repicea-mathstats', version: '[1.6.0,)'    
 
+ 	implementation group: 'com.sun.xml.bind', name:'jaxb-ri', version: '[4.0.5,)'   
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '[2.14.2,)'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '[2.14.2,)'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '[2.14.2,)'
+
     testImplementation "junit:junit:4.13.2"    
 }
 
