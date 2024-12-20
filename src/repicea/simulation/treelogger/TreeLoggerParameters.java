@@ -43,8 +43,8 @@ import repicea.serial.MarshallingException;
 import repicea.serial.MarshallingUtilities;
 import repicea.serial.Memorizable;
 import repicea.serial.MemorizerPackage;
+import repicea.serial.PostUnmarshalling;
 import repicea.serial.UnmarshallingException;
-import repicea.serial.xml.PostXmlUnmarshalling;
 import repicea.serial.xml.XmlDeserializer;
 import repicea.serial.xml.XmlSerializer;
 import repicea.simulation.treelogger.TreeLoggerParametersDialog.MessageID;
@@ -61,7 +61,7 @@ public abstract class TreeLoggerParameters<LC extends LogCategory>	implements Me
 																						IOUserInterfaceableObject, 
 																						Serializable, 
 																						REpiceaShowableUIWithParent, 
-																						PostXmlUnmarshalling,
+																						PostUnmarshalling,
 																						REpiceaGUIPermissionProvider {
 	
 	protected static class TreeLoggerParametersFileFilter extends FileFilter implements ExtendedFileFilter {
@@ -359,7 +359,6 @@ public abstract class TreeLoggerParameters<LC extends LogCategory>	implements Me
 	@SuppressWarnings("unchecked")
 	public TreeLogger<TreeLoggerParameters<?>,?> createTreeLoggerInstance() {
 		try {
-//			Class<?> clazz = ClassLoader.getSystemClassLoader().loadClass(treeLoggerClass);
 			Class<?> clazz = Class.forName(treeLoggerClass);
 			TreeLogger<TreeLoggerParameters<?>,?> treeLogger = (TreeLogger<TreeLoggerParameters<?>,?>) clazz.newInstance();
 			treeLogger.setTreeLoggerParameters(this);
