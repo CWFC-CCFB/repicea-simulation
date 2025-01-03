@@ -20,7 +20,7 @@ package repicea.simulation.covariateproviders.plotlevel;
 
 import java.util.List;
 
-import repicea.simulation.covariateproviders.StochasticImplementation;
+import repicea.simulation.covariateproviders.samplelevel.StochasticImplementation;
 
 /**
  * The StochasticInformationProvider interface provides basic information about the simulation mode.

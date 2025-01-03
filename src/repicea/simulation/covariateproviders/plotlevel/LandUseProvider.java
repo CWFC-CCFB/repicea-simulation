@@ -1,8 +1,8 @@
 /*
- * This file is part of the repicea library.
+ * This file is part of the repicea-simulation library.
  *
  * Copyright (C) 2009-2017 Mathieu Fortin for Rouge-Epicea
- * Copyright (C) 2024 His Majesty the King in right of Canada
+ * Copyright (C) 2024-2025 His Majesty the King in right of Canada
  * Author: Mathieu Fortin, Canadian Forest Service
  *
  * This library is free software; you can redistribute it and/or
@@ -20,12 +20,15 @@
  */
 package repicea.simulation.covariateproviders.plotlevel;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import repicea.util.REpiceaTranslator;
 import repicea.util.REpiceaTranslator.TextableEnum;
 
 /**
  * The LandUseProvider interface ensures that the plot instance knows its land use.
- * @author Mathieu Fortin - July 2018
+ * @author Mathieu Fortin - July 2018, January 2025
  */
 public interface LandUseProvider {
 
@@ -46,6 +49,8 @@ public interface LandUseProvider {
 		 * Land for wood production with constraints (e.g., species habitat).
 		 */
 		SensitiveWoodProduction(true, "Wood production with constraints", "Production ligneuse avec contraintes");
+		
+		static Map<String, LandUse> EligibleStringMap;
 		
 		final boolean isHarvestingAllowed;
 		
@@ -69,6 +74,39 @@ public interface LandUseProvider {
 		@Override
 		public String toString() {
 			return REpiceaTranslator.getString(this);
+		}
+
+		private static Map<String, LandUse> getEligibleStringMap() {
+			if (EligibleStringMap == null) {
+				EligibleStringMap = new HashMap<String, LandUse>();
+				for (LandUse lu : LandUse.values()) {
+					EligibleStringMap.put(lu.name(), lu);
+				}
+			}
+			return EligibleStringMap;
+		}
+
+		/**
+		 * Check whether this string matches a LandUse enum name.
+		 * @param str the String to be checked
+		 * @return a boolean
+		 */
+		public boolean isStringEligible(String str) {
+			return getEligibleStringMap().containsKey(str);
+		}
+		
+		/**
+		 * Convert a string into a LandUse enum if it is eligible.
+		 * @param str the string to be converted
+		 * @return a LandUse enum or null if the string is not eligible
+		 * @see LandUse#isStringEligible
+		 */
+		public LandUse getLandUseFromString(String str) {
+			if (isStringEligible(str)) {
+				return getEligibleStringMap().get(str);
+			} else {
+				return null;
+			}
 		}
 		
 	}

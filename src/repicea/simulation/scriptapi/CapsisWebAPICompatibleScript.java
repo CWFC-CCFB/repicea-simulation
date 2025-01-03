@@ -23,7 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import repicea.io.tools.ImportFieldElement.ImportFieldElementIDCard;
-import repicea.simulation.ApplicationScaleProvider.ApplicationScale;
+import repicea.simulation.covariateproviders.samplelevel.ApplicationScaleProvider.ApplicationScale;
 import repicea.simulation.covariateproviders.treelevel.SpeciesTypeProvider;
 
 /**

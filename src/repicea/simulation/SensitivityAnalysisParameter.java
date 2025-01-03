@@ -24,7 +24,7 @@ import java.util.Map;
 
 import repicea.math.Matrix;
 import repicea.math.SymmetricMatrix;
-import repicea.simulation.covariateproviders.StochasticImplementation;
+import repicea.simulation.covariateproviders.samplelevel.StochasticImplementation;
 import repicea.stats.estimates.Estimate;
 
 /**
