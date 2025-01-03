@@ -19,73 +19,38 @@
  */
 package repicea.simulation.landscape;
 
+import java.awt.Container;
+import java.awt.Window;
+import java.io.Serializable;
 import java.security.InvalidParameterException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import repicea.gui.REpiceaShowableUIWithParent;
+import repicea.serial.Memorizable;
+import repicea.serial.MemorizerPackage;
 import repicea.simulation.covariateproviders.plotlevel.LandUseProvider.LandUse;
 
 /**
  * A class to handle the areas and sample size in the different 
  * land use categories.
  */
-public class LandUseStrataManager {
+public final class LandUseStrataManager implements REpiceaShowableUIWithParent, Memorizable {
 
 	public static enum EstimatorType {HorvitzThompson, Mean}
 
-	//		static class LandUseStratumPanel extends REpiceaPanel {
-	//
-	//			private static enum MessageID implements TextableEnum {
-	//				;
-	//
-	//				MessageID(String englishText, String frenchText) {
-	//					setText(englishText, frenchText);
-	//				}
-	//				
-	//				@Override
-	//				public void setText(String englishText, String frenchText) {
-	//					REpiceaTranslator.setString(this, englishText, frenchText);
-	//				}
-	//
-	//				@Override
-	//				public String toString() {return REpiceaTranslator.getString(this);}
-	//			}
-	//			
-	//			final LandUseStratum stratum;
-	//
-	//			
-	//			
-	//			LandUseStratumPanel(LandUseStratum stratum) {
-	//				super();
-	//				this.stratum = stratum;
-	//			}
-	//			
-	//			@Override
-	//			public void refreshInterface() {
-	//				// TODO Auto-generated method stub
-	//				
-	//			}
-	//
-	//			@Override
-	//			public void listenTo() {
-	//				// TODO Auto-generated method stub
-	//				
-	//			}
-	//
-	//			@Override
-	//			public void doNotListenToAnymore() {
-	//				// TODO Auto-generated method stub
-	//				
-	//			}
-	//			
-	//		}
-
-	private final Map<LandUse, LandUseStratum> landUseStrata;
+	final Map<LandUse, LandUseStratum> landUseStrata;
 	EstimatorType estimatorType = null;
+	transient LandUseStrataManagerDialog guiInterface;
+	boolean isCancelled;
 
-	LandUseStrataManager(Collection<LandUseStrataManagerCompatiblePlot> plots) {
+	/**
+	 * Constructor.
+	 * @param plots a Collection of LandUseStrataManagerCompatiblePlot instances
+	 */
+	public LandUseStrataManager(Collection<LandUseStrataManagerCompatiblePlot> plots) {
 		Map<LandUse, Integer> landUseFreqMap = new HashMap<LandUse, Integer>();
 		Map<LandUse, Double> landUseIndividualPlotAreaMap = new HashMap<LandUse, Double>();
 		for (LandUseStrataManagerCompatiblePlot plot : plots) {
@@ -109,6 +74,7 @@ public class LandUseStrataManager {
 		}
 	}
 
+	
 	/**
 	 * Provide the number of plots for a particular land use.
 	 * @param lu a LandUse enum
@@ -118,6 +84,19 @@ public class LandUseStrataManager {
 		return landUseStrata.containsKey(lu) ? landUseStrata.get(lu).nbPlots : 0;
 	}
 
+	/**
+	 * Reset the status of the cancelled member to false.
+	 */
+	public void resetCancelled() {
+		this.isCancelled = false;
+	}
+	
+	/**
+	 * Check if the instance has been cancelled through the dialog.
+	 * @return a boolean
+	 */
+	public boolean isCancelled() {return isCancelled;}
+	
 	/**
 	 * Inform on the possibility of using Horvitz-Thompson (HT) estimators.<p>
 	 * HT estimators can be used only if the stratum areas are provided in 
@@ -168,6 +147,38 @@ public class LandUseStrataManager {
 		} else {
 			throw new InvalidParameterException("There are no plots for this land use: " + lu.name());
 		}
+	}
+
+	@Override
+	public LandUseStrataManagerDialog getUI(Container parent) {
+		if (guiInterface == null) {
+			guiInterface = new LandUseStrataManagerDialog(this, (Window) parent);
+		}
+		return guiInterface;
+	}
+
+	@Override
+	public boolean isVisible() {
+		return getUI(null).isVisible();
+	}
+
+	@Override
+	public void showUI(Window parent) {
+		getUI(parent).setVisible(true);
+	}
+
+	@Override
+	public MemorizerPackage getMemorizerPackage() {
+		MemorizerPackage mp = new MemorizerPackage();
+		mp.add((Serializable) landUseStrata);
+		return mp;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public void unpackMemorizerPackage(MemorizerPackage wasMemorized) {
+		landUseStrata.clear();
+		landUseStrata.putAll((Map) wasMemorized.get(0));
 	}
 
 

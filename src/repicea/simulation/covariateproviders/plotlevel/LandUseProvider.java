@@ -91,7 +91,7 @@ public interface LandUseProvider {
 		 * @param str the String to be checked
 		 * @return a boolean
 		 */
-		public boolean isStringEligible(String str) {
+		public static boolean isStringEligible(String str) {
 			return getEligibleStringMap().containsKey(str);
 		}
 		
@@ -101,7 +101,7 @@ public interface LandUseProvider {
 		 * @return a LandUse enum or null if the string is not eligible
 		 * @see LandUse#isStringEligible
 		 */
-		public LandUse getLandUseFromString(String str) {
+		public static LandUse getLandUseFromString(String str) {
 			if (isStringEligible(str)) {
 				return getEligibleStringMap().get(str);
 			} else {

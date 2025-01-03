@@ -183,4 +183,17 @@ public class LandUseStratumManagerTest {
 
 	}
 
+	public static void main(String[] arg) {
+		List<LandUseStrataManagerCompatiblePlot> plots = new ArrayList<LandUseStrataManagerCompatiblePlot>();
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.08, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.08, LandUse.SensitiveWoodProduction));
+		LandUseStrataManager lusm = new LandUseStrataManager(plots);
+		lusm.showUI(null);
+		int u = 0;
+		lusm.showUI(null);
+		u = 0;
+	}
 }

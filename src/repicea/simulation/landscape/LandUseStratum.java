@@ -19,8 +19,10 @@
  */
 package repicea.simulation.landscape;
 
+import java.awt.Component;
 import java.security.InvalidParameterException;
 
+import repicea.gui.REpiceaUIObject;
 import repicea.simulation.covariateproviders.plotlevel.LandUseProvider.LandUse;
 import repicea.simulation.landscape.LandUseStrataManager.EstimatorType;
 
@@ -28,7 +30,7 @@ import repicea.simulation.landscape.LandUseStrataManager.EstimatorType;
  * The LandUseStratum class handles the inclusion probability of a particular land use.
  * @author Mathieu Fortin - January 2025
  */
-class LandUseStratum {
+class LandUseStratum implements REpiceaUIObject {
 
 	enum WhatFor {HTEstimator, MeanEstimator}
 
@@ -36,8 +38,9 @@ class LandUseStratum {
 	final LandUse landUse;
 	final int nbPlots;
 	final double individualPlotAreaHa;
-	private double stratumAreaHa;
+	double stratumAreaHa;
 	double inclusionProbability;
+	transient LandUseStratumPanel guiInterface;
 
 	LandUseStratum(LandUseStrataManager manager, LandUse landUse, int nbPlots, double individualPlotAreaHa) {
 		if (landUse == null) {
@@ -81,6 +84,19 @@ class LandUseStratum {
 		} else {
 			throw new InvalidParameterException("The sample size in this land use " + this.landUse.name() + " is smaller than 2!");
 		}
+	}
+
+	@Override
+	public LandUseStratumPanel getUI() {
+		if (guiInterface == null ) {
+			guiInterface = new LandUseStratumPanel(this);
+		}
+		return guiInterface;
+	}
+
+	@Override
+	public boolean isVisible() {
+		return getUI().isVisible();
 	}
 }
 
