@@ -16,7 +16,7 @@
  *
  * Please see the license at http://www.gnu.org/copyleft/lesser.html.
  */
-package repicea.simulation.covariateproviders;
+package repicea.simulation.covariateproviders.samplelevel;
 
 public interface StochasticImplementation {
 
