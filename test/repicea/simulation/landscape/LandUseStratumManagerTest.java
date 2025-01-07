@@ -19,7 +19,6 @@
  */
 package repicea.simulation.landscape;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +29,7 @@ import org.junit.runners.MethodSorters;
 
 import repicea.simulation.covariateproviders.plotlevel.LandUseProvider.LandUse;
 import repicea.simulation.landscape.LandUseStrataManager.EstimatorType;
+import repicea.simulation.landscape.LandUseStrataManager.LandUseStratumException;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LandUseStratumManagerTest {
@@ -68,7 +68,7 @@ public class LandUseStratumManagerTest {
 		try {
 			lusm.getEstimatorType();	
 			Assert.fail("Should have thrown an InvalidParameterException!");
-		} catch(InvalidParameterException e) {
+		} catch(LandUseStratumException e) {
 			System.err.println(e.getMessage());
 			System.out.println("Got an exception! Relax that was expected!");
 		}
@@ -100,7 +100,7 @@ public class LandUseStratumManagerTest {
 		try {
 			lusm.getEstimatorType();	
 			Assert.fail("Should have thrown an InvalidParameterException!");
-		} catch(InvalidParameterException e) {
+		} catch(LandUseStratumException e) {
 			System.err.println(e.getMessage());
 			System.out.println("Got an exception! Relax that was expected!");
 		}
@@ -120,7 +120,7 @@ public class LandUseStratumManagerTest {
 		try {
 			lusm.getEstimatorType();	
 			Assert.fail("Should have thrown an InvalidParameterException!");
-		} catch(UnsupportedOperationException e) {
+		} catch(LandUseStratumException e) {
 			System.err.println(e.getMessage());
 			System.out.println("Got an exception! Relax that was expected!");
 		}
@@ -137,7 +137,7 @@ public class LandUseStratumManagerTest {
 		try {
 			lusm.getEstimatorType();	
 			Assert.fail("Should have thrown an InvalidParameterException!");
-		} catch(UnsupportedOperationException e) {
+		} catch(LandUseStratumException e) {
 			System.err.println(e.getMessage());
 			System.out.println("Got an exception! Relax that was expected!");
 		}
@@ -154,7 +154,7 @@ public class LandUseStratumManagerTest {
 		try {
 			lusm.setStratumAreaHaForThisLandUse(LandUse.Conservation, 10d);
 			Assert.fail("Should have thrown an InvalidParameterException!");
-		} catch(InvalidParameterException e) {
+		} catch(LandUseStratumException e) {
 			System.err.println(e.getMessage());
 			System.out.println("Got an exception! Relax that was expected!");
 		}

@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import repicea.gui.OwnedWindow;
@@ -16,6 +17,7 @@ import repicea.gui.REpiceaDialog;
 import repicea.gui.REpiceaMemorizerHandler;
 import repicea.gui.UIControlManager;
 import repicea.serial.Memorizable;
+import repicea.simulation.landscape.LandUseStrataManager.LandUseStratumException;
 import repicea.util.REpiceaTranslator;
 import repicea.util.REpiceaTranslator.TextableEnum;
 
@@ -68,6 +70,20 @@ final class LandUseStrataManagerDialog extends REpiceaDialog implements OwnedWin
 	public void cancelAction() {
 		caller.isCancelled = true;
 		super.cancelAction();
+	}
+
+	@Override
+	public void okAction() {
+		try {
+			caller.getEstimatorType();
+		} catch (LandUseStratumException e) {
+			JOptionPane.showMessageDialog(this, 
+					e.getMessage(), 
+					UIControlManager.InformationMessageTitle.Error.toString(), 
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		} 
+		super.okAction();
 	}
 	
 	@Override

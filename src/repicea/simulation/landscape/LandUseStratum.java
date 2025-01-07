@@ -19,12 +19,13 @@
  */
 package repicea.simulation.landscape;
 
-import java.awt.Component;
 import java.security.InvalidParameterException;
 
 import repicea.gui.REpiceaUIObject;
 import repicea.simulation.covariateproviders.plotlevel.LandUseProvider.LandUse;
 import repicea.simulation.landscape.LandUseStrataManager.EstimatorType;
+import repicea.simulation.landscape.LandUseStrataManager.LandUseStratumException;
+import repicea.simulation.landscape.LandUseStrataManager.MessageID;
 
 /**
  * The LandUseStratum class handles the inclusion probability of a particular land use.
@@ -65,9 +66,9 @@ class LandUseStratum implements REpiceaUIObject {
 
 	void setStratumAreaHa(double stratumAreaHa) {
 		if (stratumAreaHa < 0d) {
-			throw new InvalidParameterException("The stratumAreaHa argument must be greater or equal to 0!");
+			throw new LandUseStratumException(MessageID.StratumAreaMustBeEqualOrGreaterThanZero.toString());
 		} else if (stratumAreaHa > 0d && nbPlots == 0) {
-			throw new InvalidParameterException("The stratumAreaHa cannot be greater than 0 if there are not plots!");
+			throw new LandUseStratumException(MessageID.StratumAreaCantBeGreaterThanZeroIfNoPlots.toString());
 		}
 		this.stratumAreaHa = stratumAreaHa;
 		manager.estimatorType = null; // we reset this member so that the manager will have to be validated again
@@ -82,7 +83,7 @@ class LandUseStratum implements REpiceaUIObject {
 				return EstimatorType.Mean;
 			}
 		} else {
-			throw new InvalidParameterException("The sample size in this land use " + this.landUse.name() + " is smaller than 2!");
+			throw new LandUseStratumException(MessageID.SampleSizeOfThisLandUse.toString() + landUse.name() + MessageID.IsSmallerThanTwo.toString());
 		}
 	}
 

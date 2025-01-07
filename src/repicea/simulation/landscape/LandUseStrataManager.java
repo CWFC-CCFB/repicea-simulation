@@ -22,7 +22,6 @@ package repicea.simulation.landscape;
 import java.awt.Container;
 import java.awt.Window;
 import java.io.Serializable;
-import java.security.InvalidParameterException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -32,6 +31,8 @@ import repicea.gui.REpiceaShowableUIWithParent;
 import repicea.serial.Memorizable;
 import repicea.serial.MemorizerPackage;
 import repicea.simulation.covariateproviders.plotlevel.LandUseProvider.LandUse;
+import repicea.util.REpiceaTranslator;
+import repicea.util.REpiceaTranslator.TextableEnum;
 
 /**
  * A class to handle the areas and sample size in the different 
@@ -39,6 +40,39 @@ import repicea.simulation.covariateproviders.plotlevel.LandUseProvider.LandUse;
  */
 public final class LandUseStrataManager implements REpiceaShowableUIWithParent, Memorizable {
 
+	@SuppressWarnings("serial")
+	public static class LandUseStratumException extends RuntimeException {
+		
+		LandUseStratumException(String message) {
+			super(message);
+		}
+		
+	}
+	
+	enum MessageID implements TextableEnum {
+		DifferentPlotAreasError("It seems the plots have different areas!", "Les placettes semblent avoir des surfaces diff\u00E9rentes!"),
+		UnableToCalculateInclusionProbabilityForAtLeastOneStratum("There are several strata and the inclusion probability cannot be calculated for at least one of them!",
+				"Il y a plusieurs strates et la probabilit\u00E9 d'inclusion ne peut \u00EAtre calcul\u00E9e pour au moins une d'entre elles!"),
+		UnableToCalculateInclusionProbabilityAtAll("The inclusion probability cannot be calculated!", "La probabilit\u00E9 d'inclusion ne peut \u00EAtre calcul\u00E9e"),
+		AreaSetForStratumWithoutPlotError("There are no plots for this land use: ", "Cette strate n'a pas de placettes!"),
+		StratumAreaMustBeEqualOrGreaterThanZero("The stratumAreaHa argument must be greater or equal to 0!", "Le param\u00E8tre stratumAreaHa doit \u00EAtre \u00E9gal ou plus grand que z\u00E9ro!"),
+		StratumAreaCantBeGreaterThanZeroIfNoPlots("The stratumAreaHa cannot be greater than 0 if there are not plots!", "Le param\u00E8tre stratumAreaHa ne peut \u00EAtre plus grand que z\u00E9ro s'il n'y a pas de placettes!"),
+		SampleSizeOfThisLandUse("The sample size in this land use ", "La taille d'\u00E9chantillon de cette affectation "),
+		IsSmallerThanTwo(" is smaller than 2!", " est plus petite que 2!");
+
+		MessageID(String englishText, String frenchText) {
+			setText(englishText, frenchText);
+		}
+
+		@Override
+		public void setText(String englishText, String frenchText) {
+			REpiceaTranslator.setString(this, englishText, frenchText);
+		}
+		
+		@Override
+		public String toString() {return REpiceaTranslator.getString(this);}
+	}
+	
 	public static enum EstimatorType {HorvitzThompson, Mean}
 
 	final Map<LandUse, LandUseStratum> landUseStrata;
@@ -58,7 +92,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 			if (landUseFreqMap.containsKey(lu)) {
 				landUseFreqMap.put(lu, landUseFreqMap.get(lu) + 1);
 				if (Math.abs(plot.getAreaHa() - landUseIndividualPlotAreaMap.get(lu)) > 1E-8) {
-					throw new InvalidParameterException("It seems the plots have different areas!");
+					throw new LandUseStratumException(MessageID.DifferentPlotAreasError.toString());
 				}
 			} else {
 				landUseFreqMap.put(lu, 1);
@@ -114,7 +148,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 				for (LandUse lu : landUseStrata.keySet()) {
 					LandUseStratum lus = landUseStrata.get(lu);
 					if (lus.getEstimatorTypeCompatilibity() != EstimatorType.HorvitzThompson) {
-						throw new UnsupportedOperationException("There are several strata and the inclusion probability cannot be calculated for at least one of them!");
+						throw new LandUseStratumException(MessageID.UnableToCalculateInclusionProbabilityForAtLeastOneStratum.toString());
 					}
 				}
 				estimatorType = EstimatorType.HorvitzThompson;
@@ -132,7 +166,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 		if (getEstimatorType() == EstimatorType.HorvitzThompson) {
 			return landUseStrata.get(lu).inclusionProbability;
 		} else {
-			throw new UnsupportedOperationException("The inclusion probability cannot be calculated!");
+			throw new LandUseStratumException(MessageID.UnableToCalculateInclusionProbabilityAtAll.toString());
 		}
 	}
 
@@ -145,7 +179,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 		if (landUseStrata.containsKey(lu)) {
 			landUseStrata.get(lu).setStratumAreaHa(stratumAreaHa);
 		} else {
-			throw new InvalidParameterException("There are no plots for this land use: " + lu.name());
+			throw new LandUseStratumException(MessageID.AreaSetForStratumWithoutPlotError.toString() + lu.name());
 		}
 	}
 
