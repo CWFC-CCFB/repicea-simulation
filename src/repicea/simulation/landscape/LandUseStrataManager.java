@@ -58,7 +58,8 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 		StratumAreaMustBeEqualOrGreaterThanZero("The stratumAreaHa argument must be greater or equal to 0!", "Le param\u00E8tre stratumAreaHa doit \u00EAtre \u00E9gal ou plus grand que z\u00E9ro!"),
 		StratumAreaCantBeGreaterThanZeroIfNoPlots("The stratumAreaHa cannot be greater than 0 if there are not plots!", "Le param\u00E8tre stratumAreaHa ne peut \u00EAtre plus grand que z\u00E9ro s'il n'y a pas de placettes!"),
 		SampleSizeOfThisLandUse("The sample size in this land use ", "La taille d'\u00E9chantillon de cette affectation "),
-		IsSmallerThanTwo(" is smaller than 2!", " est plus petite que 2!");
+		IsSmallerThanTwo(" is smaller than 2!", " est plus petite que 2!"),
+		AlreadyThisPlotId("It seems there are duplicate plot ids!", "Certaines placettes ont le m\u00EAme identifiant!");
 
 		MessageID(String englishText, String frenchText) {
 			setText(englishText, frenchText);
@@ -79,6 +80,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	EstimatorType estimatorType = null;
 	transient LandUseStrataManagerDialog guiInterface;
 	boolean isCancelled;
+	final Map<String, LandUseStratum> plotIdToLandUseStrataMap;
 
 	/**
 	 * Constructor.
@@ -87,6 +89,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	public LandUseStrataManager(Collection<LandUseStrataManagerCompatiblePlot> plots) {
 		Map<LandUse, Integer> landUseFreqMap = new HashMap<LandUse, Integer>();
 		Map<LandUse, Double> landUseIndividualPlotAreaMap = new HashMap<LandUse, Double>();
+		Map<String, LandUse> plotIds = new HashMap<String, LandUse>();
 		for (LandUseStrataManagerCompatiblePlot plot : plots) {
 			LandUse lu = plot.getLandUse();
 			if (landUseFreqMap.containsKey(lu)) {
@@ -98,6 +101,12 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 				landUseFreqMap.put(lu, 1);
 				landUseIndividualPlotAreaMap.put(lu, plot.getAreaHa());
 			}
+			String plotId = plot.getId();
+			if (!plotIds.containsKey(plotId)) {
+				plotIds.put(plotId, plot.getLandUse());
+			} else {
+				throw new LandUseStratumException(MessageID.AlreadyThisPlotId.toString());
+			}
 		}
 
 		landUseStrata = new LinkedHashMap<LandUse, LandUseStratum>();
@@ -105,6 +114,12 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 			int nbPlots = landUseFreqMap.containsKey(lu) ? landUseFreqMap.get(lu) : 0;
 			double individualPlotAreaHa = landUseIndividualPlotAreaMap.containsKey(lu) ? landUseIndividualPlotAreaMap.get(lu) : 0d;
 			landUseStrata.put(lu, new LandUseStratum(this, lu, nbPlots, individualPlotAreaHa));
+		}
+		
+		plotIdToLandUseStrataMap = new HashMap<String, LandUseStratum>();
+		for (String plotId : plotIds.keySet()) {
+			LandUse lu = plotIds.get(plotId);
+			plotIdToLandUseStrataMap.put(plotId, landUseStrata.get(lu));
 		}
 	}
 
@@ -171,6 +186,19 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	}
 
 	/**
+	 * Provide the inclusion probability for a particular plot.
+	 * @param plotId the unique id of a plot
+	 * @return the inclusion probability
+	 */
+	public double getInclusionProbabilityForThisPlot(String plotId) {
+		if (getEstimatorType() == EstimatorType.HorvitzThompson) {
+			return plotIdToLandUseStrataMap.get(plotId).inclusionProbability;
+		} else {
+			throw new LandUseStratumException(MessageID.UnableToCalculateInclusionProbabilityAtAll.toString());
+		}
+	}
+
+	/**
 	 * Set the area for a particular land use.
 	 * @param lu a LandUse enum
 	 * @param stratumAreaHa the area (ha) for this land use.
@@ -205,6 +233,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	public MemorizerPackage getMemorizerPackage() {
 		MemorizerPackage mp = new MemorizerPackage();
 		mp.add((Serializable) landUseStrata);
+		mp.add((Serializable) plotIdToLandUseStrataMap);
 		return mp;
 	}
 
@@ -213,6 +242,8 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	public void unpackMemorizerPackage(MemorizerPackage wasMemorized) {
 		landUseStrata.clear();
 		landUseStrata.putAll((Map) wasMemorized.get(0));
+		plotIdToLandUseStrataMap.clear();
+		plotIdToLandUseStrataMap.putAll((Map) wasMemorized.get(1));
 	}
 
 

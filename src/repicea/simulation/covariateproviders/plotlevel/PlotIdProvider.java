@@ -17,19 +17,16 @@
  *
  * Please see the license at http://www.gnu.org/copyleft/lesser.html.
  */
-package repicea.simulation.landscape;
-
-import repicea.simulation.covariateproviders.plotlevel.AreaHaProvider;
-import repicea.simulation.covariateproviders.plotlevel.LandUseProvider;
-import repicea.simulation.covariateproviders.plotlevel.PlotIdProvider;
+package repicea.simulation.covariateproviders.plotlevel;
 
 /**
- * An plot-level interface to ensure the compatibility with the 
- * LandUseStrataManager class.
- * @author Mathieu Fortin - January 2025
+ * Ensure the plot instance can provide its id.
  */
-public interface LandUseStrataManagerCompatiblePlot extends AreaHaProvider, 
-															LandUseProvider,
-															PlotIdProvider {
+public interface PlotIdProvider {
 
+	/**
+	 * Provide the id of the plot instance.
+	 * @return a unique String for this plot
+	 */
+	public String getId();
 }

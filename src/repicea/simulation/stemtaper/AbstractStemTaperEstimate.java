@@ -25,10 +25,8 @@ import repicea.math.Matrix;
 import repicea.math.SymmetricMatrix;
 import repicea.math.integral.TrapezoidalRule;
 import repicea.stats.CentralMomentsSettable;
-import repicea.stats.Distribution;
 import repicea.stats.distributions.GaussianDistribution;
-import repicea.stats.estimates.Estimate;
-import repicea.stats.estimates.Estimate.EstimatorType;
+import repicea.stats.estimates.AbstractEstimate;
 import repicea.stats.estimates.GaussianEstimate;
 
 /**
@@ -39,7 +37,7 @@ import repicea.stats.estimates.GaussianEstimate;
  * @author Mathieu Fortin - December 2016 (Refactoring)
  */
 @SuppressWarnings({"serial"})
-public abstract class AbstractStemTaperEstimate extends Estimate<Matrix, SymmetricMatrix, GaussianDistribution> implements CentralMomentsSettable  {
+public abstract class AbstractStemTaperEstimate extends AbstractEstimate<Matrix, SymmetricMatrix, GaussianDistribution> implements CentralMomentsSettable  {
 		
 	private List<Double> heights;
 	private GaussianEstimate volumeEstimate;
