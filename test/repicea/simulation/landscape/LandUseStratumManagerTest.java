@@ -62,7 +62,7 @@ public class LandUseStratumManagerTest {
 		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 1, 0.04, LandUse.WoodProduction));
 		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 2, 0.04, LandUse.WoodProduction));
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
-		Assert.assertTrue("Estimator type should be mean", lusm.getEstimatorType() == EstimatorType.Mean);
+		Assert.assertTrue("Estimator type should be mean", lusm.getEstimatorType() == EstimatorType.SimpleMean);
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class LandUseStratumManagerTest {
 		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 2, 0.04, LandUse.WoodProduction));
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
 		lusm.setStratumAreaHaForThisLandUse(LandUse.WoodProduction, 100);
-		Assert.assertTrue("Estimator type should be Horvitz-Thompson", lusm.getEstimatorType() == EstimatorType.HorvitzThompson);
+		Assert.assertTrue("Estimator type should be Horvitz-Thompson", lusm.getEstimatorType() == EstimatorType.SimpleMean);
 		Assert.assertEquals("Checking inclusion probability", 
 				2 * 0.04 / 100, 
 				lusm.getInclusionProbabilityForThisLandUse(LandUse.WoodProduction), 
@@ -176,7 +176,7 @@ public class LandUseStratumManagerTest {
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
 		lusm.setStratumAreaHaForThisLandUse(LandUse.WoodProduction, 100d);
 		lusm.setStratumAreaHaForThisLandUse(LandUse.SensitiveWoodProduction, 200d);
-		Assert.assertTrue("Estimator type should be Horvitz-Thompson", lusm.getEstimatorType() == EstimatorType.HorvitzThompson);
+		Assert.assertTrue("Estimator type should be Horvitz-Thompson", lusm.getEstimatorType() == EstimatorType.Stratified);
 		Assert.assertEquals("Checking inclusion probability", 
 				3 * 0.04 / 100, 
 				lusm.getInclusionProbabilityForThisLandUse(LandUse.WoodProduction), 
