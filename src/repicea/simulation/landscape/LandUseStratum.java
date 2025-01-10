@@ -78,9 +78,9 @@ class LandUseStratum implements REpiceaUIObject {
 		if (nbPlots >= 2) {
 			if (stratumAreaHa > 0) {
 				inclusionProbability = nbPlots * individualPlotAreaHa / stratumAreaHa;
-				return EstimatorType.HorvitzThompson;
+				return EstimatorType.Stratified;
 			} else {
-				return EstimatorType.Mean;
+				return EstimatorType.SimpleMean;
 			}
 		} else {
 			throw new LandUseStratumException(MessageID.SampleSizeOfThisLandUse.toString() + landUse.name() + MessageID.IsSmallerThanTwo.toString());

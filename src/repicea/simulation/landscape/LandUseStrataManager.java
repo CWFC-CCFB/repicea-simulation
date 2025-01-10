@@ -22,15 +22,20 @@ package repicea.simulation.landscape;
 import java.awt.Container;
 import java.awt.Window;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import repicea.gui.REpiceaShowableUIWithParent;
 import repicea.serial.Memorizable;
 import repicea.serial.MemorizerPackage;
 import repicea.simulation.covariateproviders.plotlevel.LandUseProvider.LandUse;
+import repicea.stats.estimates.PointEstimate;
+import repicea.stats.estimates.PopulationMeanEstimate;
+import repicea.stats.estimates.StratifiedPopulationTotalEstimate;
 import repicea.util.REpiceaTranslator;
 import repicea.util.REpiceaTranslator.TextableEnum;
 
@@ -58,7 +63,8 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 		StratumAreaMustBeEqualOrGreaterThanZero("The stratumAreaHa argument must be greater or equal to 0!", "Le param\u00E8tre stratumAreaHa doit \u00EAtre \u00E9gal ou plus grand que z\u00E9ro!"),
 		StratumAreaCantBeGreaterThanZeroIfNoPlots("The stratumAreaHa cannot be greater than 0 if there are not plots!", "Le param\u00E8tre stratumAreaHa ne peut \u00EAtre plus grand que z\u00E9ro s'il n'y a pas de placettes!"),
 		SampleSizeOfThisLandUse("The sample size in this land use ", "La taille d'\u00E9chantillon de cette affectation "),
-		IsSmallerThanTwo(" is smaller than 2!", " est plus petite que 2!");
+		IsSmallerThanTwo(" is smaller than 2!", " est plus petite que 2!"),
+		AlreadyThisPlotId("It seems there are duplicate plot ids!", "Certaines placettes ont le m\u00EAme identifiant!");
 
 		MessageID(String englishText, String frenchText) {
 			setText(englishText, frenchText);
@@ -73,12 +79,13 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 		public String toString() {return REpiceaTranslator.getString(this);}
 	}
 	
-	public static enum EstimatorType {HorvitzThompson, Mean}
+	public static enum EstimatorType {SimpleMean, Stratified}
 
 	final Map<LandUse, LandUseStratum> landUseStrata;
 	EstimatorType estimatorType = null;
 	transient LandUseStrataManagerDialog guiInterface;
 	boolean isCancelled;
+	final Map<String, LandUseStratum> plotIdToLandUseStrataMap;
 
 	/**
 	 * Constructor.
@@ -87,6 +94,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	public LandUseStrataManager(Collection<LandUseStrataManagerCompatiblePlot> plots) {
 		Map<LandUse, Integer> landUseFreqMap = new HashMap<LandUse, Integer>();
 		Map<LandUse, Double> landUseIndividualPlotAreaMap = new HashMap<LandUse, Double>();
+		Map<String, LandUse> plotIds = new HashMap<String, LandUse>();
 		for (LandUseStrataManagerCompatiblePlot plot : plots) {
 			LandUse lu = plot.getLandUse();
 			if (landUseFreqMap.containsKey(lu)) {
@@ -98,6 +106,12 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 				landUseFreqMap.put(lu, 1);
 				landUseIndividualPlotAreaMap.put(lu, plot.getAreaHa());
 			}
+			String plotId = plot.getId();
+			if (!plotIds.containsKey(plotId)) {
+				plotIds.put(plotId, plot.getLandUse());
+			} else {
+				throw new LandUseStratumException(MessageID.AlreadyThisPlotId.toString());
+			}
 		}
 
 		landUseStrata = new LinkedHashMap<LandUse, LandUseStratum>();
@@ -105,6 +119,12 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 			int nbPlots = landUseFreqMap.containsKey(lu) ? landUseFreqMap.get(lu) : 0;
 			double individualPlotAreaHa = landUseIndividualPlotAreaMap.containsKey(lu) ? landUseIndividualPlotAreaMap.get(lu) : 0d;
 			landUseStrata.put(lu, new LandUseStratum(this, lu, nbPlots, individualPlotAreaHa));
+		}
+		
+		plotIdToLandUseStrataMap = new HashMap<String, LandUseStratum>();
+		for (String plotId : plotIds.keySet()) {
+			LandUse lu = plotIds.get(plotId);
+			plotIdToLandUseStrataMap.put(plotId, landUseStrata.get(lu));
 		}
 	}
 
@@ -144,17 +164,47 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 		if (estimatorType == null) {
 			if (landUseStrata.size() == 1) {
 				estimatorType = landUseStrata.values().iterator().next().getEstimatorTypeCompatilibity();
+				return EstimatorType.SimpleMean;
 			} else {
 				for (LandUse lu : landUseStrata.keySet()) {
 					LandUseStratum lus = landUseStrata.get(lu);
-					if (lus.getEstimatorTypeCompatilibity() != EstimatorType.HorvitzThompson) {
+					if (lus.getEstimatorTypeCompatilibity() != EstimatorType.Stratified) {
 						throw new LandUseStratumException(MessageID.UnableToCalculateInclusionProbabilityForAtLeastOneStratum.toString());
 					}
 				}
-				estimatorType = EstimatorType.HorvitzThompson;
+				estimatorType = EstimatorType.Stratified;
 			}
 		}
 		return estimatorType;
+	}
+
+	/**
+	 * Provide a point estimator that matches the context.<p>
+	 * If there is a single stratum, then a PopulationMeanEstimate instance is returned.
+	 * In cases of multiple strata, a StratifiedPopulationTotalEstimate is returned.
+	 * @return a PointEstimate instance
+	 */
+	public PointEstimate getPointEstimate() {
+		EstimatorType type = getEstimatorType();
+		if (type == EstimatorType.SimpleMean) {
+			LandUseStratum s = landUseStrata.values().iterator().next();
+			if (s.stratumAreaHa == 0d) {
+				return new PopulationMeanEstimate();
+			} else {
+				return new PopulationMeanEstimate(s.stratumAreaHa / s.individualPlotAreaHa);
+			}
+		} else if (type == EstimatorType.Stratified) {
+			List<String> stratumNames = new ArrayList<String>();
+			List<Double> strataPopulationSizes = new ArrayList<Double>();
+			for (LandUse stratum : landUseStrata.keySet()) {
+				stratumNames.add(stratum.name());
+				LandUseStratum s = landUseStrata.get(stratum);
+				strataPopulationSizes.add(s.stratumAreaHa / s.individualPlotAreaHa);
+			}
+			return new StratifiedPopulationTotalEstimate(stratumNames, strataPopulationSizes);
+		} else {
+			throw new UnsupportedOperationException("This estimator type has not been implemeted yet: " + type.name());
+		}
 	}
 	
 	/**
@@ -163,8 +213,21 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	 * @return the inclusion probability
 	 */
 	public double getInclusionProbabilityForThisLandUse(LandUse lu) {
-		if (getEstimatorType() == EstimatorType.HorvitzThompson) {
+		if (getEstimatorType() == EstimatorType.Stratified) {
 			return landUseStrata.get(lu).inclusionProbability;
+		} else {
+			throw new LandUseStratumException(MessageID.UnableToCalculateInclusionProbabilityAtAll.toString());
+		}
+	}
+
+	/**
+	 * Provide the inclusion probability for a particular plot.
+	 * @param plotId the unique id of a plot
+	 * @return the inclusion probability
+	 */
+	public double getInclusionProbabilityForThisPlot(String plotId) {
+		if (getEstimatorType() == EstimatorType.Stratified) {
+			return plotIdToLandUseStrataMap.get(plotId).inclusionProbability;
 		} else {
 			throw new LandUseStratumException(MessageID.UnableToCalculateInclusionProbabilityAtAll.toString());
 		}
@@ -205,6 +268,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	public MemorizerPackage getMemorizerPackage() {
 		MemorizerPackage mp = new MemorizerPackage();
 		mp.add((Serializable) landUseStrata);
+		mp.add((Serializable) plotIdToLandUseStrataMap);
 		return mp;
 	}
 
@@ -213,6 +277,8 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	public void unpackMemorizerPackage(MemorizerPackage wasMemorized) {
 		landUseStrata.clear();
 		landUseStrata.putAll((Map) wasMemorized.get(0));
+		plotIdToLandUseStrataMap.clear();
+		plotIdToLandUseStrataMap.putAll((Map) wasMemorized.get(1));
 	}
 
 

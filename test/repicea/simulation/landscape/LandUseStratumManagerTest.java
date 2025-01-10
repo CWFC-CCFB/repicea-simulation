@@ -38,10 +38,12 @@ public class LandUseStratumManagerTest {
 
 		final double areaHa;
 		final LandUse landUse;
+		final String id;
 
-		private LandUseStratumManagerCompatiblePlotImpl(double areaHa, LandUse landUse) {
+		private LandUseStratumManagerCompatiblePlotImpl(String id, double areaHa, LandUse landUse) {
 			this.areaHa = areaHa;
 			this.landUse = landUse;
+			this.id = id;
 		}
 
 		@Override
@@ -49,21 +51,24 @@ public class LandUseStratumManagerTest {
 
 		@Override
 		public LandUse getLandUse() {return landUse;}
+
+		@Override
+		public String getId() {return id;}
 	}
 	
 	@Test
 	public void test01HappyPathWithSingleStratum() {
 		List<LandUseStrataManagerCompatiblePlot> plots = new ArrayList<LandUseStrataManagerCompatiblePlot>();
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 1, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 2, 0.04, LandUse.WoodProduction));
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
-		Assert.assertTrue("Estimator type should be mean", lusm.getEstimatorType() == EstimatorType.Mean);
+		Assert.assertTrue("Estimator type should be mean", lusm.getEstimatorType() == EstimatorType.SimpleMean);
 	}
 
 	@Test
 	public void test02FailingNotEnoughPlotsWithSingleStratum() {
 		List<LandUseStrataManagerCompatiblePlot> plots = new ArrayList<LandUseStrataManagerCompatiblePlot>();
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 1, 0.04, LandUse.WoodProduction));
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
 		try {
 			lusm.getEstimatorType();	
@@ -77,11 +82,11 @@ public class LandUseStratumManagerTest {
 	@Test
 	public void test03HappyPathWithSingleStratumAndArea() {
 		List<LandUseStrataManagerCompatiblePlot> plots = new ArrayList<LandUseStrataManagerCompatiblePlot>();
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 1, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 2, 0.04, LandUse.WoodProduction));
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
 		lusm.setStratumAreaHaForThisLandUse(LandUse.WoodProduction, 100);
-		Assert.assertTrue("Estimator type should be Horvitz-Thompson", lusm.getEstimatorType() == EstimatorType.HorvitzThompson);
+		Assert.assertTrue("Estimator type should be Horvitz-Thompson", lusm.getEstimatorType() == EstimatorType.SimpleMean);
 		Assert.assertEquals("Checking inclusion probability", 
 				2 * 0.04 / 100, 
 				lusm.getInclusionProbabilityForThisLandUse(LandUse.WoodProduction), 
@@ -91,10 +96,10 @@ public class LandUseStratumManagerTest {
 	@Test
 	public void test04FailingWithMultipleStrataOneOfThemHasTooFewPlots() {
 		List<LandUseStrataManagerCompatiblePlot> plots = new ArrayList<LandUseStrataManagerCompatiblePlot>();
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 1, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 2, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 3, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 4, 0.04, LandUse.SensitiveWoodProduction));
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
 		lusm.setStratumAreaHaForThisLandUse(LandUse.WoodProduction, 100);
 		try {
@@ -111,10 +116,10 @@ public class LandUseStratumManagerTest {
 	@Test
 	public void test05FailingWithHeterogeneousMultipleStrata() {
 		List<LandUseStrataManagerCompatiblePlot> plots = new ArrayList<LandUseStrataManagerCompatiblePlot>();
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.SensitiveWoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 1, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 2, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 3, 0.04, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 4, 0.04, LandUse.SensitiveWoodProduction));
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
 		lusm.setStratumAreaHaForThisLandUse(LandUse.WoodProduction, 100);
 		try {
@@ -129,10 +134,10 @@ public class LandUseStratumManagerTest {
 	@Test
 	public void test06FailingWithHeterogeneousMultipleStrata2() {
 		List<LandUseStrataManagerCompatiblePlot> plots = new ArrayList<LandUseStrataManagerCompatiblePlot>();
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.SensitiveWoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 1, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 2, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 3, 0.04, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 4, 0.04, LandUse.SensitiveWoodProduction));
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
 		try {
 			lusm.getEstimatorType();	
@@ -146,10 +151,10 @@ public class LandUseStratumManagerTest {
 	@Test
 	public void test07FailingWhileProvidingAreaForStratumWithNoPlots() {
 		List<LandUseStrataManagerCompatiblePlot> plots = new ArrayList<LandUseStrataManagerCompatiblePlot>();
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.SensitiveWoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 1, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 2, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 3, 0.04, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 4, 0.04, LandUse.SensitiveWoodProduction));
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
 		try {
 			lusm.setStratumAreaHaForThisLandUse(LandUse.Conservation, 10d);
@@ -163,33 +168,40 @@ public class LandUseStratumManagerTest {
 	@Test
 	public void test08HappyPathWithMultipleStrata() {
 		List<LandUseStrataManagerCompatiblePlot> plots = new ArrayList<LandUseStrataManagerCompatiblePlot>();
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.08, LandUse.SensitiveWoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.08, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 1, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 2, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 3, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 4, 0.08, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 5, 0.08, LandUse.SensitiveWoodProduction));
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
 		lusm.setStratumAreaHaForThisLandUse(LandUse.WoodProduction, 100d);
 		lusm.setStratumAreaHaForThisLandUse(LandUse.SensitiveWoodProduction, 200d);
-		Assert.assertTrue("Estimator type should be Horvitz-Thompson", lusm.getEstimatorType() == EstimatorType.HorvitzThompson);
+		Assert.assertTrue("Estimator type should be Horvitz-Thompson", lusm.getEstimatorType() == EstimatorType.Stratified);
 		Assert.assertEquals("Checking inclusion probability", 
 				3 * 0.04 / 100, 
 				lusm.getInclusionProbabilityForThisLandUse(LandUse.WoodProduction), 
+				1E-8);
+		Assert.assertEquals("Checking inclusion probability for plot 1", 
+				3 * 0.04 / 100, 
+				lusm.getInclusionProbabilityForThisPlot("" + 1),
 				1E-8);
 		Assert.assertEquals("Checking inclusion probability", 
 				2 * 0.08 / 200, 
 				lusm.getInclusionProbabilityForThisLandUse(LandUse.SensitiveWoodProduction), 
 				1E-8);
-
+		Assert.assertEquals("Checking inclusion probability for plot 4", 
+				2 * 0.08 / 200, 
+				lusm.getInclusionProbabilityForThisPlot("" + 4), 
+				1E-8);
 	}
 
 	public static void main(String[] arg) {
 		List<LandUseStrataManagerCompatiblePlot> plots = new ArrayList<LandUseStrataManagerCompatiblePlot>();
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.04, LandUse.WoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.08, LandUse.SensitiveWoodProduction));
-		plots.add(new LandUseStratumManagerCompatiblePlotImpl(0.08, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 1, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 2, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 3, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 4, 0.08, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 5, 0.08, LandUse.SensitiveWoodProduction));
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
 		lusm.showUI(null);
 		int u = 0;
