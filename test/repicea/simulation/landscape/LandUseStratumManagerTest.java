@@ -19,6 +19,7 @@
  */
 package repicea.simulation.landscape;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,9 @@ import org.junit.runners.MethodSorters;
 import repicea.simulation.covariateproviders.plotlevel.LandUseProvider.LandUse;
 import repicea.simulation.landscape.LandUseStrataManager.EstimatorType;
 import repicea.simulation.landscape.LandUseStrataManager.LandUseStratumException;
+import repicea.stats.estimates.PointEstimate;
+import repicea.stats.estimates.PopulationMeanEstimate;
+import repicea.stats.estimates.StratifiedPopulationTotalEstimate;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LandUseStratumManagerTest {
@@ -195,6 +199,46 @@ public class LandUseStratumManagerTest {
 				1E-8);
 	}
 
+	
+	@Test
+	public void test09HappyPathSubdomainEstimator() {
+		List<LandUseStrataManagerCompatiblePlot> plots = new ArrayList<LandUseStrataManagerCompatiblePlot>();
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 1, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 2, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 3, 0.04, LandUse.WoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 4, 0.08, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 5, 0.08, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 6, 0.08, LandUse.Conservation));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 7, 0.08, LandUse.Conservation));
+		LandUseStrataManager lusm = new LandUseStrataManager(plots);
+		lusm.setStratumAreaHaForThisLandUse(LandUse.WoodProduction, 100d);
+		lusm.setStratumAreaHaForThisLandUse(LandUse.SensitiveWoodProduction, 250d);
+		lusm.setStratumAreaHaForThisLandUse(LandUse.Conservation, 300d);
+		Assert.assertTrue("Estimator type should be Horvitz-Thompson", lusm.getEstimatorType() == EstimatorType.Stratified);
+		PointEstimate pe = lusm.getPointEstimateForSubDomains(new LandUse[] {LandUse.WoodProduction, LandUse.SensitiveWoodProduction});
+		Assert.assertTrue("Testing if the PointEstimate instance is a StratifiedPopulationTotalEstimate", pe instanceof StratifiedPopulationTotalEstimate);
+		Assert.assertEquals("Testing population size of subdomain estimator", 
+				100d/0.04 + 250d/0.08,
+				((StratifiedPopulationTotalEstimate) pe).getPopulationSize(), 
+				1E-8);
+
+		pe = lusm.getPointEstimateForSubDomains(new LandUse[] {LandUse.WoodProduction});
+		Assert.assertTrue("Testing if the PointEstimate instance is a PopulationMeanEstimate", pe instanceof PopulationMeanEstimate);
+		Assert.assertEquals("Testing population size of subdomain estimator", 
+				100d/0.04,
+				((PopulationMeanEstimate) pe).getPopulationSize(), 
+				1E-8);
+
+		try {
+			lusm.getPointEstimateForSubDomains(new LandUse[] {LandUse.Unproductive});
+			Assert.fail("Should have thrown an InvalidParameterException");
+		} catch (InvalidParameterException e) {
+			System.err.println(e.getMessage());
+			System.out.println("This error was expected!");
+		}
+	}
+
+	
 	public static void main(String[] arg) {
 		List<LandUseStrataManagerCompatiblePlot> plots = new ArrayList<LandUseStrataManagerCompatiblePlot>();
 		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 1, 0.04, LandUse.WoodProduction));

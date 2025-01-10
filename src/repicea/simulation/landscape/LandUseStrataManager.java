@@ -22,6 +22,7 @@ package repicea.simulation.landscape;
 import java.awt.Container;
 import java.awt.Window;
 import java.io.Serializable;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -188,11 +189,9 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 		EstimatorType type = getEstimatorType();
 		if (type == EstimatorType.SimpleMean) {
 			LandUseStratum s = landUseStrata.values().iterator().next();
-			if (s.stratumAreaHa == 0d) {
-				return new PopulationMeanEstimate();
-			} else {
-				return new PopulationMeanEstimate(s.stratumAreaHa / s.individualPlotAreaHa);
-			}
+			return s.stratumAreaHa == 0d ?
+					new PopulationMeanEstimate() :
+						new PopulationMeanEstimate(s.stratumAreaHa / s.individualPlotAreaHa);
 		} else if (type == EstimatorType.Stratified) {
 			List<String> stratumNames = new ArrayList<String>();
 			List<Double> strataPopulationSizes = new ArrayList<Double>();
@@ -207,6 +206,46 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 		}
 	}
 	
+	
+	/**
+	 * Provide a point estimator for a subdomain.<p>
+	 * The subdomain can include one or more strata.
+	 * If there is a single stratum, then a PopulationMeanEstimate instance is returned.
+	 * In cases of multiple strata, a StratifiedPopulationTotalEstimate is returned.
+	 * @param strata an Array of LandUse enums
+	 * @return a PointEstimate instance
+	 */
+	public PointEstimate getPointEstimateForSubDomains(LandUse[] strata) {
+		if (strata == null || strata.length == 0) {
+			throw new InvalidParameterException("The strata parameter must have at least one string!");
+		}
+		List<LandUse> landUses = new ArrayList<LandUse>();
+		for (LandUse lu : strata) {
+			if (!landUses.contains(lu)) {
+				if (!landUseStrata.containsKey(lu)) {
+					throw new InvalidParameterException("The strata map does not contain a stratum for this land use: " + lu.name());
+				}
+				landUses.add(lu);
+			}
+		}
+		getEstimatorType(); // just to make sure the manager is valid
+		if (landUses.size() == 1) {
+			LandUseStratum s = landUseStrata.get(landUses.get(0));
+			return s.stratumAreaHa == 0d ?
+					new PopulationMeanEstimate() :
+						new PopulationMeanEstimate(s.stratumAreaHa / s.individualPlotAreaHa);
+		} else {
+			List<String> stratumNames = new ArrayList<String>();
+			List<Double> strataPopulationSizes = new ArrayList<Double>();
+			for (LandUse stratum : landUses) {
+				stratumNames.add(stratum.name());
+				LandUseStratum s = landUseStrata.get(stratum);
+				strataPopulationSizes.add(s.stratumAreaHa / s.individualPlotAreaHa);
+			}
+			return new StratifiedPopulationTotalEstimate(stratumNames, strataPopulationSizes);
+		} 
+	}
+
 	/**
 	 * Provide the inclusion probability for this land use.
 	 * @param lu a LandUse enum
