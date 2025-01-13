@@ -332,6 +332,22 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 		return strata;
 	}
 	
+	/**
+	 * Provide the list of harvestable land uses from the strata manager.
+	 * @return a List of LandUse enums
+	 */
+	public List<LandUse> getHarvestableStrata() {
+		List<LandUse> strata = new ArrayList<LandUse>();
+		for (LandUse s : landUseStrata.keySet()) {
+			if (s.isHarvestingAllowed()) {
+				strata.add(s);
+			}
+		}
+		Collections.sort(strata);
+		return strata;
+	}
+	
+	
 	@Override
 	public MemorizerPackage getMemorizerPackage() {
 		MemorizerPackage mp = new MemorizerPackage();
