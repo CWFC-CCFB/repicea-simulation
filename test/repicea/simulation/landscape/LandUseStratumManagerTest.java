@@ -31,9 +31,10 @@ import org.junit.runners.MethodSorters;
 import repicea.simulation.covariateproviders.plotlevel.LandUseProvider.LandUse;
 import repicea.simulation.landscape.LandUseStrataManager.EstimatorType;
 import repicea.simulation.landscape.LandUseStrataManager.LandUseStratumException;
-import repicea.stats.estimates.PointEstimate;
-import repicea.stats.estimates.PopulationMeanEstimate;
-import repicea.stats.estimates.StratifiedPopulationTotalEstimate;
+import repicea.stats.sampling.FinitePopulationEstimate;
+import repicea.stats.sampling.PointEstimate;
+import repicea.stats.sampling.PopulationMeanEstimate;
+import repicea.stats.sampling.StratifiedPopulationEstimate;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LandUseStratumManagerTest {
@@ -66,7 +67,7 @@ public class LandUseStratumManagerTest {
 		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 1, 0.04, LandUse.WoodProduction));
 		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 2, 0.04, LandUse.WoodProduction));
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
-		Assert.assertTrue("Estimator type should be mean", lusm.getEstimatorType() == EstimatorType.SimpleMean);
+		Assert.assertTrue("Estimator type should be mean", lusm.getEstimatorType() == EstimatorType.InfinitePopulation);
 	}
 
 	@Test
@@ -90,7 +91,7 @@ public class LandUseStratumManagerTest {
 		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 2, 0.04, LandUse.WoodProduction));
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
 		lusm.setStratumAreaHaForThisLandUse(LandUse.WoodProduction, 100);
-		Assert.assertTrue("Estimator type should be Horvitz-Thompson", lusm.getEstimatorType() == EstimatorType.SimpleMean);
+		Assert.assertTrue("Estimator type should be Horvitz-Thompson", lusm.getEstimatorType() == EstimatorType.FinitePopulation);
 		Assert.assertEquals("Checking inclusion probability", 
 				2 * 0.04 / 100, 
 				lusm.getInclusionProbabilityForThisLandUse(LandUse.WoodProduction), 
@@ -180,7 +181,7 @@ public class LandUseStratumManagerTest {
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
 		lusm.setStratumAreaHaForThisLandUse(LandUse.WoodProduction, 100d);
 		lusm.setStratumAreaHaForThisLandUse(LandUse.SensitiveWoodProduction, 200d);
-		Assert.assertTrue("Estimator type should be Horvitz-Thompson", lusm.getEstimatorType() == EstimatorType.Stratified);
+		Assert.assertTrue("Estimator type should be Stratified population", lusm.getEstimatorType() == EstimatorType.StratifiedPopulation);
 		Assert.assertEquals("Checking inclusion probability", 
 				3 * 0.04 / 100, 
 				lusm.getInclusionProbabilityForThisLandUse(LandUse.WoodProduction), 
@@ -214,19 +215,19 @@ public class LandUseStratumManagerTest {
 		lusm.setStratumAreaHaForThisLandUse(LandUse.WoodProduction, 100d);
 		lusm.setStratumAreaHaForThisLandUse(LandUse.SensitiveWoodProduction, 250d);
 		lusm.setStratumAreaHaForThisLandUse(LandUse.Conservation, 300d);
-		Assert.assertTrue("Estimator type should be Horvitz-Thompson", lusm.getEstimatorType() == EstimatorType.Stratified);
+		Assert.assertTrue("Estimator type should be Stratified population", lusm.getEstimatorType() == EstimatorType.StratifiedPopulation);
 		PointEstimate pe = lusm.getPointEstimateForSubDomains(new LandUse[] {LandUse.WoodProduction, LandUse.SensitiveWoodProduction});
-		Assert.assertTrue("Testing if the PointEstimate instance is a StratifiedPopulationTotalEstimate", pe instanceof StratifiedPopulationTotalEstimate);
+		Assert.assertTrue("Testing if the PointEstimate instance is a StratifiedPopulationTotalEstimate", pe instanceof StratifiedPopulationEstimate);
 		Assert.assertEquals("Testing population size of subdomain estimator", 
 				100d/0.04 + 250d/0.08,
-				((StratifiedPopulationTotalEstimate) pe).getPopulationSize(), 
+				((StratifiedPopulationEstimate) pe).getPopulationSize(), 
 				1E-8);
 
 		pe = lusm.getPointEstimateForSubDomains(new LandUse[] {LandUse.WoodProduction});
 		Assert.assertTrue("Testing if the PointEstimate instance is a PopulationMeanEstimate", pe instanceof PopulationMeanEstimate);
 		Assert.assertEquals("Testing population size of subdomain estimator", 
 				100d/0.04,
-				((PopulationMeanEstimate) pe).getPopulationSize(), 
+				((FinitePopulationEstimate) pe).getPopulationSize(), 
 				1E-8);
 
 		try {

@@ -34,9 +34,10 @@ import repicea.gui.REpiceaShowableUIWithParent;
 import repicea.serial.Memorizable;
 import repicea.serial.MemorizerPackage;
 import repicea.simulation.covariateproviders.plotlevel.LandUseProvider.LandUse;
-import repicea.stats.estimates.PointEstimate;
-import repicea.stats.estimates.PopulationMeanEstimate;
-import repicea.stats.estimates.StratifiedPopulationTotalEstimate;
+import repicea.stats.sampling.FinitePopulationEstimate;
+import repicea.stats.sampling.PointEstimate;
+import repicea.stats.sampling.PopulationMeanEstimate;
+import repicea.stats.sampling.StratifiedPopulationEstimate;
 import repicea.util.REpiceaTranslator;
 import repicea.util.REpiceaTranslator.TextableEnum;
 
@@ -80,7 +81,19 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 		public String toString() {return REpiceaTranslator.getString(this);}
 	}
 	
-	public static enum EstimatorType {SimpleMean, Stratified}
+	public static enum EstimatorType {
+		/**
+		 * Mean for infinite population.
+		 */
+		InfinitePopulation,
+		/**
+		 * Mean and total for finite population.
+		 */
+		FinitePopulation,
+		/**
+		 * Mean and total for stratified population.
+		 */
+		StratifiedPopulation}
 
 	final Map<LandUse, LandUseStratum> landUseStrata;
 	EstimatorType estimatorType = null;
@@ -165,15 +178,14 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 		if (estimatorType == null) {
 			if (landUseStrata.size() == 1) {
 				estimatorType = landUseStrata.values().iterator().next().getEstimatorTypeCompatilibity();
-				return EstimatorType.SimpleMean;
 			} else {
 				for (LandUse lu : landUseStrata.keySet()) {
 					LandUseStratum lus = landUseStrata.get(lu);
-					if (lus.getEstimatorTypeCompatilibity() != EstimatorType.Stratified) {
+					if (lus.getEstimatorTypeCompatilibity() == EstimatorType.InfinitePopulation) {
 						throw new LandUseStratumException(MessageID.UnableToCalculateInclusionProbabilityForAtLeastOneStratum.toString());
 					}
 				}
-				estimatorType = EstimatorType.Stratified;
+				estimatorType = EstimatorType.StratifiedPopulation;
 			}
 		}
 		return estimatorType;
@@ -187,21 +199,23 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	 */
 	public PointEstimate getPointEstimate() {
 		EstimatorType type = getEstimatorType();
-		if (type == EstimatorType.SimpleMean) {
-			LandUseStratum s = landUseStrata.values().iterator().next();
-			return s.stratumAreaHa == 0d ?
-					new PopulationMeanEstimate() :
-						new PopulationMeanEstimate(s.stratumAreaHa / s.individualPlotAreaHa);
-		} else if (type == EstimatorType.Stratified) {
+		LandUseStratum s;
+		switch(type) {
+		case InfinitePopulation:
+			return new PopulationMeanEstimate();
+		case FinitePopulation:
+			s = landUseStrata.values().iterator().next();
+			return new FinitePopulationEstimate(s.stratumAreaHa / s.individualPlotAreaHa);
+		case StratifiedPopulation:
 			List<String> stratumNames = new ArrayList<String>();
 			List<Double> strataPopulationSizes = new ArrayList<Double>();
 			for (LandUse stratum : landUseStrata.keySet()) {
 				stratumNames.add(stratum.name());
-				LandUseStratum s = landUseStrata.get(stratum);
+				s = landUseStrata.get(stratum);
 				strataPopulationSizes.add(s.stratumAreaHa / s.individualPlotAreaHa);
 			}
-			return new StratifiedPopulationTotalEstimate(stratumNames, strataPopulationSizes);
-		} else {
+			return new StratifiedPopulationEstimate(stratumNames, strataPopulationSizes);
+		default:
 			throw new UnsupportedOperationException("This estimator type has not been implemeted yet: " + type.name());
 		}
 	}
@@ -233,7 +247,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 			LandUseStratum s = landUseStrata.get(landUses.get(0));
 			return s.stratumAreaHa == 0d ?
 					new PopulationMeanEstimate() :
-						new PopulationMeanEstimate(s.stratumAreaHa / s.individualPlotAreaHa);
+						new FinitePopulationEstimate(s.stratumAreaHa / s.individualPlotAreaHa);
 		} else {
 			List<String> stratumNames = new ArrayList<String>();
 			List<Double> strataPopulationSizes = new ArrayList<Double>();
@@ -242,7 +256,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 				LandUseStratum s = landUseStrata.get(stratum);
 				strataPopulationSizes.add(s.stratumAreaHa / s.individualPlotAreaHa);
 			}
-			return new StratifiedPopulationTotalEstimate(stratumNames, strataPopulationSizes);
+			return new StratifiedPopulationEstimate(stratumNames, strataPopulationSizes);
 		} 
 	}
 
@@ -252,7 +266,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	 * @return the inclusion probability
 	 */
 	public double getInclusionProbabilityForThisLandUse(LandUse lu) {
-		if (getEstimatorType() == EstimatorType.Stratified) {
+		if (getEstimatorType() != EstimatorType.InfinitePopulation) {
 			return landUseStrata.get(lu).inclusionProbability;
 		} else {
 			throw new LandUseStratumException(MessageID.UnableToCalculateInclusionProbabilityAtAll.toString());
@@ -265,7 +279,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	 * @return the inclusion probability
 	 */
 	public double getInclusionProbabilityForThisPlot(String plotId) {
-		if (getEstimatorType() == EstimatorType.Stratified) {
+		if (getEstimatorType() != EstimatorType.InfinitePopulation) {
 			return plotIdToLandUseStrataMap.get(plotId).inclusionProbability;
 		} else {
 			throw new LandUseStratumException(MessageID.UnableToCalculateInclusionProbabilityAtAll.toString());

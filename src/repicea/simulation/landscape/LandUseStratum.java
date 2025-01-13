@@ -33,8 +33,6 @@ import repicea.simulation.landscape.LandUseStrataManager.MessageID;
  */
 class LandUseStratum implements REpiceaUIObject {
 
-	enum WhatFor {HTEstimator, MeanEstimator}
-
 	final LandUseStrataManager manager;
 	final LandUse landUse;
 	final int nbPlots;
@@ -76,11 +74,11 @@ class LandUseStratum implements REpiceaUIObject {
 	
 	EstimatorType getEstimatorTypeCompatilibity() {
 		if (nbPlots >= 2) {
-			if (stratumAreaHa > 0) {
+			if (stratumAreaHa > 0d) {
 				inclusionProbability = nbPlots * individualPlotAreaHa / stratumAreaHa;
-				return EstimatorType.Stratified;
+				return EstimatorType.FinitePopulation;
 			} else {
-				return EstimatorType.SimpleMean;
+				return EstimatorType.InfinitePopulation;
 			}
 		} else {
 			throw new LandUseStratumException(MessageID.SampleSizeOfThisLandUse.toString() + landUse.name() + MessageID.IsSmallerThanTwo.toString());
