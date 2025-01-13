@@ -21,6 +21,7 @@ package repicea.simulation.landscape;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
@@ -216,14 +217,14 @@ public class LandUseStratumManagerTest {
 		lusm.setStratumAreaHaForThisLandUse(LandUse.SensitiveWoodProduction, 250d);
 		lusm.setStratumAreaHaForThisLandUse(LandUse.Conservation, 300d);
 		Assert.assertTrue("Estimator type should be Stratified population", lusm.getEstimatorType() == EstimatorType.StratifiedPopulation);
-		PointEstimate pe = lusm.getPointEstimateForSubDomains(new LandUse[] {LandUse.WoodProduction, LandUse.SensitiveWoodProduction});
+		PointEstimate pe = lusm.getPointEstimateForSubDomains(Arrays.asList(new LandUse[] {LandUse.WoodProduction, LandUse.SensitiveWoodProduction}));
 		Assert.assertTrue("Testing if the PointEstimate instance is a StratifiedPopulationTotalEstimate", pe instanceof StratifiedPopulationEstimate);
 		Assert.assertEquals("Testing population size of subdomain estimator", 
 				100d/0.04 + 250d/0.08,
 				((StratifiedPopulationEstimate) pe).getPopulationSize(), 
 				1E-8);
 
-		pe = lusm.getPointEstimateForSubDomains(new LandUse[] {LandUse.WoodProduction});
+		pe = lusm.getPointEstimateForSubDomains(Arrays.asList(new LandUse[] {LandUse.WoodProduction}));
 		Assert.assertTrue("Testing if the PointEstimate instance is a PopulationMeanEstimate", pe instanceof PopulationMeanEstimate);
 		Assert.assertEquals("Testing population size of subdomain estimator", 
 				100d/0.04,
@@ -231,7 +232,7 @@ public class LandUseStratumManagerTest {
 				1E-8);
 
 		try {
-			lusm.getPointEstimateForSubDomains(new LandUse[] {LandUse.Unproductive});
+			lusm.getPointEstimateForSubDomains(Arrays.asList(new LandUse[] {LandUse.Unproductive}));
 			Assert.fail("Should have thrown an InvalidParameterException");
 		} catch (InvalidParameterException e) {
 			System.err.println(e.getMessage());

@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -193,8 +194,12 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 
 	/**
 	 * Provide a point estimator that matches the context.<p>
-	 * If there is a single stratum, then a PopulationMeanEstimate instance is returned.
-	 * In cases of multiple strata, a StratifiedPopulationTotalEstimate is returned.
+	 * There are three possible cases:
+	 * <ol>
+	 * <li> a single stratum without specified area, then it returns a PopulationMeanEstimate instance
+	 * <li> a single stratum with specified area, then it returns a FinitePopulationEstimate instance
+	 * <li> many strata with specified areas for each one of them, then it returns a StratifiedPopulationEstimate instance
+	 * </ol>
 	 * @return a PointEstimate instance
 	 */
 	public PointEstimate getPointEstimate() {
@@ -229,8 +234,8 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	 * @param strata an Array of LandUse enums
 	 * @return a PointEstimate instance
 	 */
-	public PointEstimate getPointEstimateForSubDomains(LandUse[] strata) {
-		if (strata == null || strata.length == 0) {
+	public PointEstimate getPointEstimateForSubDomains(List<LandUse> strata) {
+		if (strata == null || strata.size() == 0) {
 			throw new InvalidParameterException("The strata parameter must have at least one string!");
 		}
 		List<LandUse> landUses = new ArrayList<LandUse>();
@@ -317,6 +322,16 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 		getUI(parent).setVisible(true);
 	}
 
+	/**
+	 * Provide the list of land uses in the strata manager.
+	 * @return a List of LandUse enums
+	 */
+	public List<LandUse> getStrata() {
+		List<LandUse> strata = new ArrayList<LandUse>(landUseStrata.keySet());
+		Collections.sort(strata);
+		return strata;
+	}
+	
 	@Override
 	public MemorizerPackage getMemorizerPackage() {
 		MemorizerPackage mp = new MemorizerPackage();
