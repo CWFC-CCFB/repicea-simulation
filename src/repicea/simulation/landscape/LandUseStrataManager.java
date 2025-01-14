@@ -158,7 +158,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	 * Validate the sampling design. <p> 
 	 * The individual strata are checked for consistency.
 	 */
-	void validateDesign() {
+	public void validateDesign() {
 		if (!validated) {
 			for (LandUse lu : landUseStrata.keySet()) {
 				LandUseStratum lus = landUseStrata.get(lu);
