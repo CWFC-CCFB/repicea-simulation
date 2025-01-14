@@ -252,11 +252,25 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	 * @param stratumAreaHa the area (ha) for this land use.
 	 */
 	public void setStratumAreaHaForThisLandUse(LandUse lu, double stratumAreaHa) {
-		if (landUseStrata.containsKey(lu)) {
-			landUseStrata.get(lu).setStratumAreaHa(stratumAreaHa);
-		} else {
-			throw new LandUseStratumException(MessageID.AreaSetForStratumWithoutPlotError.toString() + lu.name());
+		checkStratumAvailability(lu);
+		landUseStrata.get(lu).setStratumAreaHa(stratumAreaHa);
+	}
+
+	/**
+	 * Provide the total area for some land uses.
+	 * @param lus a List of LandUse enum
+	 * @return the area (ha)
+	 */
+	public double getTotalStratumAreaHaForTheseLandUses(List<LandUse> lus) {
+		if (lus == null || lus.isEmpty()) {
+			throw new InvalidParameterException("The lus argument must be a non empty list!");
 		}
+		double totalHa = 0d;
+		for (LandUse lu : lus) {
+			checkStratumAvailability(lu);
+			totalHa += landUseStrata.get(lu).stratumAreaHa;
+		}
+		return totalHa;
 	}
 
 	@Override

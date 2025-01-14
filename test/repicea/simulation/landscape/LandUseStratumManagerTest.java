@@ -160,7 +160,7 @@ public class LandUseStratumManagerTest {
 		try {
 			lusm.setStratumAreaHaForThisLandUse(LandUse.Conservation, 10d);
 			Assert.fail("Should have thrown an InvalidParameterException!");
-		} catch(LandUseStratumException e) {
+		} catch(InvalidParameterException e) {
 			System.err.println(e.getMessage());
 			System.out.println("Got an exception! Relax that was expected!");
 		}
