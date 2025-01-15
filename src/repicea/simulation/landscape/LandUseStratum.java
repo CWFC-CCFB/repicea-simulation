@@ -23,7 +23,6 @@ import java.security.InvalidParameterException;
 
 import repicea.gui.REpiceaUIObject;
 import repicea.simulation.covariateproviders.plotlevel.LandUseProvider.LandUse;
-import repicea.simulation.landscape.LandUseStrataManager.EstimatorType;
 import repicea.simulation.landscape.LandUseStrataManager.LandUseStratumException;
 import repicea.simulation.landscape.LandUseStrataManager.MessageID;
 
@@ -32,8 +31,6 @@ import repicea.simulation.landscape.LandUseStrataManager.MessageID;
  * @author Mathieu Fortin - January 2025
  */
 class LandUseStratum implements REpiceaUIObject {
-
-	enum WhatFor {HTEstimator, MeanEstimator}
 
 	final LandUseStrataManager manager;
 	final LandUse landUse;
@@ -65,22 +62,22 @@ class LandUseStratum implements REpiceaUIObject {
 	}
 
 	void setStratumAreaHa(double stratumAreaHa) {
-		if (stratumAreaHa < 0d) {
-			throw new LandUseStratumException(MessageID.StratumAreaMustBeEqualOrGreaterThanZero.toString());
+		if (stratumAreaHa <= 0d) {
+			throw new LandUseStratumException(MessageID.StratumAreaMustBeGreaterThanZero.toString());
 		} else if (stratumAreaHa > 0d && nbPlots == 0) {
 			throw new LandUseStratumException(MessageID.StratumAreaCantBeGreaterThanZeroIfNoPlots.toString());
 		}
 		this.stratumAreaHa = stratumAreaHa;
-		manager.estimatorType = null; // we reset this member so that the manager will have to be validated again
+		manager.validated = false; // we reset this member so that the manager will have to be validated again
 	}
 	
-	EstimatorType getEstimatorTypeCompatilibity() {
+	void validateStratum() {
 		if (nbPlots >= 2) {
-			if (stratumAreaHa > 0) {
+			if (stratumAreaHa > 0d) {
 				inclusionProbability = nbPlots * individualPlotAreaHa / stratumAreaHa;
-				return EstimatorType.Stratified;
+				return;
 			} else {
-				return EstimatorType.SimpleMean;
+				throw new LandUseStratumException(MessageID.StratumAreaMustBeGreaterThanZero.toString());
 			}
 		} else {
 			throw new LandUseStratumException(MessageID.SampleSizeOfThisLandUse.toString() + landUse.name() + MessageID.IsSmallerThanTwo.toString());

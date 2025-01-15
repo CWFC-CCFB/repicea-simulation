@@ -22,8 +22,10 @@ package repicea.simulation.landscape;
 import java.awt.Container;
 import java.awt.Window;
 import java.io.Serializable;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,15 +35,18 @@ import repicea.gui.REpiceaShowableUIWithParent;
 import repicea.serial.Memorizable;
 import repicea.serial.MemorizerPackage;
 import repicea.simulation.covariateproviders.plotlevel.LandUseProvider.LandUse;
-import repicea.stats.estimates.PointEstimate;
-import repicea.stats.estimates.PopulationMeanEstimate;
-import repicea.stats.estimates.StratifiedPopulationTotalEstimate;
+import repicea.stats.sampling.StratifiedPopulationEstimate;
 import repicea.util.REpiceaTranslator;
 import repicea.util.REpiceaTranslator.TextableEnum;
 
 /**
  * A class to handle the areas and sample size in the different 
- * land use categories.
+ * land use categories. <p>
+ *
+ * A model working at the landscape level should provide the areas
+ * associated with each land use. 
+ * 
+ * @author Mathieu Fortin - January 2025
  */
 public final class LandUseStrataManager implements REpiceaShowableUIWithParent, Memorizable {
 
@@ -60,7 +65,7 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 				"Il y a plusieurs strates et la probabilit\u00E9 d'inclusion ne peut \u00EAtre calcul\u00E9e pour au moins une d'entre elles!"),
 		UnableToCalculateInclusionProbabilityAtAll("The inclusion probability cannot be calculated!", "La probabilit\u00E9 d'inclusion ne peut \u00EAtre calcul\u00E9e"),
 		AreaSetForStratumWithoutPlotError("There are no plots for this land use: ", "Cette strate n'a pas de placettes!"),
-		StratumAreaMustBeEqualOrGreaterThanZero("The stratumAreaHa argument must be greater or equal to 0!", "Le param\u00E8tre stratumAreaHa doit \u00EAtre \u00E9gal ou plus grand que z\u00E9ro!"),
+		StratumAreaMustBeGreaterThanZero("The stratum area must be greater than 0!", "Le surface de la strate doit \u00EAtre plus grande que z\u00E9ro!"),
 		StratumAreaCantBeGreaterThanZeroIfNoPlots("The stratumAreaHa cannot be greater than 0 if there are not plots!", "Le param\u00E8tre stratumAreaHa ne peut \u00EAtre plus grand que z\u00E9ro s'il n'y a pas de placettes!"),
 		SampleSizeOfThisLandUse("The sample size in this land use ", "La taille d'\u00E9chantillon de cette affectation "),
 		IsSmallerThanTwo(" is smaller than 2!", " est plus petite que 2!"),
@@ -78,15 +83,13 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 		@Override
 		public String toString() {return REpiceaTranslator.getString(this);}
 	}
-	
-	public static enum EstimatorType {SimpleMean, Stratified}
 
 	final Map<LandUse, LandUseStratum> landUseStrata;
-	EstimatorType estimatorType = null;
 	transient LandUseStrataManagerDialog guiInterface;
 	boolean isCancelled;
 	final Map<String, LandUseStratum> plotIdToLandUseStrataMap;
-
+	protected transient boolean validated;
+	
 	/**
 	 * Constructor.
 	 * @param plots a Collection of LandUseStrataManagerCompatiblePlot instances
@@ -152,72 +155,85 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	public boolean isCancelled() {return isCancelled;}
 	
 	/**
-	 * Inform on the possibility of using Horvitz-Thompson (HT) estimators.<p>
-	 * HT estimators can be used only if the stratum areas are provided in 
-	 * each stratum with plots. If there is only one stratum with plots, then the estimator of 
-	 * the mean can be used if no area was provided for this stratum. 
-	 * @return an EstimatorType enum
-	 * @throws UnsupportedOperationException if there are more than one stratum and 
-	 * the inclusion probability cannot be calculated for at least one of them.
+	 * Validate the sampling design. <p> 
+	 * The individual strata are checked for consistency.
 	 */
-	public EstimatorType getEstimatorType() throws UnsupportedOperationException {
-		if (estimatorType == null) {
-			if (landUseStrata.size() == 1) {
-				estimatorType = landUseStrata.values().iterator().next().getEstimatorTypeCompatilibity();
-				return EstimatorType.SimpleMean;
-			} else {
-				for (LandUse lu : landUseStrata.keySet()) {
-					LandUseStratum lus = landUseStrata.get(lu);
-					if (lus.getEstimatorTypeCompatilibity() != EstimatorType.Stratified) {
-						throw new LandUseStratumException(MessageID.UnableToCalculateInclusionProbabilityForAtLeastOneStratum.toString());
-					}
-				}
-				estimatorType = EstimatorType.Stratified;
+	public void validateDesign() {
+		if (!validated) {
+			for (LandUse lu : landUseStrata.keySet()) {
+				LandUseStratum lus = landUseStrata.get(lu);
+				lus.validateStratum(); 
 			}
+			validated = true;
 		}
-		return estimatorType;
 	}
 
 	/**
-	 * Provide a point estimator that matches the context.<p>
-	 * If there is a single stratum, then a PopulationMeanEstimate instance is returned.
-	 * In cases of multiple strata, a StratifiedPopulationTotalEstimate is returned.
-	 * @return a PointEstimate instance
+	 * Provide a stratified point estimator that matches the simulation context.<p>
+	 * The point estimator may contain a single stratum.
+	 * @return a StratifiedPopulationEstimate instance
 	 */
-	public PointEstimate getPointEstimate() {
-		EstimatorType type = getEstimatorType();
-		if (type == EstimatorType.SimpleMean) {
-			LandUseStratum s = landUseStrata.values().iterator().next();
-			if (s.stratumAreaHa == 0d) {
-				return new PopulationMeanEstimate();
-			} else {
-				return new PopulationMeanEstimate(s.stratumAreaHa / s.individualPlotAreaHa);
-			}
-		} else if (type == EstimatorType.Stratified) {
-			List<String> stratumNames = new ArrayList<String>();
-			List<Double> strataPopulationSizes = new ArrayList<Double>();
-			for (LandUse stratum : landUseStrata.keySet()) {
-				stratumNames.add(stratum.name());
-				LandUseStratum s = landUseStrata.get(stratum);
-				strataPopulationSizes.add(s.stratumAreaHa / s.individualPlotAreaHa);
-			}
-			return new StratifiedPopulationTotalEstimate(stratumNames, strataPopulationSizes);
-		} else {
-			throw new UnsupportedOperationException("This estimator type has not been implemeted yet: " + type.name());
+	public StratifiedPopulationEstimate getPointEstimate() {
+		validateDesign(); // to validate
+		LandUseStratum s;
+		List<String> stratumNames = new ArrayList<String>();
+		List<Double> strataPopulationSizes = new ArrayList<Double>();
+		for (LandUse stratum : landUseStrata.keySet()) {
+			stratumNames.add(stratum.name());
+			s = landUseStrata.get(stratum);
+			strataPopulationSizes.add(s.stratumAreaHa / s.individualPlotAreaHa);
 		}
+		return new StratifiedPopulationEstimate(stratumNames, strataPopulationSizes);
 	}
 	
+	
+	/**
+	 * Provide a point estimator for a subdomain.<p>
+	 * The subdomain can include one or more strata.
+	 * If there is a single stratum, then a PopulationMeanEstimate instance is returned.
+	 * In cases of multiple strata, a StratifiedPopulationTotalEstimate is returned.
+	 * @param strata an Array of LandUse enums
+	 * @return a StratifiedPopulationEstimate instance
+	 */
+	public StratifiedPopulationEstimate getPointEstimateForSubDomains(List<LandUse> strata) {
+		if (strata == null || strata.size() == 0) {
+			throw new InvalidParameterException("The strata parameter must have at least one string!");
+		}
+		validateDesign(); // just to make sure the manager is valid
+		
+		List<LandUse> landUses = new ArrayList<LandUse>();
+		for (LandUse lu : strata) {
+			if (!landUses.contains(lu)) {
+				checkStratumAvailability(lu);
+				landUses.add(lu);
+			}
+		}
+		List<String> stratumNames = new ArrayList<String>();
+		List<Double> strataPopulationSizes = new ArrayList<Double>();
+		for (LandUse stratum : landUses) {
+			stratumNames.add(stratum.name());
+			LandUseStratum s = landUseStrata.get(stratum);
+			strataPopulationSizes.add(s.stratumAreaHa / s.individualPlotAreaHa);
+		}
+		return new StratifiedPopulationEstimate(stratumNames, strataPopulationSizes);
+	}
+	
+	
+	private void checkStratumAvailability(LandUse lu) {
+		if (!landUseStrata.containsKey(lu)) {
+			throw new InvalidParameterException("The strata map does not contain a stratum for this land use: " + lu.name());
+		}
+	}
+
 	/**
 	 * Provide the inclusion probability for this land use.
 	 * @param lu a LandUse enum
 	 * @return the inclusion probability
 	 */
 	public double getInclusionProbabilityForThisLandUse(LandUse lu) {
-		if (getEstimatorType() == EstimatorType.Stratified) {
-			return landUseStrata.get(lu).inclusionProbability;
-		} else {
-			throw new LandUseStratumException(MessageID.UnableToCalculateInclusionProbabilityAtAll.toString());
-		}
+		validateDesign();
+		checkStratumAvailability(lu);
+		return landUseStrata.get(lu).inclusionProbability;
 	}
 
 	/**
@@ -226,11 +242,8 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	 * @return the inclusion probability
 	 */
 	public double getInclusionProbabilityForThisPlot(String plotId) {
-		if (getEstimatorType() == EstimatorType.Stratified) {
-			return plotIdToLandUseStrataMap.get(plotId).inclusionProbability;
-		} else {
-			throw new LandUseStratumException(MessageID.UnableToCalculateInclusionProbabilityAtAll.toString());
-		}
+		validateDesign();
+		return plotIdToLandUseStrataMap.get(plotId).inclusionProbability;
 	}
 
 	/**
@@ -239,11 +252,25 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 	 * @param stratumAreaHa the area (ha) for this land use.
 	 */
 	public void setStratumAreaHaForThisLandUse(LandUse lu, double stratumAreaHa) {
-		if (landUseStrata.containsKey(lu)) {
-			landUseStrata.get(lu).setStratumAreaHa(stratumAreaHa);
-		} else {
-			throw new LandUseStratumException(MessageID.AreaSetForStratumWithoutPlotError.toString() + lu.name());
+		checkStratumAvailability(lu);
+		landUseStrata.get(lu).setStratumAreaHa(stratumAreaHa);
+	}
+
+	/**
+	 * Provide the total area for some land uses.
+	 * @param lus a List of LandUse enum
+	 * @return the area (ha)
+	 */
+	public double getTotalStratumAreaHaForTheseLandUses(List<LandUse> lus) {
+		if (lus == null || lus.isEmpty()) {
+			throw new InvalidParameterException("The lus argument must be a non empty list!");
 		}
+		double totalHa = 0d;
+		for (LandUse lu : lus) {
+			checkStratumAvailability(lu);
+			totalHa += landUseStrata.get(lu).stratumAreaHa;
+		}
+		return totalHa;
 	}
 
 	@Override
@@ -264,6 +291,32 @@ public final class LandUseStrataManager implements REpiceaShowableUIWithParent, 
 		getUI(parent).setVisible(true);
 	}
 
+	/**
+	 * Provide the list of land uses in the strata manager.
+	 * @return a List of LandUse enums
+	 */
+	public List<LandUse> getStrata() {
+		List<LandUse> strata = new ArrayList<LandUse>(landUseStrata.keySet());
+		Collections.sort(strata);
+		return strata;
+	}
+	
+	/**
+	 * Provide the list of harvestable land uses from the strata manager.
+	 * @return a List of LandUse enums
+	 */
+	public List<LandUse> getHarvestableStrata() {
+		List<LandUse> strata = new ArrayList<LandUse>();
+		for (LandUse s : landUseStrata.keySet()) {
+			if (s.isHarvestingAllowed()) {
+				strata.add(s);
+			}
+		}
+		Collections.sort(strata);
+		return strata;
+	}
+	
+	
 	@Override
 	public MemorizerPackage getMemorizerPackage() {
 		MemorizerPackage mp = new MemorizerPackage();

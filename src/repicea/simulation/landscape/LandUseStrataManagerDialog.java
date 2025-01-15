@@ -75,7 +75,7 @@ final class LandUseStrataManagerDialog extends REpiceaDialog implements OwnedWin
 	@Override
 	public void okAction() {
 		try {
-			caller.getEstimatorType();
+			caller.validateDesign();
 		} catch (LandUseStratumException e) {
 			JOptionPane.showMessageDialog(this, 
 					e.getMessage(), 
