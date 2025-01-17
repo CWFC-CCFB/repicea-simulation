@@ -240,6 +240,8 @@ public class LandUseStratumManagerTest {
 		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 3, 0.04, LandUse.WoodProduction));
 		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 4, 0.08, LandUse.SensitiveWoodProduction));
 		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 5, 0.08, LandUse.SensitiveWoodProduction));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 6, 0.08, LandUse.Inaccessible));
+		plots.add(new LandUseStratumManagerCompatiblePlotImpl("" + 7, 0.08, LandUse.Inaccessible));
 		LandUseStrataManager lusm = new LandUseStrataManager(plots);
 		lusm.showUI(null);
 	//	int u = 0;

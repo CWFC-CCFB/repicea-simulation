@@ -48,7 +48,11 @@ public interface LandUseProvider {
 		/**
 		 * Land for wood production with constraints (e.g., species habitat).
 		 */
-		SensitiveWoodProduction(true, "Wood production with constraints", "Production ligneuse avec contraintes");
+		SensitiveWoodProduction(true, "Wood production with constraints", "Production ligneuse avec contraintes"),
+		/**
+		 * Pieces of land located in inaccessible stands due to e.g. steep slopes or wet conditions.
+		 */
+		Inaccessible(false, "Inaccessible", "Innaccessible");
 		
 		static Map<String, LandUse> EligibleStringMap;
 		
