@@ -27,9 +27,9 @@ public interface REpiceaTreatmentDefinition {
 
 	/**
 	 * Provide the treatment type associated with this instance of REpiceaTreatmentDescription.
-	 * @return an Enum that stands for the treatment type
+	 * @return an REpiceaTreatmentEnum that stands for the treatment type
 	 */
-	public Enum getTreatmentType();
+	public REpiceaTreatmentEnum getTreatmentType();
 	
 	/**
 	 * Provide the number of years before re-entry. 

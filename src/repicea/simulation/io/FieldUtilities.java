@@ -50,6 +50,11 @@ public class FieldUtilities {
 		ORIGIN(Level.plotLevel),
 		DISTURBANCE(Level.plotLevel),
 		
+		/**
+		 * The stand age as assessed in the field or through photo-interpretation.
+		 */
+		STAND_AGE(Level.plotLevel),
+		
 		PLOTWEIGHT(Level.plotLevel),
 		
 		PRECTOT(Level.plotLevel),
