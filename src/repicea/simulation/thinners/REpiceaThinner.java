@@ -38,7 +38,7 @@ public abstract class REpiceaThinner<S, T> extends REpiceaBinaryEventPredictor<S
 	
 	/**
 	 * Return the list of all possible treatments.
-	 * @return a List of Enum variables
+	 * @return a List of REpiceaTreatmentEnum variables
 	 */
-	public abstract List<Enum> getTreatmentList();
+	public abstract List<REpiceaTreatmentEnum> getTreatmentList();
 }

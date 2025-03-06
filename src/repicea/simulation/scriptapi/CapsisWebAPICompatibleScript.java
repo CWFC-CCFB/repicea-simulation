@@ -21,6 +21,7 @@ package repicea.simulation.scriptapi;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import repicea.io.tools.ImportFieldElement.ImportFieldElementIDCard;
 import repicea.simulation.covariateproviders.samplelevel.ApplicationScaleProvider.ApplicationScale;
@@ -59,9 +60,23 @@ public interface CapsisWebAPICompatibleScript {
 	 * fields, the index can be set to -1, indicating that this field is not part of the input. 
 	 * @param indices an array of integer.
 	 * @return a boolean true if the matches are consistent
+	 * @deprecated use {@link CapsisWebAPICompatibleScript#setFieldMatches(Map, List)}
 	 */
+	@Deprecated
 	public boolean setFieldMatches(int[] indices);
 
+	/**
+	 * Set the indices of the fields contained in the input that match the fields for the simulation. <p>
+	 * 
+	 * The Map argument should contain at least the ImportFieldElementIDCard of the mandatory fields and
+	 * the corresponding field names of the entry file.
+	 * 
+	 * @param oMap a Map of ImportFieldElementIDCard instances (keys) and field names (values) 
+	 * @param fieldNames the field names of the input file.
+	 * @return a boolean true if the matches are consistent
+	 */
+	public boolean setFieldMatches(Map<ImportFieldElementIDCard, String> oMap, List<String> fieldNames);
+	
 	/**
 	 * Run the simulation.
 	 * @return a ScriptResult instance containing the results of the simulation.
