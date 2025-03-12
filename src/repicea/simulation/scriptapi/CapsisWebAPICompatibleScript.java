@@ -61,7 +61,7 @@ public interface CapsisWebAPICompatibleScript {
 	 * fields, the index can be set to -1, indicating that this field is not part of the input. 
 	 * @param indices an array of integer.
 	 * @return a boolean true if the matches are consistent
-	 * @deprecated use {@link CapsisWebAPICompatibleScript#setFieldMatches(Map, List)}
+	 * @deprecated use {@link CapsisWebAPICompatibleScript#setFieldMatches(Map, FormatReader)}
 	 */
 	@Deprecated
 	public boolean setFieldMatches(int[] indices);
