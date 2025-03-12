@@ -1,7 +1,7 @@
 /*
  * This file is part of the repicea-simulation library.
  *
- * Copyright (C) 2021-24 His Majesty the King in Right of Canada
+ * Copyright (C) 2021-2025 His Majesty the King in Right of Canada
  * Author: Jean-Francois Lavoie and Mathieu Fortin, Canadian Forest Service
  *
  * This library is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import repicea.io.FormatReader;
 import repicea.io.tools.ImportFieldElement.ImportFieldElementIDCard;
 import repicea.simulation.covariateproviders.samplelevel.ApplicationScaleProvider.ApplicationScale;
 import repicea.simulation.covariateproviders.treelevel.SpeciesTypeProvider;
@@ -31,13 +32,13 @@ import repicea.simulation.covariateproviders.treelevel.SpeciesTypeProvider;
  * An interface that ensures the Capsis model is compatible with CapsisWebAPI.
  * 
  * @author Jean-Francois Lavoie - September 2021
- * @author Mathieu Fortin - January 2024
+ * @author Mathieu Fortin - January 2024, March 2025
  */
 public interface CapsisWebAPICompatibleScript {
 	
 	/**
 	 * Provide a descriptions of the different input fields.
-	 * @return a List of ImportFieldElementIDCard instances.
+	 * @return a List of ImportFieldElementIDCard instances
 	 */
 	public List<ImportFieldElementIDCard> getFieldDescriptions();
 	
@@ -66,16 +67,15 @@ public interface CapsisWebAPICompatibleScript {
 	public boolean setFieldMatches(int[] indices);
 
 	/**
-	 * Set the indices of the fields contained in the input that match the fields for the simulation. <p>
+	 * Set the field matches between what the model needs and what is available in the input file. <p>
 	 * 
-	 * The Map argument should contain at least the ImportFieldElementIDCard of the mandatory fields and
-	 * the corresponding field names of the entry file.
-	 * 
-	 * @param oMap a Map of ImportFieldElementIDCard instances (keys) and field names (values) 
-	 * @param fieldNames the field names of the input file.
+	 * @param oMap a Map of field names from the ImportFieldElementIDCard instances (keys) and corresponding
+	 * field names in the input file (values).
+	 * @param formatReader a FormatReader instance of the input file
+	 *  
 	 * @return a boolean true if the matches are consistent
 	 */
-	public boolean setFieldMatches(Map<ImportFieldElementIDCard, String> oMap, List<String> fieldNames);
+	public boolean setFieldMatches(Map<String, String> oMap, FormatReader<?> formatReader);
 	
 	/**
 	 * Run the simulation.
