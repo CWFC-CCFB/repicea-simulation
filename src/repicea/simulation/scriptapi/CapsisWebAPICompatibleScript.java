@@ -55,18 +55,6 @@ public interface CapsisWebAPICompatibleScript {
 	public void addRecord(Object[] record);
 
 	/**
-	 * Set the indices of the fields contained in the input that match the fields for the simulation. <p>
-	 * For instance, if the plot id is the first field for the simulation, then the first integer in the 
-	 * array could be 2, indicating the field containing the plot id in the input is the third one. For optional
-	 * fields, the index can be set to -1, indicating that this field is not part of the input. 
-	 * @param indices an array of integer.
-	 * @return a boolean true if the matches are consistent
-	 * @deprecated use {@link CapsisWebAPICompatibleScript#setFieldMatches(Map, FormatReader)}
-	 */
-	@Deprecated
-	public boolean setFieldMatches(int[] indices);
-
-	/**
 	 * Set the field matches between what the model needs and what is available in the input file. <p>
 	 * 
 	 * @param oMap a Map of field names from the ImportFieldElementIDCard instances (keys) and corresponding
@@ -83,7 +71,7 @@ public interface CapsisWebAPICompatibleScript {
 	 * @throws Exception if an error occurred during the simulation
 	 */
 	public ScriptResult runSimulation() throws Exception;
-
+	
 	/**
 	 * Close the project. <p>
 	 * For consistency with CAPSIS.
@@ -145,4 +133,28 @@ public interface CapsisWebAPICompatibleScript {
 	 * @return a Map instance
 	 */
 	public LinkedHashMap<String, Object> getScope();
+	
+	/**
+	 * Cancel the script.
+	 */
+	public void cancel();
+	
+	/**
+	 * Inform on whether the script has been cancelled.
+	 * @return a boolean
+	 */
+	public boolean isCancelled();
+	
+	/**
+	 * True if the script is running in verbose mode.
+	 * @return a boolean
+	 */
+	public boolean isVerbose();
+
+	/**
+	 * Set the script to verbose mode.
+	 * @param isVerbose a boolean
+	 */
+	public void setVerbose(boolean isVerbose);
+	
 }
