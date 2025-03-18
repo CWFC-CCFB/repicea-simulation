@@ -83,7 +83,7 @@ public interface CapsisWebAPICompatibleScript {
 	 * @throws Exception if an error occurred during the simulation
 	 */
 	public ScriptResult runSimulation() throws Exception;
-
+	
 	/**
 	 * Close the project. <p>
 	 * For consistency with CAPSIS.
@@ -145,4 +145,28 @@ public interface CapsisWebAPICompatibleScript {
 	 * @return a Map instance
 	 */
 	public LinkedHashMap<String, Object> getScope();
+	
+	/**
+	 * Cancel the script.
+	 */
+	public void cancel();
+	
+	/**
+	 * Inform on whether the script has been cancelled.
+	 * @return a boolean
+	 */
+	public boolean isCancelled();
+	
+	/**
+	 * True if the script is running in verbose mode.
+	 * @return a boolean
+	 */
+	public boolean isVerbose();
+
+	/**
+	 * Set the script to verbose mode.
+	 * @param isVerbose a boolean
+	 */
+	public void setVerbose(boolean isVerbose);
+	
 }
