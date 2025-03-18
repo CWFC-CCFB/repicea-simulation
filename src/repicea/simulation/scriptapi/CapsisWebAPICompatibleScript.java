@@ -55,18 +55,6 @@ public interface CapsisWebAPICompatibleScript {
 	public void addRecord(Object[] record);
 
 	/**
-	 * Set the indices of the fields contained in the input that match the fields for the simulation. <p>
-	 * For instance, if the plot id is the first field for the simulation, then the first integer in the 
-	 * array could be 2, indicating the field containing the plot id in the input is the third one. For optional
-	 * fields, the index can be set to -1, indicating that this field is not part of the input. 
-	 * @param indices an array of integer.
-	 * @return a boolean true if the matches are consistent
-	 * @deprecated use {@link CapsisWebAPICompatibleScript#setFieldMatches(Map, FormatReader)}
-	 */
-	@Deprecated
-	public boolean setFieldMatches(int[] indices);
-
-	/**
 	 * Set the field matches between what the model needs and what is available in the input file. <p>
 	 * 
 	 * @param oMap a Map of field names from the ImportFieldElementIDCard instances (keys) and corresponding
