@@ -158,22 +158,52 @@ public class ScriptResult {
 			return  null;
 		}
 	}
+
+	
+	
+	private static void appendDifferenceMessage(StringBuilder sb, String message) {
+		if (sb.length() > 0) {
+			sb.append(System.lineSeparator());
+		}
+		sb.append(message);
+	}
 	
 	/**
-	 * Check the compatibility between two ScriptResult instances. To be compatible,
-	 * the DataSet instances nested in the ScriptResult instances must share the 
-	 * same field names and the same field types. Moreover the ScriptResult instances 
-	 * must have the same output types. 
-	 * @param result a ScriptResult instance
-	 * @return a boolean
+	 * Check the differences between this instance and another ScriptResult instance.<p>
+	 * 
+	 * @param other another ScriptResult instance
+	 * @return a String containing the difference. If the string is empty, then there is no difference.
 	 */
-	public boolean isCompatible(ScriptResult result) {
-		return (dataset.getFieldNames().equals(result.dataset.getFieldNames()) && 
-				dataset.getFieldTypes().equals(result.dataset.getFieldTypes()) &&
-				outputTypes.equals(result.outputTypes) && 
-				this.nbRealizations == result.nbRealizations &&
-				this.climateChangeScenario.equals(result.climateChangeScenario) &&
-				this.growthModel.equals(result.growthModel));
+	public String checkForDifferences(ScriptResult other) {
+		StringBuilder sb = new StringBuilder();
+		if (!dataset.getFieldNames().equals(other.dataset.getFieldNames())) {
+			appendDifferenceMessage(sb, "Dataset fieldnames are different: " + System.lineSeparator() + 
+					"This = " + dataset.getFieldNames() + System.lineSeparator() + 
+					"New  = " + other.dataset.getFieldNames());
+		}
+		if (!dataset.getFieldTypes().equals(other.dataset.getFieldTypes())) {
+			appendDifferenceMessage(sb, "Dataset field types are different: " + System.lineSeparator() + 
+					"This = " + dataset.getFieldTypes() + System.lineSeparator() + 
+					"New  = " + other.dataset.getFieldTypes());
+		}
+		if (!outputTypes.equals(other.outputTypes)) {
+			appendDifferenceMessage(sb, "Output types are different: " + System.lineSeparator() + 
+					"This = " + outputTypes + System.lineSeparator() + 
+					"New  = " + other.outputTypes);
+		}
+		if (nbRealizations != other.nbRealizations) {
+			appendDifferenceMessage(sb, "Numbers of realizations are different: " + 
+					"This = " + nbRealizations + "; New = " + other.nbRealizations);
+		}
+		if (!climateChangeScenario.equals(other.climateChangeScenario)) {
+			appendDifferenceMessage(sb, "Climate change scenarios are different: " + 
+					"This = " + climateChangeScenario + "; New = " + other.climateChangeScenario);
+		}
+		if (!growthModel.equals(other.growthModel)) {
+			appendDifferenceMessage(sb, "Growth models are different: " + 
+					"This = " + growthModel + "; New = " + other.growthModel);
+		}
+		return sb.toString();
 	}
 
 	/**
