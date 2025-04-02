@@ -1,7 +1,7 @@
 /*
  * This file is part of the repicea library.
  *
- * Copyright (C) 2009-2012 Mathieu Fortin for Rouge-Epicea
+ * Copyright (C) 2009-2019 Mathieu Fortin for Rouge-Epicea
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,19 +16,21 @@
  *
  * Please see the license at http://www.gnu.org/copyleft/lesser.html.
  */
-package repicea.simulation.covariateproviders.plotlevel;
+package repicea.simulation.covariateproviders.plotlevel.climate;
 
 /**
- * This interface ensures the stand instance can provide its mean 
- * annual precipitation.
- * @author Mathieu Fortin - November 2012
+ * This interface ensures the plot or the stand instance can provide its 
+ * seasonal temperature over the interval.
+ * @author Mathieu Fortin - July 2019
+ *
  */
-public interface MeanAnnualPrecipitationMmProvider {
+public interface MeanSeasonalTemperatureCelsiusProvider {
 
+	
 	/**
-	 * This method returns the mean annual precipitation in mm.
-	 * @return a double
+	 * Provide the monthly mean temperature above 6&deg;C.
+	 * @return the temperature (&deg;C)
 	 */
-	public double getMeanAnnualPrecipitationMm();
+	public double getMeanSeasonalTemperatureCelsius();
 
 }
