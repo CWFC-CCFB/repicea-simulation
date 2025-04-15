@@ -52,7 +52,7 @@ public interface LandUseProvider {
 		/**
 		 * Pieces of land located in inaccessible stands due to e.g. steep slopes or wet conditions.
 		 */
-		Inaccessible(false, "Inaccessible", "Innaccessible");
+		Inaccessible(false, "Inaccessible", "Inaccessible");
 		
 		static Map<String, LandUse> EligibleStringMap;
 		
