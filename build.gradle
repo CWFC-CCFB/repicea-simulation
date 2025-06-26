@@ -6,7 +6,8 @@
 plugins {
     id 'com.palantir.git-version' version '3.0.0'
     id 'maven-publish'
-    id 'signing'
+	id 'java-library'
+	id 'org.jreleaser' version '1.17.0'
 }
 
 
@@ -213,23 +214,37 @@ publishing {
         }
     }
     repositories {
-        maven {
-            name = 'LocalFile'
-            url = "file://${buildDir}/repo"
-        }
-
 		maven {
-		 	name = 'Sonatype'
-		 	credentials(PasswordCredentials)
-		 	url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+		 	url = layout.buildDirectory.dir('staging-deploy')
 		}
     }
 }
 
-signing {
-    sign publishing.publications.repicea
+jreleaser {
+	environment {
+		variables = 'jreleaser.properties'
+	}
+    signing {
+        active = 'ALWAYS'
+        armored = true
+		mode = 'FILE'
+		publicKey = '../public.pgp'
+		secretKey = '../private.pgp'
+    }
+    deploy {
+        maven {
+           mavenCentral {
+                sonatype {
+                    active = 'ALWAYS'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    stagingRepository('target/staging-deploy')
+                }
+            }
+        }
+    }
 }
 
+/*
 publishRepiceaPublicationToMavenLocal {
 	dependsOn jar
 }
@@ -237,3 +252,4 @@ publishRepiceaPublicationToMavenLocal {
 publishRepiceaPublicationToLocalFileRepository {
 	dependsOn jar
 }
+*/
