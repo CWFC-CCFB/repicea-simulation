@@ -6,8 +6,7 @@
 plugins {
     id 'com.palantir.git-version' version '3.0.0'
     id 'maven-publish'
-	id 'java-library'
-	id 'org.jreleaser' version '1.17.0'
+	id 'signing'
 }
 
 
@@ -48,9 +47,6 @@ java {
 }
 
 repositories {
-	maven {		// sonatype repository
-		url "https://repo1.maven.org/maven2/"
-	}
     mavenCentral()
     mavenLocal()
 }
@@ -96,7 +92,7 @@ configurations {
 // make sure to set the compliance to Java 1.8 in the project properties if the Java version is later than 1.8
 // make sure to set Java Compiler > Errors Warnings > Deprecated and Restricted API > Forbidden reference to WARNING instead of ERROR
 dependencies {
-    implementation group: 'io.github.cwfc-ccfb', name: 'repicea', version: '[1.15.1,)'    
+    implementation group: 'io.github.cwfc-ccfb', name: 'repicea', version: '[1.15.4,)'    
     implementation group: 'io.github.cwfc-ccfb', name: 'repicea-mathstats', version: '[1.7.6,)'    
 
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '[2.14.2,)'
@@ -214,42 +210,21 @@ publishing {
         }
     }
     repositories {
-		maven {
-		 	url = layout.buildDirectory.dir('staging-deploy')
-		}
-    }
-}
-
-jreleaser {
-	environment {
-		variables = 'jreleaser.properties'
-	}
-    signing {
-        active = 'ALWAYS'
-        armored = true
-		mode = 'FILE'
-		publicKey = '../public.pgp'
-		secretKey = '../private.pgp'
-    }
-    deploy {
         maven {
-           mavenCentral {
-                sonatype {
-                    active = 'ALWAYS'
-                    url = 'https://central.sonatype.com/api/v1/publisher'
-                    stagingRepository('build/staging-deploy')
-                }
-            }
+            name = 'LocalFile'
+            url = "file://${buildDir}/repo"
         }
     }
 }
 
-/*
+signing {
+    sign publishing.publications.repicea
+}
+
 publishRepiceaPublicationToMavenLocal {
-	dependsOn jar
+	dependsOn integrationTest
 }
 
 publishRepiceaPublicationToLocalFileRepository {
-	dependsOn jar
+	dependsOn clean, integrationTest
 }
-*/
