@@ -37,6 +37,7 @@ public class REpiceaSpeciesTest {
 		Language originalLanguage = REpiceaTranslator.getCurrentLanguage();
 		REpiceaTranslator.setCurrentLanguage(Language.French);
 		List<Species> quebecSpecies = Species.getSpeciesForThisLocale(SpeciesLocale.Quebec);
+		System.out.println("==== Quebec Species ====");
 		for (Species s : quebecSpecies)
 			System.out.println(s.toString());
 		Assert.assertEquals("Testing the number of species in Quebec", 34, quebecSpecies.size());
@@ -49,9 +50,22 @@ public class REpiceaSpeciesTest {
 		Language originalLanguage = REpiceaTranslator.getCurrentLanguage();
 		REpiceaTranslator.setCurrentLanguage(Language.French);
 		List<Species> ipccSpecies = Species.getSpeciesForThisLocale(SpeciesLocale.IPCC);
+		System.out.println("==== IPCC Species ====");
 		for (Species s : ipccSpecies)
 			System.out.println(s.toString());
 		Assert.assertEquals("Testing the number of species in IPCC locale", 24, ipccSpecies.size());
+		REpiceaTranslator.setCurrentLanguage(originalLanguage);
+	}
+
+	@Test
+	public void simpleFranceLocaleTest() {
+		Language originalLanguage = REpiceaTranslator.getCurrentLanguage();
+		REpiceaTranslator.setCurrentLanguage(Language.French);
+		List<Species> franceSpecies = Species.getSpeciesForThisLocale(SpeciesLocale.France);
+		System.out.println("==== French Species ====");
+		for (Species s : franceSpecies)
+			System.out.println(s.toString());
+		Assert.assertEquals("Testing the number of species in France", 4, franceSpecies.size());
 		REpiceaTranslator.setCurrentLanguage(originalLanguage);
 	}
 
