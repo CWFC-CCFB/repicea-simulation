@@ -47,7 +47,8 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 
 	public static enum SpeciesLocale {
 		IPCC,
-		Quebec;
+		Quebec,
+		France;
 	}
 	
 	public static enum Species implements REpiceaSpecies {
@@ -109,7 +110,14 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		Tsuga_canadensis_QC(SpeciesType.ConiferousSpecies, 0.404, 0.17, "Eastern hemlock", "Pruche de l'Est", SpeciesLocale.Quebec),
 		Abies_balsamea_QC(SpeciesType.ConiferousSpecies, 0.335, 0.12, "Balsam fir", "Sapin baumier", SpeciesLocale.Quebec),
 		Thuja_occidentalis_QC(SpeciesType.ConiferousSpecies, 0.299, 0.14, "Eastern white ceder", "Thuya occidental", SpeciesLocale.Quebec),
-		Tilia_americana_QC(SpeciesType.BroadleavedSpecies, 0.36, 0.105, "Basswood", "Tilleul d'Am\u00E9rique", SpeciesLocale.Quebec);
+		Tilia_americana_QC(SpeciesType.BroadleavedSpecies, 0.36, 0.105, "Basswood", "Tilleul d'Am\u00E9rique", SpeciesLocale.Quebec),
+		
+		
+		Populus_tremula_FR(SpeciesType.BroadleavedSpecies, 0.475, 0.145, "European aspen", "Tremble", SpeciesLocale.France),
+		Pinus_nigra_FR(SpeciesType. ConiferousSpecies, 0.510, 0.200, "Black pine", "Pin noir", SpeciesLocale.France),
+		Other_broadleaved_FR(SpeciesType.BroadleavedSpecies, 0.601, 0.15, "Other broadleaved species", "Autre feuillu", SpeciesLocale.France),
+		Other_coniferous_FR(SpeciesType.ConiferousSpecies, 0.443, 0.15, "Other coniferous species", "Autre conif\u00E8re", SpeciesLocale.France)
+		;
 
 		static Map<SpeciesLocale, List<Species>> SPECIES_BY_LOCALE_MAP;
 
