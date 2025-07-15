@@ -144,7 +144,12 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 			REpiceaTranslator.setString(this, englishText, frenchText);
 		}
 		
-		public String getLatinName() {return name().replace("_", " ");}
+		public String getLatinName() {
+			String latinName = name().indexOf("_") == name().lastIndexOf("_") ?
+					name() :
+						name().substring(0, name().lastIndexOf("_"));
+			return latinName.replace("_", " ");
+		}
 		
 		@Override
 		public String toString() {return REpiceaTranslator.getString(this);}
