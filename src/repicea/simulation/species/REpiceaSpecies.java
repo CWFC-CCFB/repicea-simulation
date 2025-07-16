@@ -45,13 +45,27 @@ import repicea.util.REpiceaTranslator.TextableEnum;
  */
 public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkProportionProvider, BasicWoodDensityProvider {
 
-	public static enum SpeciesLocale {
-		IPCC,
-		Quebec,
-		France;
+	public static enum SpeciesLocale implements TextableEnum {
+		IPCC("IPCC", "GIEC"),
+		Quebec("Quebec", "Qu\u00E9bec"),
+		France("France", "France");
+
+		SpeciesLocale(String englishText, String frenchText) {
+			setText(englishText, frenchText);
+		}
+		
+		@Override
+		public void setText(String englishText, String frenchText) {
+			REpiceaTranslator.setString(this, englishText, frenchText);
+		}
+		
+		@Override
+		public String toString() {
+			return REpiceaTranslator.getString(this);
+		}
 	}
 	
-	public static enum Species implements REpiceaSpecies {
+	public static enum Species implements REpiceaSpecies{
 		Abies_spp(SpeciesType.ConiferousSpecies, 0.40, 0.118, "Fir", "Sapin", SpeciesLocale.IPCC),
 		Acer_spp(SpeciesType.BroadleavedSpecies, 0.52, 0.109, "Maple", "Erable", SpeciesLocale.IPCC),
 		Alnus_spp(SpeciesType.BroadleavedSpecies, 0.45, 0.115, "Alder", "Aulne", SpeciesLocale.IPCC),
@@ -152,7 +166,9 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		}
 		
 		@Override
-		public String toString() {return REpiceaTranslator.getString(this);}
+		public String toString() {
+			return REpiceaTranslator.getString(this) + " " + localeList.toString();
+		}
 
 		@Override
 		public double getBasicWoodDensity() {return basicWoodDensity;}
