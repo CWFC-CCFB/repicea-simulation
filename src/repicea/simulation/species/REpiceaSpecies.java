@@ -112,11 +112,34 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		Thuja_occidentalis_QC(SpeciesType.ConiferousSpecies, 0.299, 0.14, "Eastern white ceder", "Thuya occidental", SpeciesLocale.Quebec),
 		Tilia_americana_QC(SpeciesType.BroadleavedSpecies, 0.36, 0.105, "Basswood", "Tilleul d'Am\u00E9rique", SpeciesLocale.Quebec),
 		
-		
-		Populus_tremula_FR(SpeciesType.BroadleavedSpecies, 0.475, 0.145, "European aspen", "Tremble", SpeciesLocale.France),
-		Pinus_nigra_FR(SpeciesType. ConiferousSpecies, 0.510, 0.200, "Black pine", "Pin noir", SpeciesLocale.France),
-		Other_broadleaved_FR(SpeciesType.BroadleavedSpecies, 0.601, 0.15, "Other broadleaved species", "Autre feuillu", SpeciesLocale.France),
-		Other_coniferous_FR(SpeciesType.ConiferousSpecies, 0.443, 0.15, "Other coniferous species", "Autre conif\u00E8re", SpeciesLocale.France)
+		Alnus_spp_FR(SpeciesType.BroadleavedSpecies, 0.457, 0.15, "Alder", "Aulne", SpeciesLocale.France),
+		Betula_spp_FR(SpeciesType.BroadleavedSpecies, 0.541, 0.145, "Birch", "Bouleau", SpeciesLocale.France),
+		Prunus_spp_FR(SpeciesType.BroadleavedSpecies, 0.532, 0.15, "Cherry tree", "Cerisier ou Merisier", SpeciesLocale.France),
+		Carpinus_betulus_FR(SpeciesType.BroadleavedSpecies, 0.620, 0.05, "Hornbeam", "Charme", SpeciesLocale.France),
+		Castanea_sativa_FR(SpeciesType.BroadleavedSpecies, 0.505, 0.13, "Chestnut tree", "Ch\u00E2taignier", SpeciesLocale.France),
+		Quercus_robur_FR(SpeciesType.BroadleavedSpecies, 0.622, 0.15, "Pedunculate oak", "Ch\u00EAne p\u00E9doncul\u00E9", SpeciesLocale.France),
+		Quercus_petraea_FR(SpeciesType.BroadleavedSpecies, 0.643, 0.15, "Sessile oak", "Ch\u00EAne rouvre", SpeciesLocale.France),
+		Quercus_pubescens_FR(SpeciesType.BroadleavedSpecies, 0.475, 0.15, "Pubescent oak", "Ch\u00EAne pubescent", SpeciesLocale.France),
+		Quercus_ilex_FR(SpeciesType.BroadleavedSpecies, 0.704, 0.15, "Holm oak", "Ch\u00EAne vert", SpeciesLocale.France),
+		Acer_spp_FR(SpeciesType.BroadleavedSpecies, 0.582, 0.15, "Maple tree", "Erable", SpeciesLocale.France),
+		Fraxinus_spp_FR(SpeciesType.BroadleavedSpecies, 0.596, 0.115, "Ash tree", "Fr\u00EAne", SpeciesLocale.France),
+		Fagus_sylvatica_FR(SpeciesType.BroadleavedSpecies, 0.604, 0.055, "European beech", "H\u00EAtre", SpeciesLocale.France),
+		Robinia_pseudoacacia_FR(SpeciesType.BroadleavedSpecies, 0.642, 0.15, "Black locust", "Robinier", SpeciesLocale.France),
+		Tilia_spp_FR(SpeciesType.BroadleavedSpecies, 0.462, 0.15, "Lime tree", "Tilleul", SpeciesLocale.France),
+		Populus_tremula_FR(SpeciesType.BroadleavedSpecies, 0.475, 0.15, "European aspen", "Tremble", SpeciesLocale.France),
+		Other_broadleaved_FR(SpeciesType.BroadleavedSpecies, 0.592, 0.15, "Other broadleaved", "Autre feuillu", SpeciesLocale.France),
+		Pseudotsuga_menziesii_FR(SpeciesType.ConiferousSpecies, 0.462, 0.145, "Douglas fir", "Douglas", SpeciesLocale.France),
+		Picea_abies_FR(SpeciesType.ConiferousSpecies, 0.394, 0.11, "Norway spruce", "Epic\u00E9a commun", SpeciesLocale.France),
+		Picea_sitchensis_FR(SpeciesType.ConiferousSpecies, 0.401, 0.11, "Sitka spruce", "Epic\u00E9a de Sitka", SpeciesLocale.France),
+		Larix_decidua_FR(SpeciesType.ConiferousSpecies, 0.497, 0.145, "European larch", "M\u00E9l\u00E8ze d'Europe", SpeciesLocale.France),
+		Pinus_halepensis_FR(SpeciesType.ConiferousSpecies, 0.539, 0.20, "Aleppo pine", "Pin d'Alep", SpeciesLocale.France),
+		Pinus_laricio_FR(SpeciesType.ConiferousSpecies, 0.499, 0.20, "Laricio pine", "Pin laricio", SpeciesLocale.France),
+		Pinus_pinaster_FR(SpeciesType.ConiferousSpecies, 0.446, 0.25, "Maritime pine", "Pin maritime", SpeciesLocale.France),
+		Pinus_mugo_FR(SpeciesType.ConiferousSpecies, 0.425, 0.20, "Mountain pine", "Pin mugo", SpeciesLocale.France),
+		Pinus_nigra_FR(SpeciesType.ConiferousSpecies, 0.523, 0.20, "Black pine", "Pin noir", SpeciesLocale.France),
+		Pinus_sylvestris_FR(SpeciesType.ConiferousSpecies, 0.458, 0.16, "Scots pine", "Pin sylvestre", SpeciesLocale.France),
+		Abies_alba_FR(SpeciesType.ConiferousSpecies, 0.421, 0.11, "Silver fir", "Sapin pectin\u00E9", SpeciesLocale.France),
+		Other_coniferous_FR(SpeciesType.ConiferousSpecies, 0.507, 0.15, "Other conifer", "Autre conif\u00E8re", SpeciesLocale.France)
 		;
 
 		static Map<SpeciesLocale, List<Species>> SPECIES_BY_LOCALE_MAP;
