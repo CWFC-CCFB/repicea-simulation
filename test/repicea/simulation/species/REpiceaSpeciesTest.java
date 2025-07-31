@@ -65,7 +65,7 @@ public class REpiceaSpeciesTest {
 		System.out.println("==== French Species ====");
 		for (Species s : franceSpecies)
 			System.out.println(s.toString() + " - " + s.getLatinName());
-		Assert.assertEquals("Testing the number of species in France", 4, franceSpecies.size());
+		Assert.assertEquals("Testing the number of species in France", 28, franceSpecies.size());
 		REpiceaTranslator.setCurrentLanguage(originalLanguage);
 	}
 
