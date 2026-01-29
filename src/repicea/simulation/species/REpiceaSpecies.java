@@ -41,6 +41,12 @@ import repicea.util.REpiceaTranslator.TextableEnum;
  * <li> its basic wood density
  * <li> its name in different language through the Textable enum interface
  * </ul>
+ * 
+ * The proportion of bark volume was taken from 
+ * Miles, P.D. and W.B. Smith. 2009. Specific gravity and other properties of wood
+ * and bark for 156 tree species found in North America. USDA Forest Service,
+ * Northern Research Station. Research Note NRS-38.
+ * 
  * @author Mathieu Fortin - June 2025
  */
 public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkProportionProvider, BasicWoodDensityProvider {
@@ -65,6 +71,9 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		}
 	}
 	
+	/**
+	 * An enum variable for the difference species.
+	 */
 	public static enum Species implements REpiceaSpecies{
 		Abies_spp(SpeciesType.ConiferousSpecies, 0.40, 0.118, "Fir", "Sapin", SpeciesLocale.IPCC),
 		Acer_spp(SpeciesType.BroadleavedSpecies, 0.52, 0.109, "Maple", "Erable", SpeciesLocale.IPCC),
@@ -181,6 +190,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 			REpiceaTranslator.setString(this, englishText, frenchText);
 		}
 		
+		@Override
 		public String getLatinName() {
 			String latinName = name().indexOf("_") == name().lastIndexOf("_") ?
 					name() :
@@ -225,5 +235,11 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		
 	}
+	
+	/**
+	 * Provide the Latin name of the species.
+	 * @return a String
+	 */
+	public String getLatinName();
 	
 }
