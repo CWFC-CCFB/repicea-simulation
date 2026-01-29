@@ -40,7 +40,7 @@ public class REpiceaSpeciesTest {
 		System.out.println("==== Quebec Species ====");
 		for (Species s : quebecSpecies)
 			System.out.println(s.toString() + " - " + s.getLatinName());
-		Assert.assertEquals("Testing the number of species in Quebec", 34, quebecSpecies.size());
+		Assert.assertEquals("Testing the number of species in Quebec", 35, quebecSpecies.size());
 		REpiceaTranslator.setCurrentLanguage(originalLanguage);
 	}
 	
