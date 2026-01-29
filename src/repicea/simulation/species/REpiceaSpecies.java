@@ -122,7 +122,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		Juglans_cinerea_QC(SpeciesType.BroadleavedSpecies, 0.368, 0.15, "Butternut", "Noyer cendr\u00E9", SpeciesLocale.Quebec),
 		Juglans_nigra_QC(SpeciesType.BroadleavedSpecies, 0.546, 0.15, "Black walnut", "Noyer noir", SpeciesLocale.Quebec),
 		Ulmus_americana_QC(SpeciesType.BroadleavedSpecies, 0.524, 0.14, "American elm", "Orme d'Am\u00E9rique", SpeciesLocale.Quebec),
-		Ostrya_virgiana_QC(SpeciesType.BroadleavedSpecies, 0.652, 0.15, "Ironwood", "Ostryer de Virginie", SpeciesLocale.Quebec),
+		Ostrya_virginiana_QC(SpeciesType.BroadleavedSpecies, 0.652, 0.15, "Ironwood", "Ostryer de Virginie", SpeciesLocale.Quebec),
 		Populus_grandidentata_QC(SpeciesType.BroadleavedSpecies, 0.39, 0.144, "Large-tooth aspen", "Peuplier \u00E0 grandes dents", SpeciesLocale.Quebec),
 		Populus_balsamifera_QC(SpeciesType.BroadleavedSpecies, 0.372, 0.163, "Black cottonwood", "Peuplier baumier", SpeciesLocale.Quebec),
 		Populus_tremuloides_QC(SpeciesType.BroadleavedSpecies, 0.374, 0.144, "Trembling aspen", "Peuplier faux tremble", SpeciesLocale.Quebec),
@@ -134,6 +134,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		Abies_balsamea_QC(SpeciesType.ConiferousSpecies, 0.335, 0.12, "Balsam fir", "Sapin baumier", SpeciesLocale.Quebec),
 		Thuja_occidentalis_QC(SpeciesType.ConiferousSpecies, 0.299, 0.14, "Eastern white ceder", "Thuya occidental", SpeciesLocale.Quebec),
 		Tilia_americana_QC(SpeciesType.BroadleavedSpecies, 0.36, 0.105, "Basswood", "Tilleul d'Am\u00E9rique", SpeciesLocale.Quebec),
+		Betula_populifolia_QC(SpeciesType.BroadleavedSpecies, 0.506, 0.126, "Gray birch", "Bouleau gris", SpeciesLocale.Quebec),  // same specs as betula papyrifera
 		
 		Alnus_spp_FR(SpeciesType.BroadleavedSpecies, 0.457, 0.15, "Alder", "Aulne", SpeciesLocale.France),
 		Betula_spp_FR(SpeciesType.BroadleavedSpecies, 0.541, 0.145, "Birch", "Bouleau", SpeciesLocale.France),
