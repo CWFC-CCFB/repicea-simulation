@@ -121,12 +121,12 @@ public abstract class WoodPiece implements Serializable {
 		this(logCategory, tree);
 		this.withPith = true;
 		if (overbark) {
-			double volumeUnderBark = volumeOfThisWoodPieceM3 / (1d + tree.getBarkProportionOfWoodVolume());
+			double volumeUnderBark = volumeOfThisWoodPieceM3 / (1d + tree.getBarkProportionOfWoodVolume(tree.getSpeciesLocale()));
 			setProperty(Property.woodVolume_m3, volumeUnderBark);
 			setProperty(Property.barkVolume_m3, volumeOfThisWoodPieceM3 - volumeUnderBark);
 		} else {
 			setProperty(Property.woodVolume_m3, volumeOfThisWoodPieceM3);
-			setProperty(Property.barkVolume_m3, volumeOfThisWoodPieceM3 * tree.getBarkProportionOfWoodVolume());
+			setProperty(Property.barkVolume_m3, volumeOfThisWoodPieceM3 * tree.getBarkProportionOfWoodVolume(tree.getSpeciesLocale()));
 		}
 		this.withBark = getBarkVolumeM3() > 0d;
 	}

@@ -18,6 +18,8 @@
  */
 package repicea.simulation.covariateproviders.treelevel;
 
+import repicea.simulation.species.REpiceaSpecies.SpeciesLocale;
+
 /**
  * This interface ensures the instance can provide the bark proportion with respect to
  * the wood volume.
@@ -27,9 +29,10 @@ public interface BarkProportionProvider {
 
 	/**
 	 * Returns the bark proportion with respect to the wood volume.
+	 * @param locale a SpeciesLocale enum
 	 * @return the bark proportion 
 	 */
-	public double getBarkProportionOfWoodVolume();
+	public double getBarkProportionOfWoodVolume(SpeciesLocale locale);
 
 	
 }

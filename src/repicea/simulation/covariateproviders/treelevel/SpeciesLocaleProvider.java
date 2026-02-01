@@ -1,7 +1,8 @@
 /*
- * This file is part of the repicea library.
+ * This file is part of the repicea-simulation library.
  *
- * Copyright (C) 2009-2020 Mathieu Fortin for Rouge-Epicea
+ * Copyright (C) 2026 His Majesty the King in right of Canada
+ * Author: Mathieu Fortin, Canadian Forest Service
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,18 +22,13 @@ package repicea.simulation.covariateproviders.treelevel;
 import repicea.simulation.species.REpiceaSpecies.SpeciesLocale;
 
 /**
- * This interface ensures the instance can provide its basic wood density.
- * @author Mathieu Fortin - August 2013
+ * Ensure the tree instance can provide its species locale.
  */
-public interface BasicWoodDensityProvider {
-
+public interface SpeciesLocaleProvider {
 
 	/**
-	 * This method returns the basic wood density calculated as 
-	 * the oven dry weight / green volume (e.g. 30% of moisture content). 
-	 * @param locale a SpeciesLocale enum
-	 * @return the basic wood density (Mg/m3)
+	 * Provide the species locale of the tree instance.
+	 * @return a SpeciesLocale enum
 	 */
-	public double getBasicWoodDensity(SpeciesLocale locale);
-
+	public SpeciesLocale getSpeciesLocale(); 
 }
