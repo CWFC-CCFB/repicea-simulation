@@ -41,7 +41,7 @@ import repicea.util.REpiceaTranslator.TextableEnum;
  * <li> its name in different language through the Textable enum interface
  * </ul>
  * 
- * The proportion of bark volume was taken from 
+ * For Quebec SpeciesLocale, the proportion of bark volume was taken from 
  * Miles, P.D. and W.B. Smith. 2009. Specific gravity and other properties of wood
  * and bark for 156 tree species found in North America. USDA Forest Service,
  * Northern Research Station. Research Note NRS-38.
@@ -51,8 +51,39 @@ import repicea.util.REpiceaTranslator.TextableEnum;
 public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkProportionProvider, BasicWoodDensityProvider {
 
 	public static enum SpeciesLocale implements TextableEnum {
+		/**
+		 * IPCC locale.<p>
+		 * 
+		 * Data come from the 2006 IPCC Guidelines for National Greenhouse Gas Inventories.
+		 * Some data come from the 2003 version of the guide.
+		 */
 		IPCC("IPCC", "GIEC", null),
-		Quebec("Quebec", "Qu\u00E9bec", IPCC),
+		/**
+		 * North America locale.<p>
+		 * 
+		 * Data come from Miles, P.D. and W.B. Smith. 2009. 
+		 * Specific gravity and other properties of wood
+		 * and bark for 156 tree species found in North America. 
+		 * USDA Forest Service, Northern Research Station. Research Note NRS-38.
+		 */
+		NorthAmerica("North America", "Amerique du Nord", IPCC),
+		/**
+		 * Quebec locale.<p>
+		 * 
+		 * Basic density data were provided by Hugues Power. There is
+		 * no bark proportion and consequently, any call to the 
+		 * {@link Species#getBarkProportionOfWoodVolume(SpeciesLocale)} 
+		 * method will rely on the next locale, i.e. NorthAmerica. <p>
+		 * 
+		 * The other coniferous and other broadleaved groups were calculated
+		 * as the mean of the species in each species type.
+		 */
+		Quebec("Quebec", "Qu\u00E9bec", NorthAmerica),
+		/**
+		 * France locale.<p>
+		 * Data provided by French national inventory (contact is
+		 * Henri Cuny).
+		 */
 		France("France", "France", IPCC);
 
 		final SpeciesLocale nextLevel;
@@ -84,11 +115,11 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 	
 	static class LocaleEntry {
 		
-		final double basicWoodDensity;
-		final double barkProportionOfWoodVolume;
+		final Double basicWoodDensity;
+		final Double barkProportionOfWoodVolume;
 		final SpeciesLocale locale;
 		
-		LocaleEntry(SpeciesLocale locale, double basicWoodDensity, double barkProportionOfWoodVolume) {
+		LocaleEntry(SpeciesLocale locale, Double basicWoodDensity, Double barkProportionOfWoodVolume) {
 			this.locale = locale;
 			this.basicWoodDensity = basicWoodDensity;
 			this.barkProportionOfWoodVolume = barkProportionOfWoodVolume;
@@ -101,20 +132,32 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 	public static enum Species implements REpiceaSpecies {
 		Abies_spp(SpeciesType.ConiferousSpecies, "Fir", "Sapin", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.40, 0.118)),
+		
 		Abies_alba(SpeciesType.ConiferousSpecies, "Silver fir", "Sapin pectin\u00E9", 
 				new LocaleEntry(SpeciesLocale.France, 0.421, 0.11)),
+		
 		Abies_balsamea(SpeciesType.ConiferousSpecies, "Balsam fir", "Sapin baumier", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.335, 0.12)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.33, 0.12),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.335, null)),
+
+		Abies_lasiocarpa(SpeciesType.ConiferousSpecies, "Subalpine fir", "Sapin subalpin", 
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.310, 0.108)),
 
 		Acer_spp(SpeciesType.BroadleavedSpecies, "Maple", "Erable", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.52, 0.109),
 				new LocaleEntry(SpeciesLocale.France, 0.582, 0.15)),
-		Acer_rubrum(SpeciesType.BroadleavedSpecies, "Red maple", "Erable rouge", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.516, 0.086)),
+
+		Acer_rubrum(SpeciesType.BroadleavedSpecies, "Red maple", "Erable rouge",
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.490, 0.086),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.516, null)),
+		
 		Acer_saccharum(SpeciesType.BroadleavedSpecies, "Sugar maple", "Erable \u00E0 sucre", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.597, 0.156)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.560, 0.156),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.597, null)),
+		
 		Acer_saccharinum(SpeciesType.BroadleavedSpecies, "Silver maple", "Erable argent\u00E9", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.461, 0.086)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.440, 0.086),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.461, null)),
 
 		Alnus_spp(SpeciesType.BroadleavedSpecies, "Alder", "Aulne", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.45, 0.115),
@@ -123,21 +166,29 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		Betula_spp(SpeciesType.BroadleavedSpecies, "Birch", "Bouleau", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.51, 0.110),
 				new LocaleEntry(SpeciesLocale.France, 0.541, 0.145)),
+		
 		Betula_alleghaniensis(SpeciesType.BroadleavedSpecies, "Yellow birch", "Bouleau jaune", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.559, 0.098)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.550, 0.098),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.559, null)),
+		
 		Betula_papyrifera(SpeciesType.BroadleavedSpecies, "Paper birch", "Bouleau \u00E0 papier", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.506, 0.126)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.480, 0.126),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.506, null)),
+		
 		Betula_populifolia(SpeciesType.BroadleavedSpecies, "Gray birch", "Bouleau gris", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.506, 0.126)),  // same specs as betula papyrifera
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.450, 0.126)),  
 
 		Carpinus_betulus(SpeciesType.BroadleavedSpecies, "Hornbeam", "Charme", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.63, 0.086), // this one is from IPCC guidelines 2003
 				new LocaleEntry(SpeciesLocale.France, 0.620, 0.05)),
 
 		Carya_cordiformis(SpeciesType.BroadleavedSpecies, "Bitternut hickory", "Caryer cordiforme", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.628, 0.16)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.600, 0.16),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.628, null)),
+		
 		Carya_ovata(SpeciesType.BroadleavedSpecies, "Shagbark hickory", "Caryer ovale", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.654, 0.16)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.640, 0.16),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.654, null)),
 
 		Castanea_sativa(SpeciesType.BroadleavedSpecies, "Chestnut", "Chataignier", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.48, 0.150),	// this one is from IPCC guidelines 2003
@@ -147,68 +198,110 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 				"European beech", "H\u00EAtre europ\u00E9en", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.58, 0.060),
 				new LocaleEntry(SpeciesLocale.France, 0.604, 0.055)),
+		
 		Fagus_grandifolia(SpeciesType.BroadleavedSpecies, "American beech", "H\u00EAtre \u00E0 grande feuilles", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.59, 0.06)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.560, 0.06),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.590, null)),
 
 		Fraxinus_spp(SpeciesType.BroadleavedSpecies, "Ash", "Fr\u00EAne", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.57, 0.160),
 				new LocaleEntry(SpeciesLocale.France, 0.596, 0.115)),
+		
 		Fraxinus_americana(SpeciesType.BroadleavedSpecies, "White ash", "Fr\u00EAne d'Am\u00E9rique", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.57, 0.16)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.550, 0.16),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.570, null)),
+		
 		Fraxinus_pensylvanica(SpeciesType.BroadleavedSpecies, "Red ash", "Fr\u00EAne de Pensylvanie", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.486, 0.16)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.530, 0.16),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.486, null)),
+		
 		Fraxinus_nigra(SpeciesType.BroadleavedSpecies, "Black ash", "Fr\u00EAne noir", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.468, 0.16)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.450, 0.16),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.468, null)),
 
 		Juglans_spp(SpeciesType.BroadleavedSpecies, "Wallnut", "Noyer", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.53, 0.150)),	// this one is from IPCC guidelines 2003
+		
 		Juglans_cinerea(SpeciesType.BroadleavedSpecies, "Butternut", "Noyer cendr\u00E9", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.368, 0.15)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.360, 0.15),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.368, null)),
+		
 		Juglans_nigra(SpeciesType.BroadleavedSpecies, "Black walnut", "Noyer noir", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.546, 0.15)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.510, 0.15),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.546, null)),
 
+		Juniperus_virginiana(SpeciesType.BroadleavedSpecies, "Eastern red cedar", "Gen\u00E9vrier de Virginie",
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.440, 0.12)),
+		
 		Larix_decidua(SpeciesType.ConiferousSpecies, "European larch", "M\u00E9l\u00E8ze d'Europe", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.46, 0.140),
 				new LocaleEntry(SpeciesLocale.France, 0.497, 0.145)),
+		
 		Larix_laricina(SpeciesType.ConiferousSpecies, "Tamarack larch", "M\u00E9l\u00E8ze laricin", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.485, 0.14)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.490, 0.14),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.485, null)),
 
 		Ostrya_virginiana(SpeciesType.BroadleavedSpecies, "Ironwood", "Ostryer de Virginie", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.652, 0.15)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.630, 0.15),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.652, null)),
 
 		Picea_abies(SpeciesType.ConiferousSpecies, "Norway spruce", "Epinette de Norv\u00E0ge", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.40, 0.126),
 				new LocaleEntry(SpeciesLocale.France, 0.394, 0.11)),
+		
 		Picea_glauca(SpeciesType.ConiferousSpecies, "White spruce", "Epinette blanche", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.354, 0.13)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.370, 0.13),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.354, null)),
+		
 		Picea_mariana(SpeciesType.ConiferousSpecies, "Black spruce", "Epinette noire", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.406, 0.13)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.380, 0.13),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.406, null)),
+		
 		Pinus_pinaster(SpeciesType.ConiferousSpecies, "Maritime pine", "Pin maritime", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.44, 0.160),
 				new LocaleEntry(SpeciesLocale.France, 0.446, 0.25)),
+		
 		Picea_rubens(SpeciesType.ConiferousSpecies, "Red spruce", "Epinette rouge", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.38, 0.13)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.370, 0.13),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.38, null)),
+		
 		Picea_sitchensis(SpeciesType.ConiferousSpecies, "Sitka spruce", "Epic\u00E9a de Sitka", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.40, 0.126),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.330, 0.125),
 				new LocaleEntry(SpeciesLocale.France, 0.401, 0.11)),
 
-		Pinus_banksiana(SpeciesType.ConiferousSpecies, "Jack pine", "Pin gris", new 
-				LocaleEntry(SpeciesLocale.Quebec, 0.421, 0.14)),
+		Pinus_banksiana(SpeciesType.ConiferousSpecies, "Jack pine", "Pin gris", 
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.400, 0.14),
+				new	LocaleEntry(SpeciesLocale.Quebec, 0.421, null)),
+
+		Pinus_contorta(SpeciesType.ConiferousSpecies, "Lodgepole pine", "Pin tordu",
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.380, 0.089)),
+		
 		Pinus_halepensis(SpeciesType.ConiferousSpecies, "Aleppo pine", "Pin d'Alep", 
 				new LocaleEntry(SpeciesLocale.France, 0.539, 0.20)),
+		
 		Pinus_laricio(SpeciesType.ConiferousSpecies, "Laricio pine", "Pin laricio", 
 				new LocaleEntry(SpeciesLocale.France, 0.499, 0.20)),
+		
 		Pinus_mugo(SpeciesType.ConiferousSpecies, "Mountain pine", "Pin mugo", 
 				new LocaleEntry(SpeciesLocale.France, 0.425, 0.20)),
+		
 		Pinus_nigra(SpeciesType.ConiferousSpecies, "Black pine", "Pin noir", 
 				new LocaleEntry(SpeciesLocale.France, 0.523, 0.20)),
+		
 		Pinus_radiata(SpeciesType.ConiferousSpecies, "Monterey pine", "Pin de Monterey", 
-				new LocaleEntry(SpeciesLocale.IPCC, 0.38, 0.134)),
+				new LocaleEntry(SpeciesLocale.IPCC, 0.380, 0.134),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.400, 0.134)),
+		
 		Pinus_resinosa(SpeciesType.ConiferousSpecies, "Red pine", "Pin rouge", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.392, 0.16)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.410, 0.16),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.392, null)),
+		
 		Pinus_strobus(SpeciesType.ConiferousSpecies, "White pine", "Pin blanc",
 				new LocaleEntry(SpeciesLocale.IPCC, 0.32, 0.160),
-				new LocaleEntry(SpeciesLocale.Quebec, 0.364, 0.16)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.340, 0.16),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.364, null)),
+		
 		Pinus_sylvestris(SpeciesType.ConiferousSpecies, 
 				"Scots pine", "Pin sylvestre", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.42, 0.160),
@@ -216,74 +309,108 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 
 		Populus_spp(SpeciesType.BroadleavedSpecies, "Poplar", "Peuplier", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.35, 0.184)),
-		Populus_balsamifera(SpeciesType.BroadleavedSpecies, "Black cottonwood", "Peuplier baumier", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.372, 0.163)),
+		
+		Populus_balsamifera(SpeciesType.BroadleavedSpecies, "Balsam poplar", "Peuplier baumier", 
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.310, 0.163),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.372, null)),
+		
 		Populus_deltoides(SpeciesType.BroadleavedSpecies, "Eastern cottonwood", "Peuplier delto\u00EFde", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.352, 0.22)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.370, 0.22),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.352, null)),
+		
 		Populus_grandidentata(SpeciesType.BroadleavedSpecies, "Large-tooth aspen", "Peuplier \u00E0 grandes dents", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.39, 0.144)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.360, 0.144),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.390, null)),
+		
 		Populus_tremula(SpeciesType.BroadleavedSpecies, "European aspen", "Tremble", 
 				new LocaleEntry(SpeciesLocale.France, 0.475, 0.15)),
+		
 		Populus_tremuloides(SpeciesType.BroadleavedSpecies, "Trembling aspen", "Peuplier faux tremble", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.374, 0.144)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.350, 0.144),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.374, null)),
 
 		Prunus_spp(SpeciesType.ConiferousSpecies, "Cherry tree", "Cerisier ou Merisier", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.49, 0.092),
 				new LocaleEntry(SpeciesLocale.France, 0.532, 0.15)),
+		
 		Prunus_serotina(SpeciesType.BroadleavedSpecies, "Black cherry", "Cerisier tardif", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.51, 0.092)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.470, 0.092),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.51, null)),
 
 		Pseudotsuga_menziesii(SpeciesType.ConiferousSpecies, "Douglas fir", "Sapin Douglas", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.45, 0.173),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.450, 0.173),
 				new LocaleEntry(SpeciesLocale.France, 0.462, 0.145)),
 
 		Quercus_spp(SpeciesType.BroadleavedSpecies, "Oak", "Ch\u00EAne", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.58, 0.191)),
+		
 		Quercus_alba(SpeciesType.BroadleavedSpecies, "White oak", "Ch\u00EAne blanc", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.654, 0.16)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.600, 0.16),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.654, null)),
+		
 		Quercus_ilex(SpeciesType.BroadleavedSpecies, "Holm oak", "Ch\u00EAne vert", 
 				new LocaleEntry(SpeciesLocale.France, 0.704, 0.15)),
+
 		Quercus_macrocarpa(SpeciesType.BroadleavedSpecies, "Bur oak", "Ch\u00EAne \u00E0 gros fruits", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.599, 0.16)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.580, 0.16),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.599, null)),
+
 		Quercus_petraea(SpeciesType.BroadleavedSpecies, "Sessile oak", "Ch\u00EAne rouvre", 
 				new LocaleEntry(SpeciesLocale.France, 0.643, 0.15)),
+		
 		Quercus_pubescens(SpeciesType.BroadleavedSpecies, "Pubescent oak", "Ch\u00EAne pubescent", 
 				new LocaleEntry(SpeciesLocale.France, 0.475, 0.15)),
+		
 		Quercus_robur(SpeciesType.BroadleavedSpecies, "Pedunculate oak", "Ch\u00EAne p\u00E9doncul\u00E9", 
 				new LocaleEntry(SpeciesLocale.France, 0.622, 0.15)),
+		
 		Quercus_rubra(SpeciesType.BroadleavedSpecies, "Red oak", "Ch\u00EAne rouge", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.581, 0.2)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.560, 0.20),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.581, null)),
 
 		Robinia_pseudoacacia(SpeciesType.BroadleavedSpecies, "Black locust", "Robinier", 
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.660, 0.15),
 				new LocaleEntry(SpeciesLocale.France, 0.642, 0.15)),
 
 		Salix_spp(SpeciesType.BroadleavedSpecies, "Willow", "Saule", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.45, 0.160)),
 		
 		Thuja_occidentalis(SpeciesType.ConiferousSpecies, "Eastern white ceder", "Thuya occidental", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.299, 0.14)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.290, 0.14),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.299, null)),
+		
 		Thuja_plicata(SpeciesType.ConiferousSpecies, "Red cedar", "Thuya g\u00E9ant", 
-				new LocaleEntry(SpeciesLocale.IPCC, 0.31, 0.106)), // this one is from IPCC guidelines 2003
+				new LocaleEntry(SpeciesLocale.IPCC, 0.310, 0.106), // this one is from IPCC guidelines 2003
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.310, 0.106)),
 
 		Tilia_spp(SpeciesType.BroadleavedSpecies, 
 				"Lime tree", "Tilleul", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.43, 0.105),
 				new LocaleEntry(SpeciesLocale.France, 0.462, 0.15)),
-		Tilia_americana(SpeciesType.BroadleavedSpecies, "Basswood", "Tilleul d'Am\u00E9rique", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.36, 0.105)),
+		
+		Tilia_americana(SpeciesType.BroadleavedSpecies, "American basswood", "Tilleul d'Am\u00E9rique", 
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.320, 0.105),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.360, null)),
 		
 		Tsuga_spp(SpeciesType.ConiferousSpecies, "Hemlock", "Pruche", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.42, 0.162)), // this one is from IPCC guidelines 2003
+		
 		Tsuga_canadensis(SpeciesType.ConiferousSpecies, "Eastern hemlock", "Pruche de l'Est", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.404, 0.17)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.380, 0.17),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.404, null)),
 
 		Ulmus_americana(SpeciesType.BroadleavedSpecies, "American elm", "Orme d'Am\u00E9rique", 
-				new LocaleEntry(SpeciesLocale.Quebec, 0.524, 0.14)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.460, 0.14),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.524, null)),
 		
 		Other_broadleaved(SpeciesType.BroadleavedSpecies, "Other broadleaved", "Autre feuillu", 
-				new LocaleEntry(SpeciesLocale.France, 0.592, 0.15)),
+				new LocaleEntry(SpeciesLocale.France, 0.592, 0.15),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.513, 0.141)),
+		
 		Other_coniferous(SpeciesType.ConiferousSpecies, "Other conifer", "Autre conif\u00E8re", 
-				new LocaleEntry(SpeciesLocale.France, 0.507, 0.15))
+				new LocaleEntry(SpeciesLocale.France, 0.507, 0.15),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.384, 0.142))
 		;
 
 		static Map<SpeciesLocale, List<Species>> SPECIES_BY_LOCALE_MAP;
@@ -293,16 +420,30 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 //		final double barkProportionOfWoodVolume;
 //		final List<SpeciesLocale> localeList;
 		
-		private final Map<SpeciesLocale, LocaleEntry> localeMap;
+		private final Map<SpeciesLocale, Double> localeBarkProportion;
+		private final Map<SpeciesLocale, Double> localeBasicWoodDensity;
+		private final List<SpeciesLocale> localeList;
 		
 		Species(SpeciesType speciesType, 
 				String englishName,
 				String frenchName,
 				LocaleEntry... localeEntries) {
 			this.speciesType = speciesType;
-			this.localeMap = new HashMap<SpeciesLocale, LocaleEntry>();
+			localeBarkProportion = new HashMap<SpeciesLocale, Double>();
+			localeBasicWoodDensity = new HashMap<SpeciesLocale, Double>();
+			localeList = new ArrayList<SpeciesLocale>();
 			for (LocaleEntry le : localeEntries) {
-				localeMap.put(le.locale, le);
+				if (le.barkProportionOfWoodVolume != null) {
+					localeBarkProportion.put(le.locale, le.barkProportionOfWoodVolume);
+				}
+				if (le.basicWoodDensity != null) {
+					localeBasicWoodDensity.put(le.locale, le.basicWoodDensity);
+				}
+				if (le.barkProportionOfWoodVolume != null || le.basicWoodDensity != null) {
+					if (!localeList.contains(le.locale)) {
+						localeList.add(le.locale);
+					}
+				}
 			}
 //			this.basicWoodDensity = basicWoodDensity;
 //			this.barkProportionOfWoodVolume = barkProportionOfWoodVolume;
@@ -325,25 +466,25 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		@Override
 		public String toString() {
-			return REpiceaTranslator.getString(this) + " " + localeMap.keySet().toString();
+			return REpiceaTranslator.getString(this) + " " + localeList.toString();
 		}
 
 		@Override
 		public double getBasicWoodDensity(SpeciesLocale locale) {
-			return Species.findLocaleEntryInMap(locale, localeMap).basicWoodDensity;
+			return Species.findLocaleEntryInMap(locale, localeBasicWoodDensity);
 		}
 
 		
-		private static LocaleEntry findLocaleEntryInMap(SpeciesLocale locale, Map<SpeciesLocale, LocaleEntry> oMap) {
+		private static double findLocaleEntryInMap(SpeciesLocale locale, Map<SpeciesLocale, Double> oMap) {
 			SpeciesLocale currentLocale = locale;
 			while (currentLocale != null) {
-				if (oMap.containsKey(locale)) {
-					return oMap.get(locale);
+				if (oMap.containsKey(currentLocale)) {
+					return oMap.get(currentLocale);
 				} else {
 					currentLocale = locale.nextLevel;
 				}
 			}
-			throw new UnsupportedOperationException("Cannot find any available basic wood density for this locale: " + locale.name());
+			throw new UnsupportedOperationException("Cannot find any entry with this locale: " + locale.name());
 		}
 
 		/**
@@ -358,7 +499,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 					SPECIES_BY_LOCALE_MAP.put(locale, new ArrayList<Species>());	
 				}
 				for (Species s : Species.values()) {
-					for (SpeciesLocale l : s.localeMap.keySet()) {
+					for (SpeciesLocale l : s.localeList) {
 						SPECIES_BY_LOCALE_MAP.get(l).add(s);
 					}
 				}
@@ -368,7 +509,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		@Override
 		public double getBarkProportionOfWoodVolume(SpeciesLocale locale) {
-			return Species.findLocaleEntryInMap(locale, localeMap).barkProportionOfWoodVolume;
+			return Species.findLocaleEntryInMap(locale, localeBarkProportion);
 		}		
 		
 		@Override
@@ -381,5 +522,6 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 	 * @return a String
 	 */
 	public String getLatinName();
+	
 	
 }
