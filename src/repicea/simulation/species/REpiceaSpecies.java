@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import repicea.serial.SerializerChangeMonitor;
 import repicea.simulation.covariateproviders.treelevel.BarkProportionProvider;
 import repicea.simulation.covariateproviders.treelevel.BasicWoodDensityProvider;
 import repicea.simulation.covariateproviders.treelevel.SpeciesTypeProvider;
@@ -49,6 +50,74 @@ import repicea.util.REpiceaTranslator.TextableEnum;
  * @author Mathieu Fortin - June 2025
  */
 public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkProportionProvider, BasicWoodDensityProvider {
+
+	static class Initializer {
+		static {
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Abies_alba_FR", "Abies_alba");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Acer_spp_FR", "Acer_spp");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Alnus_spp_FR", "Alnus_spp");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Betula_spp_FR", "Betula_spp");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Carpinus_betulus_FR","Carpinus_betulus");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Castanea_sativa_FR","Castanea_sativa");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Fagus_sylvatica_FR","Fagus_sylvatica");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Fraxinus_spp_FR","Fraxinus_spp");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Larix_decidua_FR","Larix_decidua");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Picea_abies_FR","Picea_abies");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Pinus_pinaster_FR","Pinus_pinaster");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Picea_sitchensis_FR","Picea_sitchensis");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Pinus_halepensis_FR","Pinus_halepensis");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Pinus_laricio_FR","Pinus_laricio");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Pinus_mugo_FR","Pinus_mugo");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Pinus_nigra_FR","Pinus_nigra");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Pinus_sylvestris_FR","Pinus_sylvestris");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Populus_tremula_FR","Populus_tremula");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Prunus_spp_FR","Prunus_spp");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Pseudotsuga_menziesii_FR","Pseudotsuga_menziesii");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Quercus_ilex_FR","Quercus_ilex");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Quercus_petraea_FR","Quercus_petraea");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Quercus_pubescens_FR","Quercus_pubescens");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Quercus_robur_FR","Quercus_robur");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Robinia_pseudoacacia_FR","Robinia_pseudoacacia");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Tilia_spp_FR","Tilia_spp");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Other_broadleaved_FR","Other_broadleaved");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Other_coniferous_FR","Other_coniferous");
+			
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Abies_balsamea_QC","Abies_balsamea");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Acer_rubrum_QC","Acer_rubrum");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Acer_saccharum_QC","Acer_saccharum"); 
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Acer_saccharinum_QC","Acer_saccharinum");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Betula_alleghaniensis_QC","Betula_alleghaniensis");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Betula_papyrifera_QC","Betula_papyrifera");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Carya_cordiformis_QC","Carya_cordiformis"); 
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Carya_ovata_QC","Carya_ovata");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Fagus_grandifolia_QC","Fagus_grandifolia");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Fraxinus_americana_QC","Fraxinus_americana");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Fraxinus_pensylvanica_QC","Fraxinus_pensylvanica");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Fraxinus_nigra_QC","Fraxinus_nigra"); 
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Juglans_cinerea_QC","Juglans_cinerea");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Juglans_nigra_QC","Juglans_nigra");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Larix_laricina_QC","Larix_laricina");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Ostrya_virgiana_QC","Ostrya_virginiana");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Picea_glauca_QC","Picea_glauca");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Picea_mariana_QC","Picea_mariana"); 
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Picea_rubens_QC","Picea_rubens");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Pinus_banksiana_QC","Pinus_banksiana");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Pinus_resinosa_QC","Pinus_resinosa");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Pinus_strobus_QC","Pinus_strobus");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Populus_balsamifera_QC","Populus_balsamifera");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Populus_deltoides_QC","Populus_deltoides");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Populus_grandidentata_QC","Populus_grandidentata");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Populus_tremuloides_QC","Populus_tremuloides");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Prunus_serotina_QC","Prunus_serotina"); 
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Quercus_alba_QC","Quercus_alba"); 
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Quercus_macrocarpa_QC","Quercus_macrocarpa");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Quercus_rubra_QC","Quercus_rubra"); 
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Thuja_occidentalis_QC","Thuja_occidentalis");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Tilia_americana_QC","Tilia_americana");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Tsuga_canadensis_QC","Tsuga_canadensis");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Ulmus_americana_QC","Ulmus_americana"); 
+		}
+	}
 
 	public static enum SpeciesLocale implements TextableEnum {
 		/**
@@ -129,7 +198,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 	/**
 	 * An enum variable for the difference species.
 	 */
-	public static enum Species implements REpiceaSpecies {
+	public enum Species implements REpiceaSpecies {
 		Abies_spp(SpeciesType.ConiferousSpecies, "Fir", "Sapin", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.40, 0.118)),
 		
@@ -413,6 +482,8 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 				new LocaleEntry(SpeciesLocale.Quebec, 0.384, 0.142))
 		;
 
+		final static Initializer SingletonInitializer = new Initializer();
+
 		static Map<SpeciesLocale, List<Species>> SPECIES_BY_LOCALE_MAP;
 
 		final SpeciesType speciesType;
@@ -481,7 +552,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 				if (oMap.containsKey(currentLocale)) {
 					return oMap.get(currentLocale);
 				} else {
-					currentLocale = locale.nextLevel;
+					currentLocale = currentLocale.nextLevel;
 				}
 			}
 			throw new UnsupportedOperationException("Cannot find any entry with this locale: " + locale.name());
