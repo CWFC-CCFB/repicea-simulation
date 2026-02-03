@@ -10,9 +10,9 @@ The repicea-simulation library
 
 An extension of repicea for simulation.
 
-Copyright (C) 2009-2021 Mathieu Fortin for Rouge Epicea.
+Copyright &copy; 2009-2021 Mathieu Fortin for Rouge Epicea.
 
-Copyright (C) 2021-2024 His Majesty the King in right of Canada (authors: Mathieu Fortin and Jean-François Lavoie (CWFC-CCFB, Canadian Forest Service)
+Copyright &copy; 2021-2026 His Majesty the King in right of Canada (authors: Mathieu Fortin and Jean-François Lavoie (CWFC-CCFB, Canadian Forest Service)
 
 Email: mathieu.fortin.re@gmail.com
 
