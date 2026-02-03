@@ -230,7 +230,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.510, 0.15),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.546, null)),
 
-		Juniperus_virginiana(SpeciesType.BroadleavedSpecies, "Eastern red cedar", "Gen\u00E9vrier de Virginie",
+		Juniperus_virginiana(SpeciesType.ConiferousSpecies, "Eastern red cedar", "Gen\u00E9vrier de Virginie",
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.440, 0.12)),
 		
 		Larix_decidua(SpeciesType.ConiferousSpecies, "European larch", "M\u00E9l\u00E8ze d'Europe", 
@@ -256,10 +256,6 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		Picea_mariana(SpeciesType.ConiferousSpecies, "Black spruce", "Epinette noire", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.380, 0.13),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.406, null)),
-		
-		Pinus_pinaster(SpeciesType.ConiferousSpecies, "Maritime pine", "Pin maritime", 
-				new LocaleEntry(SpeciesLocale.IPCC, 0.44, 0.160),
-				new LocaleEntry(SpeciesLocale.France, 0.446, 0.25)),
 		
 		Picea_rubens(SpeciesType.ConiferousSpecies, "Red spruce", "Epinette rouge", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.370, 0.13),
@@ -288,6 +284,10 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		Pinus_nigra(SpeciesType.ConiferousSpecies, "Black pine", "Pin noir", 
 				new LocaleEntry(SpeciesLocale.France, 0.523, 0.20)),
+		
+		Pinus_pinaster(SpeciesType.ConiferousSpecies, "Maritime pine", "Pin maritime", 
+				new LocaleEntry(SpeciesLocale.IPCC, 0.44, 0.160),
+				new LocaleEntry(SpeciesLocale.France, 0.446, 0.25)),
 		
 		Pinus_radiata(SpeciesType.ConiferousSpecies, "Monterey pine", "Pin de Monterey", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.380, 0.134),
@@ -329,7 +329,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.350, 0.144),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.374, null)),
 
-		Prunus_spp(SpeciesType.ConiferousSpecies, "Cherry tree", "Cerisier ou Merisier", 
+		Prunus_spp(SpeciesType.BroadleavedSpecies, "Cherry tree", "Cerisier ou Merisier", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.49, 0.092),
 				new LocaleEntry(SpeciesLocale.France, 0.532, 0.15)),
 		
