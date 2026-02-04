@@ -127,6 +127,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		 * Some data come from the 2003 version of the guide.
 		 */
 		IPCC("IPCC", "GIEC", null),
+		
 		/**
 		 * North America locale.<p>
 		 * 
@@ -136,6 +137,19 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		 * USDA Forest Service, Northern Research Station. Research Note NRS-38.
 		 */
 		NorthAmerica("North America", "Amerique du Nord", IPCC),
+
+		/**
+		 * France locale.<p>
+		 * Data provided by French national inventory (contact is
+		 * Henri Cuny).
+		 */
+		France("France", "France", IPCC),
+
+		/**
+		 * Ontario locale.
+		 */
+		Ontario("Ontario", "Ontario", NorthAmerica),
+
 		/**
 		 * Quebec locale.<p>
 		 * 
@@ -147,13 +161,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		 * The other coniferous and other broadleaved groups were calculated
 		 * as the mean of the species in each species type.
 		 */
-		Quebec("Quebec", "Qu\u00E9bec", NorthAmerica),
-		/**
-		 * France locale.<p>
-		 * Data provided by French national inventory (contact is
-		 * Henri Cuny).
-		 */
-		France("France", "France", IPCC);
+		Quebec("Quebec", "Qu\u00E9bec", NorthAmerica);
 
 		final SpeciesLocale nextLevel;
 		
@@ -200,13 +208,15 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 	 */
 	public enum Species implements REpiceaSpecies {
 		Abies_spp(SpeciesType.ConiferousSpecies, "Fir", "Sapin", 
-				new LocaleEntry(SpeciesLocale.IPCC, 0.40, 0.118)),
+				new LocaleEntry(SpeciesLocale.IPCC, 0.40, 0.118),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.36, 0.1176)),
 		
 		Abies_alba(SpeciesType.ConiferousSpecies, "Silver fir", "Sapin pectin\u00E9", 
 				new LocaleEntry(SpeciesLocale.France, 0.421, 0.11)),
 		
 		Abies_balsamea(SpeciesType.ConiferousSpecies, "Balsam fir", "Sapin baumier", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.33, 0.12),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.335, null)),
 
 		Abies_lasiocarpa(SpeciesType.ConiferousSpecies, "Subalpine fir", "Sapin subalpin", 
@@ -214,18 +224,27 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 
 		Acer_spp(SpeciesType.BroadleavedSpecies, "Maple", "Erable", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.52, 0.109),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.470, 0.1081),
 				new LocaleEntry(SpeciesLocale.France, 0.582, 0.15)),
 
+		Acer_pensylvanicum(SpeciesType.BroadleavedSpecies, "Striped maple", "Erable de Pennsylvanie",
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.440, 0.086),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
+				new LocaleEntry(SpeciesLocale.Quebec, null, null)),
+		
 		Acer_rubrum(SpeciesType.BroadleavedSpecies, "Red maple", "Erable rouge",
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.490, 0.086),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.516, null)),
 		
 		Acer_saccharum(SpeciesType.BroadleavedSpecies, "Sugar maple", "Erable \u00E0 sucre", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.560, 0.156),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.597, null)),
 		
 		Acer_saccharinum(SpeciesType.BroadleavedSpecies, "Silver maple", "Erable argent\u00E9", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.440, 0.086),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.461, null)),
 
 		Alnus_spp(SpeciesType.BroadleavedSpecies, "Alder", "Aulne", 
@@ -238,25 +257,38 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		Betula_alleghaniensis(SpeciesType.BroadleavedSpecies, "Yellow birch", "Bouleau jaune", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.550, 0.098),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.559, null)),
 		
 		Betula_papyrifera(SpeciesType.BroadleavedSpecies, "Paper birch", "Bouleau \u00E0 papier", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.480, 0.126),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.506, null)),
 		
 		Betula_populifolia(SpeciesType.BroadleavedSpecies, "Gray birch", "Bouleau gris", 
-				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.450, 0.126)),  
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.450, 0.126),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
+				new LocaleEntry(SpeciesLocale.Quebec, null, null)),  
 
 		Carpinus_betulus(SpeciesType.BroadleavedSpecies, "Hornbeam", "Charme", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.63, 0.086), // this one is from IPCC guidelines 2003
 				new LocaleEntry(SpeciesLocale.France, 0.620, 0.05)),
 
+		Carya_spp(SpeciesType.BroadleavedSpecies, "Hickory", "Caryer",
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.620, 0.16)),
+		
 		Carya_cordiformis(SpeciesType.BroadleavedSpecies, "Bitternut hickory", "Caryer cordiforme", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.600, 0.16),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.628, null)),
-		
+
+		Carya_glabra(SpeciesType.BroadleavedSpecies, "Pignut hickory", "Caryer glabre", 
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.660, 0.16),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null)),
+
 		Carya_ovata(SpeciesType.BroadleavedSpecies, "Shagbark hickory", "Caryer ovale", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.640, 0.16),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.654, null)),
 
 		Castanea_sativa(SpeciesType.BroadleavedSpecies, "Chestnut", "Chataignier", 
@@ -270,37 +302,47 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		Fagus_grandifolia(SpeciesType.BroadleavedSpecies, "American beech", "H\u00EAtre \u00E0 grande feuilles", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.560, 0.06),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.590, null)),
 
 		Fraxinus_spp(SpeciesType.BroadleavedSpecies, "Ash", "Fr\u00EAne", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.57, 0.160),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.510, 0.16),
 				new LocaleEntry(SpeciesLocale.France, 0.596, 0.115)),
 		
 		Fraxinus_americana(SpeciesType.BroadleavedSpecies, "White ash", "Fr\u00EAne d'Am\u00E9rique", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.550, 0.16),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.570, null)),
 		
 		Fraxinus_pensylvanica(SpeciesType.BroadleavedSpecies, "Red ash", "Fr\u00EAne de Pensylvanie", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.530, 0.16),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.486, null)),
 		
 		Fraxinus_nigra(SpeciesType.BroadleavedSpecies, "Black ash", "Fr\u00EAne noir", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.450, 0.16),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.468, null)),
 
 		Juglans_spp(SpeciesType.BroadleavedSpecies, "Wallnut", "Noyer", 
-				new LocaleEntry(SpeciesLocale.IPCC, 0.53, 0.150)),	// this one is from IPCC guidelines 2003
+				new LocaleEntry(SpeciesLocale.IPCC, 0.53, 0.150), 		// this one is from IPCC guidelines 2003
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.440, 0.15)),	
 		
 		Juglans_cinerea(SpeciesType.BroadleavedSpecies, "Butternut", "Noyer cendr\u00E9", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.360, 0.15),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.368, null)),
 		
 		Juglans_nigra(SpeciesType.BroadleavedSpecies, "Black walnut", "Noyer noir", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.510, 0.15),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.546, null)),
 
 		Juniperus_virginiana(SpeciesType.ConiferousSpecies, "Eastern red cedar", "Gen\u00E9vrier de Virginie",
-				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.440, 0.12)),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.440, 0.12),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
+				new LocaleEntry(SpeciesLocale.Quebec, null, null)),
 		
 		Larix_decidua(SpeciesType.ConiferousSpecies, "European larch", "M\u00E9l\u00E8ze d'Europe", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.46, 0.140),
@@ -308,10 +350,16 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		Larix_laricina(SpeciesType.ConiferousSpecies, "Tamarack larch", "M\u00E9l\u00E8ze laricin", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.490, 0.14),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.485, null)),
+		
+		Liriodendron_tulipifera(SpeciesType.BroadleavedSpecies, "Yellow-poplar", "Tulipier de Virginie",
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.400, 0.18),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null)),
 
 		Ostrya_virginiana(SpeciesType.BroadleavedSpecies, "Ironwood", "Ostryer de Virginie", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.630, 0.15),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.652, null)),
 
 		Picea_abies(SpeciesType.ConiferousSpecies, "Norway spruce", "Epinette de Norv\u00E0ge", 
@@ -320,14 +368,17 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		Picea_glauca(SpeciesType.ConiferousSpecies, "White spruce", "Epinette blanche", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.370, 0.13),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.354, null)),
 		
 		Picea_mariana(SpeciesType.ConiferousSpecies, "Black spruce", "Epinette noire", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.380, 0.13),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.406, null)),
 		
 		Picea_rubens(SpeciesType.ConiferousSpecies, "Red spruce", "Epinette rouge", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.370, 0.13),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.38, null)),
 		
 		Picea_sitchensis(SpeciesType.ConiferousSpecies, "Sitka spruce", "Epic\u00E9a de Sitka", 
@@ -337,6 +388,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 
 		Pinus_banksiana(SpeciesType.ConiferousSpecies, "Jack pine", "Pin gris", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.400, 0.14),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new	LocaleEntry(SpeciesLocale.Quebec, 0.421, null)),
 
 		Pinus_contorta(SpeciesType.ConiferousSpecies, "Lodgepole pine", "Pin tordu",
@@ -364,11 +416,13 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		Pinus_resinosa(SpeciesType.ConiferousSpecies, "Red pine", "Pin rouge", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.410, 0.16),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.392, null)),
 		
 		Pinus_strobus(SpeciesType.ConiferousSpecies, "White pine", "Pin blanc",
 				new LocaleEntry(SpeciesLocale.IPCC, 0.32, 0.160),
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.340, 0.16),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.364, null)),
 		
 		Pinus_sylvestris(SpeciesType.ConiferousSpecies, 
@@ -377,10 +431,12 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 				new LocaleEntry(SpeciesLocale.France, 0.458, 0.16)),
 
 		Populus_spp(SpeciesType.BroadleavedSpecies, "Poplar", "Peuplier", 
-				new LocaleEntry(SpeciesLocale.IPCC, 0.35, 0.184)),
+				new LocaleEntry(SpeciesLocale.IPCC, 0.35, 0.184),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.350, 0.1852)),
 		
 		Populus_balsamifera(SpeciesType.BroadleavedSpecies, "Balsam poplar", "Peuplier baumier", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.310, 0.163),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.372, null)),
 		
 		Populus_deltoides(SpeciesType.BroadleavedSpecies, "Eastern cottonwood", "Peuplier delto\u00EFde", 
@@ -389,6 +445,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		Populus_grandidentata(SpeciesType.BroadleavedSpecies, "Large-tooth aspen", "Peuplier \u00E0 grandes dents", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.360, 0.144),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.390, null)),
 		
 		Populus_tremula(SpeciesType.BroadleavedSpecies, "European aspen", "Tremble", 
@@ -396,14 +453,21 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		Populus_tremuloides(SpeciesType.BroadleavedSpecies, "Trembling aspen", "Peuplier faux tremble", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.350, 0.144),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.374, null)),
 
 		Prunus_spp(SpeciesType.BroadleavedSpecies, "Cherry tree", "Cerisier ou Merisier", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.49, 0.092),
 				new LocaleEntry(SpeciesLocale.France, 0.532, 0.15)),
-		
+
+		Prunus_pensylvanica(SpeciesType.BroadleavedSpecies, "Pin cherry", "Cerisier de Pennsylvanie", // Copy from Prunus serotina 
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.470, 0.092),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.51, null)),
+
 		Prunus_serotina(SpeciesType.BroadleavedSpecies, "Black cherry", "Cerisier tardif", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.470, 0.092),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.51, null)),
 
 		Pseudotsuga_menziesii(SpeciesType.ConiferousSpecies, "Douglas fir", "Sapin Douglas", 
@@ -412,21 +476,33 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 				new LocaleEntry(SpeciesLocale.France, 0.462, 0.145)),
 
 		Quercus_spp(SpeciesType.BroadleavedSpecies, "Oak", "Ch\u00EAne", 
-				new LocaleEntry(SpeciesLocale.IPCC, 0.58, 0.191)),
+				new LocaleEntry(SpeciesLocale.IPCC, 0.58, 0.191),
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.590, 0.1912)),
 		
 		Quercus_alba(SpeciesType.BroadleavedSpecies, "White oak", "Ch\u00EAne blanc", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.600, 0.16),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.654, null)),
+		
+		Quercus_bicolor(SpeciesType.BroadleavedSpecies, "Swamp white oak", "Ch\u00EAne bicolore",
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.640, 0.16),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
+				new LocaleEntry(SpeciesLocale.Quebec, null, null)),
 		
 		Quercus_ilex(SpeciesType.BroadleavedSpecies, "Holm oak", "Ch\u00EAne vert", 
 				new LocaleEntry(SpeciesLocale.France, 0.704, 0.15)),
 
 		Quercus_macrocarpa(SpeciesType.BroadleavedSpecies, "Bur oak", "Ch\u00EAne \u00E0 gros fruits", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.580, 0.16),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.599, null)),
 
 		Quercus_petraea(SpeciesType.BroadleavedSpecies, "Sessile oak", "Ch\u00EAne rouvre", 
 				new LocaleEntry(SpeciesLocale.France, 0.643, 0.15)),
+
+		Quercus_velutina(SpeciesType.BroadleavedSpecies, "Black oak", "Ch\u00EAne noir",
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.560, 0.185),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null)),
 		
 		Quercus_pubescens(SpeciesType.BroadleavedSpecies, "Pubescent oak", "Ch\u00EAne pubescent", 
 				new LocaleEntry(SpeciesLocale.France, 0.475, 0.15)),
@@ -436,6 +512,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		Quercus_rubra(SpeciesType.BroadleavedSpecies, "Red oak", "Ch\u00EAne rouge", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.560, 0.20),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.581, null)),
 
 		Robinia_pseudoacacia(SpeciesType.BroadleavedSpecies, "Black locust", "Robinier", 
@@ -447,6 +524,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		Thuja_occidentalis(SpeciesType.ConiferousSpecies, "Eastern white ceder", "Thuya occidental", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.290, 0.14),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.299, null)),
 		
 		Thuja_plicata(SpeciesType.ConiferousSpecies, "Red cedar", "Thuya g\u00E9ant", 
@@ -460,6 +538,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		Tilia_americana(SpeciesType.BroadleavedSpecies, "American basswood", "Tilleul d'Am\u00E9rique", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.320, 0.105),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.360, null)),
 		
 		Tsuga_spp(SpeciesType.ConiferousSpecies, "Hemlock", "Pruche", 
@@ -467,19 +546,43 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		Tsuga_canadensis(SpeciesType.ConiferousSpecies, "Eastern hemlock", "Pruche de l'Est", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.380, 0.17),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.404, null)),
 
+		Ulmus_spp(SpeciesType.BroadleavedSpecies, "Elm", "Orme",
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.540, 0.14)),
+		
 		Ulmus_americana(SpeciesType.BroadleavedSpecies, "American elm", "Orme d'Am\u00E9rique", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.460, 0.14),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.524, null)),
-		
+
+		Ulmus_rubra(SpeciesType.BroadleavedSpecies, "Slippery elm", "Orme rouge",
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.480, 0.14),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
+				new LocaleEntry(SpeciesLocale.Quebec, null, null)),
+
+		Ulmus_thomasii(SpeciesType.BroadleavedSpecies, "Rock elm", "Orme li\u00E8ge",
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.570, 0.14),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
+				new LocaleEntry(SpeciesLocale.Quebec, null, null)),
+
 		Other_broadleaved(SpeciesType.BroadleavedSpecies, "Other broadleaved", "Autre feuillu", 
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.520, 0.1532),
 				new LocaleEntry(SpeciesLocale.France, 0.592, 0.15),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.513, 0.141)),
 		
 		Other_coniferous(SpeciesType.ConiferousSpecies, "Other conifer", "Autre conif\u00E8re", 
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.410, 0.1447),
 				new LocaleEntry(SpeciesLocale.France, 0.507, 0.15),
-				new LocaleEntry(SpeciesLocale.Quebec, 0.384, 0.142))
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.384, 0.142)),
+		
+		Broadleaved_shrubs(SpeciesType.BroadleavedSpecies, "Shrubs", "Arbuste",
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.520, 0.1532),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
+				new LocaleEntry(SpeciesLocale.Quebec, null, null)),
 		;
 
 		final static Initializer SingletonInitializer = new Initializer();
@@ -494,6 +597,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		private final Map<SpeciesLocale, Double> localeBarkProportion;
 		private final Map<SpeciesLocale, Double> localeBasicWoodDensity;
 		private final List<SpeciesLocale> localeList;
+		private final String latinName;
 		
 		Species(SpeciesType speciesType, 
 				String englishName,
@@ -510,12 +614,11 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 				if (le.basicWoodDensity != null) {
 					localeBasicWoodDensity.put(le.locale, le.basicWoodDensity);
 				}
-				if (le.barkProportionOfWoodVolume != null || le.basicWoodDensity != null) {
-					if (!localeList.contains(le.locale)) {
-						localeList.add(le.locale);
-					}
+				if (!localeList.contains(le.locale)) {
+					localeList.add(le.locale);
 				}
 			}
+			latinName = name().replace("_", " ");
 //			this.basicWoodDensity = basicWoodDensity;
 //			this.barkProportionOfWoodVolume = barkProportionOfWoodVolume;
 			setText(englishName, frenchName);
@@ -529,10 +632,11 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		@Override
 		public String getLatinName() {
-			String latinName = name().indexOf("_") == name().lastIndexOf("_") ?
-					name() :
-						name().substring(0, name().lastIndexOf("_"));
-			return latinName.replace("_", " ");
+//			String latinName = name().indexOf("_") == name().lastIndexOf("_") ?
+//					name() :
+//						name().substring(0, name().lastIndexOf("_"));
+//			return latinName.replace("_", " ");
+			return latinName;
 		}
 		
 		@Override
