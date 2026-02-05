@@ -144,11 +144,16 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		 * Henri Cuny).
 		 */
 		France("France", "France", IPCC),
+		
+		/**
+		 * Canada locale.
+		 */
+		Canada("Canada", "Canada", NorthAmerica),
 
 		/**
 		 * Ontario locale.
 		 */
-		Ontario("Ontario", "Ontario", NorthAmerica),
+		Ontario("Ontario", "Ontario", Canada),
 
 		/**
 		 * Quebec locale.<p>
@@ -161,7 +166,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		 * The other coniferous and other broadleaved groups were calculated
 		 * as the mean of the species in each species type.
 		 */
-		Quebec("Quebec", "Qu\u00E9bec", NorthAmerica);
+		Quebec("Quebec", "Qu\u00E9bec", Canada);
 
 		final SpeciesLocale nextLevel;
 		
