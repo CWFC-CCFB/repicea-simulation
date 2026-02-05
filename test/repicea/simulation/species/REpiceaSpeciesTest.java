@@ -82,7 +82,7 @@ public class REpiceaSpeciesTest {
 		System.out.println("==== North American Species ====");
 		for (Species s : northAmericaSpecies)
 			System.out.println(s.toString() + " - " + s.getLatinName());
-		Assert.assertEquals("Testing the number of species in North America", 62, northAmericaSpecies.size());
+		Assert.assertEquals("Testing the number of species in North America", 63, northAmericaSpecies.size());
 		REpiceaTranslator.setCurrentLanguage(originalLanguage);
 	}
 

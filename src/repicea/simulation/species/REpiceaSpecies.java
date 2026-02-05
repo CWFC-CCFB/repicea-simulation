@@ -139,6 +139,11 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		NorthAmerica("North America", "Amerique du Nord", IPCC),
 
 		/**
+		 * Belgium locale.
+		 */
+		Belgium("Belgium", "Belgique", IPCC),
+		
+		/**
 		 * France locale.<p>
 		 * Data provided by French national inventory (contact is
 		 * Henri Cuny).
@@ -588,6 +593,10 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.520, 0.1532),
 				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, null, null)),
+		
+		Other(SpeciesType.BroadleavedSpecies, "Other", "Autre",
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.465, 0.14895)),
+		
 		;
 
 		final static Initializer SingletonInitializer = new Initializer();
