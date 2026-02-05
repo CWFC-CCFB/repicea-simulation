@@ -38,10 +38,11 @@ public class REpiceaSpeciesTest {
 		Language originalLanguage = REpiceaTranslator.getCurrentLanguage();
 		REpiceaTranslator.setCurrentLanguage(Language.French);
 		List<Species> quebecSpecies = Species.getSpeciesForThisLocale(SpeciesLocale.Quebec);
+		System.out.println("");
 		System.out.println("==== Quebec Species ====");
 		for (Species s : quebecSpecies)
 			System.out.println(s.toString() + " - " + s.getLatinName());
-		Assert.assertEquals("Testing the number of species in Quebec", 36, quebecSpecies.size());
+		Assert.assertEquals("Testing the number of species in Quebec", 44, quebecSpecies.size());
 		REpiceaTranslator.setCurrentLanguage(originalLanguage);
 	}
 	
@@ -51,6 +52,7 @@ public class REpiceaSpeciesTest {
 		Language originalLanguage = REpiceaTranslator.getCurrentLanguage();
 		REpiceaTranslator.setCurrentLanguage(Language.French);
 		List<Species> ipccSpecies = Species.getSpeciesForThisLocale(SpeciesLocale.IPCC);
+		System.out.println("");
 		System.out.println("==== IPCC Species ====");
 		for (Species s : ipccSpecies)
 			System.out.println(s.toString() + " - " + s.getLatinName());
@@ -63,6 +65,7 @@ public class REpiceaSpeciesTest {
 		Language originalLanguage = REpiceaTranslator.getCurrentLanguage();
 		REpiceaTranslator.setCurrentLanguage(Language.French);
 		List<Species> franceSpecies = Species.getSpeciesForThisLocale(SpeciesLocale.France);
+		System.out.println("");
 		System.out.println("==== French Species ====");
 		for (Species s : franceSpecies)
 			System.out.println(s.toString() + " - " + s.getLatinName());
@@ -75,10 +78,11 @@ public class REpiceaSpeciesTest {
 		Language originalLanguage = REpiceaTranslator.getCurrentLanguage();
 		REpiceaTranslator.setCurrentLanguage(Language.French);
 		List<Species> northAmericaSpecies = Species.getSpeciesForThisLocale(SpeciesLocale.NorthAmerica);
+		System.out.println("");
 		System.out.println("==== North American Species ====");
 		for (Species s : northAmericaSpecies)
 			System.out.println(s.toString() + " - " + s.getLatinName());
-		Assert.assertEquals("Testing the number of species in North America", 43, northAmericaSpecies.size());
+		Assert.assertEquals("Testing the number of species in North America", 62, northAmericaSpecies.size());
 		REpiceaTranslator.setCurrentLanguage(originalLanguage);
 	}
 
@@ -101,7 +105,19 @@ public class REpiceaSpeciesTest {
 
 	}
 
-	
+	@Test
+	public void test07OntarioLocale() {
+		Language originalLanguage = REpiceaTranslator.getCurrentLanguage();
+		REpiceaTranslator.setCurrentLanguage(Language.French);
+		List<Species> northAmericaSpecies = Species.getSpeciesForThisLocale(SpeciesLocale.Ontario);
+		System.out.println("");
+		System.out.println("==== Ontario Species ====");
+		for (Species s : northAmericaSpecies)
+			System.out.println(s.toString() + " - " + s.getLatinName());
+		Assert.assertEquals("Testing the number of species in Ontario", 46, northAmericaSpecies.size());
+		REpiceaTranslator.setCurrentLanguage(originalLanguage);
+	}
+
 	public static void main(String[] args) {
 		int nbBroadleaved = 0;
 		int nbConiferous = 0;

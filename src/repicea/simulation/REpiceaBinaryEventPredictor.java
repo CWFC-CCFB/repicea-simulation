@@ -20,7 +20,9 @@ package repicea.simulation;
 
 import java.util.Map;
 
+import repicea.math.integral.GaussHermiteQuadrature.GaussHermiteQuadratureCompatibleFunction;
 import repicea.stats.StatisticalUtility;
+import repicea.stats.model.glm.LinkFunction;
 
 /**
  * This REpiceaBinaryEventPredictor class implements logistic and other models that aim at 
@@ -31,6 +33,36 @@ import repicea.stats.StatisticalUtility;
  */
 public abstract class REpiceaBinaryEventPredictor<S, T> extends REpiceaPredictor {
 
+	
+	/**
+	 * A support class for Gauss-Hermite quadrature.<p>
+	 * This class should be used when the model has a single random effect and
+	 * a population-averaged prediction had to be produce, typically in 
+	 * deterministic mode.
+	 */
+	@SuppressWarnings("serial")
+	protected static class EmbeddedLinkFunction extends LinkFunction implements GaussHermiteQuadratureCompatibleFunction<Double> {
+
+		private final double standardDeviation;
+		
+		/**
+		 * Constructor.
+		 * @param linkFunctionType a Type enum defining the type of link function
+		 * @param randomEffectVariance the random effect variance
+		 */
+		public EmbeddedLinkFunction(Type linkFunctionType, double randomEffectVariance) {
+			super(linkFunctionType);
+			standardDeviation = Math.sqrt(randomEffectVariance);
+		}
+		
+		@Override
+		public double convertFromGaussToOriginal(double x, double mu, int covarianceIndexI, int covarianceIndexJ) {
+			return mu + Math.sqrt(2d) * x * standardDeviation;
+		}
+		
+	}
+
+	
 	private static final long serialVersionUID = 20131015L;
 
 	protected REpiceaBinaryEventPredictor(boolean isParametersVariabilityEnabled, boolean isRandomEffectsVariabilityEnabled, boolean isResidualVariabilityEnabled) {
