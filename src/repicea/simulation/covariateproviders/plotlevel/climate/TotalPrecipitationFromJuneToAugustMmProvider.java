@@ -1,7 +1,8 @@
 /*
- * This file is part of the repicea library.
+ * This file is part of the repicea-simulation library.
  *
- * Copyright (C) 2009-2012 Mathieu Fortin for Rouge-Epicea
+ * Copyright (C) 2026 His Majesty the King in right of Canada
+ * Author: Mathieu Fortin, Canadian Forest Service
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,17 +22,17 @@ package repicea.simulation.covariateproviders.plotlevel.climate;
 import repicea.simulation.climate.REpiceaClimate.ClimateVariableTemporalResolution;
 
 /**
- * This interface ensures the plot instance can provide its total
- * annual precipitation.
- * @author Mathieu Fortin - November 2012
+ * This interface ensures the stand instance can provide its total precipitation 
+ * from June to August.
+ * @author Mathieu Fortin - February 2026
  */
-public interface TotalAnnualPrecipitationMmProvider {
+public interface TotalPrecipitationFromJuneToAugustMmProvider {
 
 	/**
-	 * Provide the total annual precipitation in mm.
+	 * Provide the total precipitation from March to May in mm.
 	 * @param resolution the resolution of the climate variable 
 	 * @return a double
 	 */
-	public double getTotalAnnualPrecipitationMm(ClimateVariableTemporalResolution resolution);
+	public double getTotalPrecipitationFromJuneToAugustMm(ClimateVariableTemporalResolution resolution);
 
 }

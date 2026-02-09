@@ -18,8 +18,10 @@
  */
 package repicea.simulation.covariateproviders.plotlevel.climate;
 
+import repicea.simulation.climate.REpiceaClimate.ClimateVariableTemporalResolution;
+
 /**
- * This interface ensures the stand instance can provide its mean 
+ * This interface ensures the plot instance can provide its mean 
  * annual temperature.
  * @author Mathieu Fortin - November 2012
  */
@@ -27,8 +29,9 @@ public interface MeanAnnualTemperatureCelsiusProvider {
 
 	/**
 	 * Provide the mean annual temperature.
+	 * @param resolution the resolution of the climate variable 
 	 * @return the temperature (&deg;C)
 	 */
-	public double getMeanAnnualTemperatureCelsius();
+	public double getMeanAnnualTemperatureCelsius(ClimateVariableTemporalResolution resolution);
 
 }

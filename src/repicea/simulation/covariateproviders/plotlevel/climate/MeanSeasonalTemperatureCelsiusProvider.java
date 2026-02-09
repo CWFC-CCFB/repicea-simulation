@@ -18,8 +18,10 @@
  */
 package repicea.simulation.covariateproviders.plotlevel.climate;
 
+import repicea.simulation.climate.REpiceaClimate.ClimateVariableTemporalResolution;
+
 /**
- * This interface ensures the plot or the stand instance can provide its 
+ * This interface ensures the plot or the plot instance can provide its 
  * seasonal temperature over the interval.
  * @author Mathieu Fortin - July 2019
  *
@@ -29,8 +31,9 @@ public interface MeanSeasonalTemperatureCelsiusProvider {
 	
 	/**
 	 * Provide the monthly mean temperature above 6&deg;C.
+	 * @param resolution the resolution of the climate variable 
 	 * @return the temperature (&deg;C)
 	 */
-	public double getMeanSeasonalTemperatureCelsius();
+	public double getMeanSeasonalTemperatureCelsius(ClimateVariableTemporalResolution resolution);
 
 }
