@@ -28,7 +28,10 @@ import repicea.util.REpiceaTranslator.TextableEnum;
 public interface SpeciesTypeProvider {
 
 	
-	
+	/**
+	 * Define the species type of a species. <p>
+	 * It is either broadleaved or coniferous.
+	 */
 	public static enum SpeciesType implements TextableEnum {
 		ConiferousSpecies("Coniferous","Conif\u00E8re"),
 		BroadleavedSpecies("Broadleaved", "Feuillue");
