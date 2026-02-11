@@ -30,7 +30,7 @@ import repicea.simulation.covariateproviders.plotlevel.climate.MeanAnnualTempera
 public class REpiceaClimateTest {
 
 	
-	class MeanTemp implements MeanAnnualTemperatureCelsiusProvider {
+	static class MeanTemp implements MeanAnnualTemperatureCelsiusProvider {
 
 		@AllowedResolutions(values = {ClimateVariableTemporalResolution.Annual, ClimateVariableTemporalResolution.IntervalAveraged})
 		@Override
@@ -40,7 +40,11 @@ public class REpiceaClimateTest {
 		}
 		
 	}
-	
+
+	static class MeanTempDerived extends MeanTemp {
+
+	}
+
 	@Test
 	public void test01SimpleClimateChangeTrend() {
 		REpiceaClimateChangeTrend trend = new REpiceaClimateChangeTrend();
@@ -98,6 +102,16 @@ public class REpiceaClimateTest {
 		}
 	}
 
+	@Test
+	public void test04ClimateVariableResolutionsAnnotationInSuperClass() {
+		MeanTempDerived temp = new MeanTempDerived();
+		try {
+			temp.getMeanAnnualTemperatureCelsius(ClimateVariableTemporalResolution.Normals30Year);
+			Assert.fail("Should have failed");
+		} catch (UnsupportedOperationException e) {
+			// Should end up here
+		}
+	}
 
 	
 	

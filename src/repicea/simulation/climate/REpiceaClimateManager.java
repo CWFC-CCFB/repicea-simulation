@@ -63,7 +63,7 @@ public final class REpiceaClimateManager {
 		ConcurrentHashMap<String, List<ClimateVariableTemporalResolution>> innerMap = controlMap.get(clazz);
 		if (!innerMap.containsKey(methodName)) {
 			try {
-				Method method = o.getClass().getDeclaredMethod(methodName, resolution.getClass());
+				Method method = o.getClass().getMethod(methodName, resolution.getClass());
 				if (method.isAnnotationPresent(AllowedResolutions.class)) {
 					AllowedResolutions allowedResolutions = method.getAnnotation(AllowedResolutions.class);
 					innerMap.put(methodName, Arrays.asList(allowedResolutions.values()));
