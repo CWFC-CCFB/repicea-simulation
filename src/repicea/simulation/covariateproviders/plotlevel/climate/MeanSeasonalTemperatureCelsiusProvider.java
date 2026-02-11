@@ -18,7 +18,7 @@
  */
 package repicea.simulation.covariateproviders.plotlevel.climate;
 
-import repicea.simulation.climate.REpiceaClimate.ClimateVariableTemporalResolution;
+import repicea.simulation.climate.REpiceaClimateManager.ClimateVariableTemporalResolution;
 
 /**
  * This interface ensures the plot or the plot instance can provide its 
