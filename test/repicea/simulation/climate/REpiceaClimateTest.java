@@ -1,14 +1,48 @@
+/*
+ * This file is part of the repicea-simulation library.
+ *
+ * Copyright (C) 2026 His Majesty the King in right of Canada
+ * Author: Mathieu Fortin, Canadian Forest Service
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed with the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * Please see the license at http://www.gnu.org/copyleft/lesser.html.
+ */
 package repicea.simulation.climate;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import repicea.simulation.climate.REpiceaClimateManager.AllowedResolutions;
+import repicea.simulation.climate.REpiceaClimateManager.ClimateVariableTemporalResolution;
 import repicea.simulation.climate.REpiceaClimateVariableMap.ClimateVariable;
+import repicea.simulation.covariateproviders.plotlevel.climate.MeanAnnualTemperatureCelsiusProvider;
 
 public class REpiceaClimateTest {
 
+	
+	class MeanTemp implements MeanAnnualTemperatureCelsiusProvider {
+
+		@AllowedResolutions(values = {ClimateVariableTemporalResolution.Annual, ClimateVariableTemporalResolution.IntervalAveraged})
+		@Override
+		public double getMeanAnnualTemperatureCelsius(ClimateVariableTemporalResolution resolution) {
+			REpiceaClimateManager.getInstance().checkClimateRelatedMethodResolution(this, "getMeanAnnualTemperatureCelsius", resolution);
+			return 0;
+		}
+		
+	}
+	
 	@Test
-	public void testSimpleClimateChangeTrend() {
+	public void test01SimpleClimateChangeTrend() {
 		REpiceaClimateChangeTrend trend = new REpiceaClimateChangeTrend();
 		REpiceaClimateVariableChangeMap map = new REpiceaClimateVariableChangeMap();
 		map.put(ClimateVariable.MeanGrowingSeasonTempC, 0.016);
@@ -42,7 +76,29 @@ public class REpiceaClimateTest {
 				1E-8);
 	}
 	
+	@Test
+	public void test02ClimateVariableResolutionsAnnotation() {
+		MeanTemp temp = new MeanTemp();
+		try {
+			temp.getMeanAnnualTemperatureCelsius(ClimateVariableTemporalResolution.Normals30Year);
+			Assert.fail("Should have failed");
+		} catch (UnsupportedOperationException e) {
+			// Should end up here
+		}
+	}
 	
+	@Test
+	public void test03ClimateVariableResolutionsAnnotation() {
+		MeanTemp temp = new MeanTemp();
+		try {
+			temp.getMeanAnnualTemperatureCelsius(ClimateVariableTemporalResolution.Normals30Year);
+			Assert.fail("Should have failed");
+		} catch (UnsupportedOperationException e) {
+			// Should end up here
+		}
+	}
+
+
 	
 	
 }
