@@ -109,7 +109,6 @@ public interface REpiceaClimateGenerator<P extends GeographicalCoordinatesProvid
 	public REpiceaClimateVariableMap getClimateVariables(P plot);
 	
 	public static class ClimateChangeScenarioHelper {
-		@SuppressWarnings("deprecation")
 		static public ClimateChangeScenario getClimateChangeScenarioFromString(String climateChangeScenarioStr) {
 			try {
 				return RepresentativeConcentrationPathway.valueOf(climateChangeScenarioStr);

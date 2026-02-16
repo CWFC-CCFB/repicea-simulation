@@ -18,20 +18,35 @@
  */
 package repicea.simulation.covariateproviders.plotlevel.climate;
 
-import repicea.simulation.climate.REpiceaClimateManager.ClimateVariableTemporalResolution;
+import repicea.simulation.ClimateSensitivePredictor;
+import repicea.simulation.climate.REpiceaClimateVariableInformation;
+import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
+import repicea.simulation.climate.REpiceaClimateVariableProvider;
 
 /**
  * This interface ensures the plot instance can provide its total
  * annual precipitation.
  * @author Mathieu Fortin - November 2012
  */
-public interface TotalAnnualPrecipitationMmProvider {
+public interface TotalAnnualPrecipitationMmProvider extends REpiceaClimateVariableProvider {
 
 	/**
 	 * Provide the total annual precipitation in mm.
-	 * @param resolution the resolution of the climate variable 
+	 * @param info an REpiceaClimateVariableInformation instance defining the climate variable 
 	 * @return a double
 	 */
-	public double getTotalAnnualPrecipitationMm(ClimateVariableTemporalResolution resolution);
+	public double getTotalAnnualPrecipitationMm(REpiceaClimateVariableInformation info);
+
+	/**
+	 * Default implementation to retrieve the variable from the predictor itself.
+	 * @param predictor a ClimateSensitivePredictor instance
+	 * @param resolution a Resolution enum
+	 * @return the number of days
+	 */
+	public default double getTotalAnnualPrecipitationMm(ClimateSensitivePredictor predictor, Resolution resolution) {
+		return getTotalAnnualPrecipitationMm(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor, 
+				TotalAnnualPrecipitationMmProvider.class,
+				resolution));
+	}
 
 }

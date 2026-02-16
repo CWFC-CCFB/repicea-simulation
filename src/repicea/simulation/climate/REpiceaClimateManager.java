@@ -19,68 +19,54 @@
  */
 package repicea.simulation.climate;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * A class handling checks on climate-related methods.
  * @author Mathieu Fortin - February
  */
 public final class REpiceaClimateManager {
 
-	public static enum ClimateVariableTemporalResolution {
-		Normals30Year,
-		IntervalAveraged,
-		IntervalAveragedStartingBeforeInitialMeasurement, 
-		Annual;
-	}
 	
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.METHOD)
-	public @interface AllowedResolutions {
-		public ClimateVariableTemporalResolution[] values();
-	}
+//	
+//	@Retention(RetentionPolicy.RUNTIME)
+//	@Target(ElementType.METHOD)
+//	public @interface AllowedResolutions {
+//		public ClimateVariableTemporalResolution[] values();
+//	}
 	
-	private static final REpiceaClimateManager SINGLETON = new REpiceaClimateManager();
+//	private static final REpiceaClimateManager SINGLETON = new REpiceaClimateManager();
 
-	private final ConcurrentHashMap<Class<?>, ConcurrentHashMap<String, List<ClimateVariableTemporalResolution>>> controlMap;
+//	private final ConcurrentHashMap<Class<?>, ConcurrentHashMap<String, List<ClimateVariableTemporalResolution>>> controlMap;
 	
-	private REpiceaClimateManager() {
-		controlMap = new ConcurrentHashMap<Class<?>, ConcurrentHashMap<String, List<ClimateVariableTemporalResolution>>>();
-	};
-
-	public void checkClimateRelatedMethodResolution(Object o, String methodName, ClimateVariableTemporalResolution resolution) {
-		Class<?> clazz = o.getClass();
-		if (!controlMap.containsKey(clazz)) {
-			controlMap.put(clazz, new ConcurrentHashMap<String, List<ClimateVariableTemporalResolution>>());
-		}
-		ConcurrentHashMap<String, List<ClimateVariableTemporalResolution>> innerMap = controlMap.get(clazz);
-		if (!innerMap.containsKey(methodName)) {
-			try {
-				Method method = o.getClass().getMethod(methodName, resolution.getClass());
-				if (method.isAnnotationPresent(AllowedResolutions.class)) {
-					AllowedResolutions allowedResolutions = method.getAnnotation(AllowedResolutions.class);
-					innerMap.put(methodName, Arrays.asList(allowedResolutions.values()));
-				} else {
-					innerMap.put(methodName, Arrays.asList(ClimateVariableTemporalResolution.values()));
-				}
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			} 
-		}
-		if (!innerMap.get(methodName).contains(resolution)) {
-			throw new UnsupportedOperationException("The method " + methodName + " in class " + clazz.getName() + " does not support this resolution: " + resolution.name());
-		}
+	public REpiceaClimateManager() {
+//		controlMap = new ConcurrentHashMap<Class<?>, ConcurrentHashMap<String, List<ClimateVariableTemporalResolution>>>();
 	}
 
-	public static REpiceaClimateManager getInstance() {
-		return SINGLETON;
-	}
+//	public void checkClimateRelatedMethodResolution(Object o, String methodName, ClimateVariableTemporalResolution resolution) {
+//		Class<?> clazz = o.getClass();
+//		if (!controlMap.containsKey(clazz)) {
+//			controlMap.put(clazz, new ConcurrentHashMap<String, List<ClimateVariableTemporalResolution>>());
+//		}
+//		ConcurrentHashMap<String, List<ClimateVariableTemporalResolution>> innerMap = controlMap.get(clazz);
+//		if (!innerMap.containsKey(methodName)) {
+//			try {
+//				Method method = o.getClass().getMethod(methodName, resolution.getClass());
+//				if (method.isAnnotationPresent(AllowedResolutions.class)) {
+//					AllowedResolutions allowedResolutions = method.getAnnotation(AllowedResolutions.class);
+//					innerMap.put(methodName, Arrays.asList(allowedResolutions.values()));
+//				} else {
+//					innerMap.put(methodName, Arrays.asList(ClimateVariableTemporalResolution.values()));
+//				}
+//			} catch (Exception e) {
+//				throw new RuntimeException(e);
+//			} 
+//		}
+//		if (!innerMap.get(methodName).contains(resolution)) {
+//			throw new UnsupportedOperationException("The method " + methodName + " in class " + clazz.getName() + " does not support this resolution: " + resolution.name());
+//		}
+//	}
+//
+//	public static REpiceaClimateManager getInstance() {
+//		return SINGLETON;
+//	}
 	
 }

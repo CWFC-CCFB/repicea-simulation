@@ -18,20 +18,35 @@
  */
 package repicea.simulation.covariateproviders.plotlevel.climate;
 
-import repicea.simulation.climate.REpiceaClimateManager.ClimateVariableTemporalResolution;
+import repicea.simulation.ClimateSensitivePredictor;
+import repicea.simulation.climate.REpiceaClimateVariableInformation;
+import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
+import repicea.simulation.climate.REpiceaClimateVariableProvider;
 
 /**
  * This interface ensures the plot instance can provide its mean 
  * annual temperature.
  * @author Mathieu Fortin - November 2012
  */
-public interface MeanAnnualTemperatureCelsiusProvider {
+public interface MeanAnnualTemperatureCelsiusProvider extends REpiceaClimateVariableProvider {
 
 	/**
 	 * Provide the mean annual temperature.
-	 * @param resolution the resolution of the climate variable 
+	 * @param info an REpiceaClimateVariableInformation instance defining the climate variable 
 	 * @return the temperature (&deg;C)
 	 */
-	public double getMeanAnnualTemperatureCelsius(ClimateVariableTemporalResolution resolution);
+	public double getMeanAnnualTemperatureCelsius(REpiceaClimateVariableInformation info);
+
+	/**
+	 * Default implementation to retrieve the variable from the predictor itself.
+	 * @param predictor a ClimateSensitivePredictor instance
+	 * @param resolution a Resolution enum
+	 * @return the number of days
+	 */
+	public default double getMeanAnnualTemperatureCelsius(ClimateSensitivePredictor predictor, Resolution resolution) {
+		return getMeanAnnualTemperatureCelsius(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor, 
+				MeanAnnualTemperatureCelsiusProvider.class,
+				resolution));
+	}
 
 }

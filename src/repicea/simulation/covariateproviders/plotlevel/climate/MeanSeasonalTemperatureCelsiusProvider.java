@@ -18,22 +18,29 @@
  */
 package repicea.simulation.covariateproviders.plotlevel.climate;
 
-import repicea.simulation.climate.REpiceaClimateManager.ClimateVariableTemporalResolution;
-
 /**
  * This interface ensures the plot or the plot instance can provide its 
- * seasonal temperature over the interval.
+ * seasonal temperature over the interval. <p>
+ * This interface refers to the publication of Manso et al. 2015 Forestry in 
+ * the European context.
  * @author Mathieu Fortin - July 2019
  *
  */
 public interface MeanSeasonalTemperatureCelsiusProvider {
 
-	
 	/**
 	 * Provide the monthly mean temperature above 6&deg;C.
-	 * @param resolution the resolution of the climate variable 
 	 * @return the temperature (&deg;C)
 	 */
-	public double getMeanSeasonalTemperatureCelsius(ClimateVariableTemporalResolution resolution);
+	public double getMeanSeasonalTemperatureCelsius();
+
+//	/**
+//	 * Default implementation to retrieve the variable from the predictor itself.
+//	 * @param predictor a ClimateSensitivePredictor instance
+//	 * @return the number of days
+//	 */
+//	public default double getMeanSeasonalTemperatureCelsius(ClimateSensitivePredictor predictor) {
+//		return getMeanSeasonalTemperatureCelsius(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor, MeanSeasonalTemperatureCelsiusProvider.class));
+//	}
 
 }

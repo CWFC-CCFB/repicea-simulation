@@ -26,6 +26,7 @@ import repicea.simulation.climate.REpiceaClimateVariableMap.ClimateVariable;
  * This map contains the annual change for the difference climate variables.
  * @author Mathieu Fortin - July 2019
  */
-public class REpiceaClimateVariableChangeMap extends HashMap<ClimateVariable, Double>{
+@SuppressWarnings("serial")
+public class REpiceaClimateVariableChangeMap extends HashMap<ClimateVariable, Double> {
 
 }

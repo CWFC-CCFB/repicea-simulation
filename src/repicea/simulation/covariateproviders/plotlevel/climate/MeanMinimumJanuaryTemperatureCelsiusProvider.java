@@ -19,20 +19,35 @@
  */
 package repicea.simulation.covariateproviders.plotlevel.climate;
 
-import repicea.simulation.climate.REpiceaClimateManager.ClimateVariableTemporalResolution;
+import repicea.simulation.ClimateSensitivePredictor;
+import repicea.simulation.climate.REpiceaClimateVariableInformation;
+import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
+import repicea.simulation.climate.REpiceaClimateVariableProvider;
 
 /**
  * This interface ensures the plot instance can provide its mean 
  * minimum January temperature.
  * @author Mathieu Fortin - February 2026
  */
-public interface MeanMinimumJanuaryTemperatureCelsiusProvider {
+public interface MeanMinimumJanuaryTemperatureCelsiusProvider extends REpiceaClimateVariableProvider {
 
 	/**
 	 * Provide the average minimum temperature of January.
-	 * @param resolution the resolution of the climate variable 
+	 * @param info an REpiceaClimateVariableInformation instance defining the climate variable 
 	 * @return the temperature (&deg;C)
 	 */
-	public double getMeanMinimumJanuaryTemperatureCelsius(ClimateVariableTemporalResolution resolution);
+	public double getMeanMinimumJanuaryTemperatureCelsius(REpiceaClimateVariableInformation info);
+
+	/**
+	 * Default implementation to retrieve the variable from the predictor itself.
+	 * @param predictor a ClimateSensitivePredictor instance
+	 * @param resolution a Resolution enum
+	 * @return the number of days
+	 */
+	public default double getMeanMinimumJanuaryTemperatureCelsius(ClimateSensitivePredictor predictor, Resolution resolution) {
+		return getMeanMinimumJanuaryTemperatureCelsius(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor, 
+				MeanMinimumJanuaryTemperatureCelsiusProvider.class,
+				resolution));
+	}
 
 }
