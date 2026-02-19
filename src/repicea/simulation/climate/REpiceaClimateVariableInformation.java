@@ -49,24 +49,36 @@ import repicea.simulation.covariateproviders.plotlevel.climate.TotalPrecipitatio
  */
 public class REpiceaClimateVariableInformation {
 
+	/**
+	 * An enum to identify the climate generator.
+	 */
 	public static enum WeatherGenerator {
 		BioSIM,
-		
 	}
 
+	/**
+	 * An enum that stands for the temporal resolution of the climate variable.
+	 */
 	public static enum Resolution {
-		Normals50Year,
-		Normals30Year,
-		IntervalAveraged,
-		IntervalAveragedStarting20YrsBeforeFinalMeasurement, 
-		Annual;
+		Normals50Year(50),
+		Normals30Year(30),
+		IntervalAveragedStarting20YrsBeforeFinalMeasurement(20), 
+		IntervalAveraged(0),
+		Annual(0);
+		final int nbYrBeforeToTarget;
+		Resolution(int offset){
+			this.nbYrBeforeToTarget = offset; 
+		}
 	}
-	
+
+	/**
+	 * An enum that refers to the model used in BioSIM
+	 */
 	public static enum BioSimModel {
 		Climatic_Annual("Climatic_Annual", null),
 		Climatic_Monthly("Climatic_Monthly", null),
 		Climate_Mosture_Index_Annual("Climate_Mosture_Index_Annual", null),
-		Growing_DegreeDay_Annual("DegreeDay_Annual", "\"LowerThreshold\"=5"),
+		Growing_DegreeDay_Annual("DegreeDay_Annual", "LowerThreshold:5"),
 		Soil_Moisture_Index_Annual("Soil_Moisture_Index_Annual", null),
 		VaporPressureDeficit_Monthly("VaporPressureDeficit_Monthly", null),
 		Normals1961_1990("Normals1961_1990", null),
@@ -85,7 +97,10 @@ public class REpiceaClimateVariableInformation {
 	public static enum BioSimNormals {
 	}
 	
-	
+
+	/**
+	 * An enum for fast-tracking the production of REpiceaClimateVariableInformation.
+	 */
 	public static enum BioSimClimateVariable {
 		FrostDays(AnnualFrostDaysProvider.class, BioSimModel.Climatic_Annual, "FrostDay"),
 		FrostFreeDays(AnnualFrostFreeDaysProvider.class, BioSimModel.Climatic_Annual, "FrostFreeDay"),
@@ -186,15 +201,20 @@ public class REpiceaClimateVariableInformation {
 	public static void fillClimateInfoMap(Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> oMap,
 			Class<?> plotClazz,
 			Resolution resolution) {
-		for (Class<?> interfaze : plotClazz.getInterfaces()) {
-			if (REpiceaClimateVariableProvider.class.isAssignableFrom(interfaze)) {
-				@SuppressWarnings("unchecked")
-				Class<? extends REpiceaClimateVariableProvider> climateInterfaze = (Class<? extends REpiceaClimateVariableProvider>) interfaze;
-				if (!oMap.containsKey(climateInterfaze)) {
-					oMap.put(climateInterfaze, new HashMap<Resolution, REpiceaClimateVariableInformation>());
+		Class<?> clazz = plotClazz;
+		while (clazz != Object.class) {
+			Class<?>[] interfaces = clazz.getInterfaces();
+			for (Class<?> interfaze : interfaces) {
+				if (REpiceaClimateVariableProvider.class.isAssignableFrom(interfaze)) {
+					@SuppressWarnings("unchecked")
+					Class<? extends REpiceaClimateVariableProvider> climateInterfaze = (Class<? extends REpiceaClimateVariableProvider>) interfaze;
+					if (!oMap.containsKey(climateInterfaze)) {
+						oMap.put(climateInterfaze, new HashMap<Resolution, REpiceaClimateVariableInformation>());
+					}
+					oMap.get(climateInterfaze).put(resolution, BioSimClimateVariable.createVariableInfo(climateInterfaze, resolution));
 				}
-				oMap.get(climateInterfaze).put(resolution, BioSimClimateVariable.createVariableInfo(climateInterfaze, resolution));
 			}
+			clazz = clazz.getSuperclass();
 		}
 	}
 

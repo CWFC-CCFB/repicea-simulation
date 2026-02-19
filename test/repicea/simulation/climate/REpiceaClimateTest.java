@@ -94,6 +94,12 @@ public class REpiceaClimateTest {
 		public Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> getClimateVariableInformationMap() {
 			return CLIMATE_INFO;
 		}
+
+		@Override
+		public String getId() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 		
 	}
 

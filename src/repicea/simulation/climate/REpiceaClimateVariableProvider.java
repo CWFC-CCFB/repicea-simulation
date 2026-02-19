@@ -23,12 +23,13 @@ import java.util.Map;
 
 import repicea.simulation.ClimateSensitivePredictor;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
+import repicea.simulation.covariateproviders.plotlevel.PlotIdProvider;
 
 /**
  * An empty interface just to identify climate-related interfaces.
  * @author Mathieu Fortin - February 2026
  */
-public interface REpiceaClimateVariableProvider {
+public interface REpiceaClimateVariableProvider extends PlotIdProvider {
 
 	static REpiceaClimateVariableInformation getInformationFromPredictor(ClimateSensitivePredictor predictor, Class<? extends REpiceaClimateVariableProvider> clazz, Resolution resolution) {
 		Map<Resolution, REpiceaClimateVariableInformation> infos = predictor.getClimateVariableInformationMap().get(clazz);
