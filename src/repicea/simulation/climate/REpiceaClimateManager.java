@@ -32,6 +32,7 @@ import biosimclient.BioSimClient;
 import biosimclient.BioSimClientException;
 import biosimclient.BioSimDataSet;
 import biosimclient.BioSimEnums.ClimateModel;
+import biosimclient.BioSimEnums.Period;
 import biosimclient.BioSimEnums.RCP;
 import biosimclient.BioSimParameterMap;
 import biosimclient.BioSimPlot;
@@ -43,31 +44,39 @@ import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.covariateproviders.plotlevel.PlotIdProvider;
 
 /**
- * A class handling checks on climate-related methods.
+ * A class handling the production of climate variables.
  * @author Mathieu Fortin - February 2026
  */
 public final class REpiceaClimateManager {
 
-	private static final List<BioSimModel> FixedNormalsModel = Arrays.asList(new BioSimModel[] {BioSimModel.Normals1961_1990,
-			BioSimModel.Normals1971_2000, BioSimModel.Normals1981_2010, BioSimModel.Normals1991_2020});
 	private static final HashMap<RepresentativeConcentrationPathway, RCP> RCPLookupMap = new HashMap<RepresentativeConcentrationPathway, RCP>(); 
 	static {
 		RCPLookupMap.put(RepresentativeConcentrationPathway.RCP4_5, RCP.RCP45);
 		RCPLookupMap.put(RepresentativeConcentrationPathway.RCP8_5, RCP.RCP85);
 	}
+	private static final Map<BioSimModel, Period> PeriodLookupMap = new HashMap<BioSimModel, Period>();
+	static {
+		PeriodLookupMap.put(BioSimModel.Normals1961_1990, Period.FromNormals1961_1990);
+		PeriodLookupMap.put(BioSimModel.Normals1971_2000, Period.FromNormals1971_2000);
+		PeriodLookupMap.put(BioSimModel.Normals1981_2010, Period.FromNormals1981_2010);
+		PeriodLookupMap.put(BioSimModel.Normals1991_2020, Period.FromNormals1991_2020);
+	}
 	
 	private static List<Resolution> ResolutionNeedingStartDate = Arrays.asList(new Resolution[] {Resolution.Annual, Resolution.IntervalAveraged});
 		
-	private final Map<String, BioSimPlot> plotMap;
-	private final List<BioSimPlot> plotList;
-	private final Map<String, BioSimModel> annualModels;
-	private final Map<String, BioSimModel> fixedNormals;
+	private final Map<String, BioSimPlot> plotMap; // to map the plot from its id
+	private final List<BioSimPlot> plotList; // the list of original plot so that we don't need to provide BioSimPlot instance over and over again
+	final Map<String, BioSimModel> annualModels;
+	final Map<String, BioSimModel> fixedNormalModels;
 	private Resolution dominantResolution;
-	private final int lastBioSIMDailyDateYr;
-	private final int nbRealizations;
+	private final int lastBioSIMDailyDateYr; // the last daily date on BioSIM WebAPI
+	private final int nbRealizations; // the number of realizations in the growth simulation
 	private final RepresentativeConcentrationPathway rcp;
-	protected int lastDateYrInDataset;
+	protected int lastDateYrInDataset; // the last date yr in the annualValueMap
 	protected final Map<BioSimModel, Map<BioSimPlot, Map<Integer, BioSimDataSet>>> annualValueMap; 
+	protected final Map<BioSimModel, Map<BioSimPlot, BioSimDataSet>> fixedNormals;
+	private boolean staticNormalsProduced = false; // a boolean to make sure the fixed normals are retrieved only once
+	private final ClimateModel climModel = ClimateModel.RCM4; // the climate model
 	
 	private final ConcurrentHashMap<REpiceaClimateVariableInformation, 
 						ConcurrentHashMap<String, 
@@ -97,6 +106,7 @@ public final class REpiceaClimateManager {
 		}
 		this.rcp = rcp;
 		annualValueMap = new HashMap<BioSimModel, Map<BioSimPlot, Map<Integer, BioSimDataSet>>>();
+		fixedNormals = new HashMap<BioSimModel, Map<BioSimPlot, BioSimDataSet>>();
 		cache = new ConcurrentHashMap<REpiceaClimateVariableInformation, 
 				ConcurrentHashMap<String, 
 				ConcurrentHashMap<Integer, 
@@ -116,13 +126,13 @@ public final class REpiceaClimateManager {
 		plotList.addAll(plots);
 		
 		annualModels = new LinkedHashMap<String, BioSimModel>();
-		fixedNormals = new LinkedHashMap<String, BioSimModel>();
+		fixedNormalModels = new LinkedHashMap<String, BioSimModel>();
 		for (REpiceaClimateVariableInformation info : climateInfo) {
 			BioSimModel model = info.model;
-			Map<String, BioSimModel> currentList = FixedNormalsModel.contains(model) ?
-					fixedNormals :
+			Map<String, BioSimModel> currentList = isFixedNormalsModel(model) ?
+					fixedNormalModels :
 						annualModels;
-			Resolution currentResolution = FixedNormalsModel.contains(model) ?
+			Resolution currentResolution = isFixedNormalsModel(model) ?
 					null :
 						info.resolution;
 			if (currentResolution != null) {
@@ -136,6 +146,10 @@ public final class REpiceaClimateManager {
 		}
 	}
 
+	private boolean isFixedNormalsModel(BioSimModel model) {
+		return PeriodLookupMap.containsKey(model);
+	}
+	
 	private List<BioSimParameterMap> getParameterMap() {
 		List<BioSimParameterMap> outputList = new ArrayList<BioSimParameterMap>();
 		for (BioSimModel m : annualModels.values()) {
@@ -156,21 +170,6 @@ public final class REpiceaClimateManager {
 		return outputList;
 	}
 	
-	private static BioSimDataSet createClone(BioSimDataSet dataSet) {
-		BioSimDataSet clone = new BioSimDataSet(dataSet.getFieldNames());
-		for (Observation o : dataSet.getObservations()) {
-			clone.addObservation(o.toArray());
-		}
-		clone.indexFieldType();
-		return clone;
-	}
-	
-	private static void addAllObservations(BioSimDataSet dataSet, BioSimDataSet toBeMerged) {
-		for (Observation o : toBeMerged.getObservations()) {
-			dataSet.addObservation(o.toArray());
-		}
-		dataSet.indexFieldType();
-	}
 	
 	private static BioSimDataSet getSubDataSet(BioSimDataSet dataSet, int realization) {
 		BioSimDataSet subDataSet = new BioSimDataSet(dataSet.getFieldNames());
@@ -221,7 +220,14 @@ public final class REpiceaClimateManager {
 			boolean isBeyondLastDailyDateYr = fromYr > lastBioSIMDailyDateYr; 
 			List<String> modelList = new ArrayList<String>(annualModels.keySet());
 			List<BioSimParameterMap> parmsMap = getParameterMap();
-			LinkedHashMap<String, Object> result = BioSimClient.generateWeather(fromYr, toYr, plotList, RCPLookupMap.get(rcp), ClimateModel.RCM4, modelList, isBeyondLastDailyDateYr ? nbRealizations : 1, parmsMap);
+			LinkedHashMap<String, Object> result = BioSimClient.generateWeather(fromYr, 
+					toYr, 
+					plotList, 
+					RCPLookupMap.get(rcp), 
+					climModel, 
+					modelList, 
+					isBeyondLastDailyDateYr ? nbRealizations : 1, 
+					parmsMap);
 //			System.out.println("BioSIM request took " + BioSimClient.getLastServerRequestDuration() + " sec.");
 			for (String modelName : result.keySet()) {
 				BioSimModel model = annualModels.get(modelName);
@@ -239,18 +245,44 @@ public final class REpiceaClimateManager {
 					for (int i = 0; i < nbRealizations; i++) {
 						BioSimDataSet dataSetForThisRealization = isBeyondLastDailyDateYr ? 
 								getSubDataSet(dataSet, i) :
-									createClone(dataSet);
+									dataSet.clone();
 						if (!innerInnerMap.containsKey(i)) {
 							innerInnerMap.put(i, dataSetForThisRealization);
 						} else {
-							addAllObservations(innerInnerMap.get(i), dataSetForThisRealization);
+							innerInnerMap.get(i).addAllObservations(dataSetForThisRealization);
 						}
 						
 					}
 				}
 			}
 			lastDateYrInDataset = toYr;
-			// TODO MF20260217 faire les normals ici
+			if (!staticNormalsProduced) {
+				for (BioSimModel model : fixedNormalModels.values()) {
+					LinkedHashMap<BioSimPlot, BioSimDataSet> normalResult = BioSimClient.getAnnualNormals(PeriodLookupMap.get(model), 
+							plotList, 
+							RCPLookupMap.get(rcp),
+							climModel);
+					for (BioSimDataSet ds : normalResult.values()) {
+						computeMeanTairInNormals(ds);
+					}
+					fixedNormals.put(model, normalResult); 
+				}
+				staticNormalsProduced = true;
+			}
+		}
+	}
+	
+	private void computeMeanTairInNormals(BioSimDataSet dataset) {
+		if (!dataset.getFieldNames().contains("T") && dataset.getFieldNames().contains("TN") && dataset.getFieldNames().contains("TX")) {
+			int indexTn = dataset.getFieldNames().indexOf("TN");
+			int indexTx = dataset.getFieldNames().indexOf("TX");
+			List<Object> TN = dataset.getFieldValues(indexTn);
+			List<Object> TX = dataset.getFieldValues(indexTx);
+			Object[] T = new Object[TX.size()];
+			for (int i = 0; i < T.length; i++) {
+				T[i] = ((Double) TX.get(i) + (Double) TN.get(i)) * .5;
+			}
+			dataset.addField("T", T);
 		}
 	}
 	
@@ -295,30 +327,43 @@ public final class REpiceaClimateManager {
 			int realization, 
 			String plotId,
 			REpiceaClimateVariableInformation info) {
-		fromYr = reajustFromYrDependingOnResolution(info.resolution, fromYr, toYr);
-		Double cachedValue = getCachedValue(info, plotId, fromYr, toYr, realization);
-		if (cachedValue == null) {
-			BioSimPlot p = plotMap.get(plotId);
-			BioSimDataSet dataSet = annualValueMap.get(info.model).get(p).get(realization);
-			int indexField = dataSet.getFieldNames().indexOf(info.fieldName);
-			int indexYear = dataSet.getFieldNames().indexOf("Year");
-			double total = 0d;
-			for (Observation o : dataSet.getObservations()) {
-				Object[] objectArray = o.toArray();
-				int currentDateYr = ((Number) objectArray[indexYear]).intValue();
-				if (currentDateYr >= fromYr && currentDateYr <= toYr) {
-					total += ((Number) objectArray[indexField]).doubleValue();
-				} else if (currentDateYr > toYr) {
-					break;
-				}
+		BioSimPlot p = plotMap.get(plotId);
+		if (isFixedNormalsModel(info.model)) {
+			BioSimDataSet ds = fixedNormals.get(info.model).get(p);
+			int fieldIndex = ds.getFieldNames().indexOf(info.fieldName);
+			if (fieldIndex == -1) {
+				throw new UnsupportedOperationException("The field " + info.fieldName + " cannot be found in the BioSimDataSet instance!");
 			}
-			double mean = total / (toYr - fromYr + 1);
-			storeValueInCache(info, plotId, fromYr, toYr, realization, mean);
-			return mean;
+			List<Object> values = ds.getFieldValues(fieldIndex);
+			if (values.size() != 1) {
+				throw new UnsupportedOperationException("There should be only one value in this field " + info.fieldName + "!");
+			}
+			return (Double) values.get(0);
 		} else {
-			return cachedValue;
+			fromYr = reajustFromYrDependingOnResolution(info.resolution, fromYr, toYr);
+			Double cachedValue = getCachedValue(info, plotId, fromYr, toYr, realization);
+			if (cachedValue == null) {
+//				BioSimPlot p = plotMap.get(plotId);
+				BioSimDataSet dataSet = annualValueMap.get(info.model).get(p).get(realization);
+				int indexField = dataSet.getFieldNames().indexOf(info.fieldName);
+				int indexYear = dataSet.getFieldNames().indexOf("Year");
+				double total = 0d;
+				for (Observation o : dataSet.getObservations()) {
+					Object[] objectArray = o.toArray();
+					int currentDateYr = ((Number) objectArray[indexYear]).intValue();
+					if (currentDateYr >= fromYr && currentDateYr <= toYr) {
+						total += ((Number) objectArray[indexField]).doubleValue();
+					} else if (currentDateYr > toYr) {
+						break;
+					}
+				}
+				double mean = total / (toYr - fromYr + 1);
+				storeValueInCache(info, plotId, fromYr, toYr, realization, mean);
+				return mean;
+			} else {
+				return cachedValue;
+			}
 		}
-		
 	}
 
 	private void storeValueInCache(REpiceaClimateVariableInformation info, 

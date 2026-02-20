@@ -202,7 +202,7 @@ public class REpiceaClimateVariableInformation {
 			Class<?> plotClazz,
 			Resolution resolution) {
 		Class<?> clazz = plotClazz;
-		while (clazz != Object.class) {
+		while (clazz != null && clazz != Object.class) {
 			Class<?>[] interfaces = clazz.getInterfaces();
 			for (Class<?> interfaze : interfaces) {
 				if (REpiceaClimateVariableProvider.class.isAssignableFrom(interfaze)) {

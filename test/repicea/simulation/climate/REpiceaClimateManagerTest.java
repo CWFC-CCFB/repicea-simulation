@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import biosimclient.BioSimClientException;
@@ -98,11 +97,41 @@ public class REpiceaClimateManagerTest {
 
 		
 	}
+	
+	
+	@SuppressWarnings("serial")
+	static class PlotWithNormals extends ExtendedPlot  {
+
+		private static final Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> CLIMATE_INFO = new HashMap<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>>();
+		static {
+			REpiceaClimateVariableInformation.fillClimateInfoMap(CLIMATE_INFO, ExtendedPlot.class, Resolution.IntervalAveragedStarting20YrsBeforeFinalMeasurement);
+			CLIMATE_INFO.get(MeanAnnualTemperatureCelsiusProvider.class).put(Resolution.Normals30Year,  
+					new REpiceaClimateVariableInformation(Resolution.Normals30Year, BioSimModel.Normals1971_2000, "T"));
+		}
+		
+		PlotWithNormals(String id, double latitude, double longitude, double altitude) {
+			super(id, latitude, longitude, altitude);
+		}
+		
+		
+		@Override
+		public Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> getClimateVariableInformationMap() {
+			return CLIMATE_INFO;
+		}
+
+
+		@Override
+		public double getGrowingDegreeDaysCelsius(REpiceaClimateVariableInformation info) {
+			return 0;
+		}
+
+
+		
+	}
 
 	
-	
 	@Test
-	public void test01ClimateGenerationHappyPathOneRealizationOverOneInterval() throws BioSimClientException, BioSimServerException {
+	public void test01ClimateGenerationHappyPathOneRealizationOverOneInterval() throws BioSimClientException, BioSimServerException, InterruptedException {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new Plot("01", 46, -75, 120));
 		plots.add(new Plot("02", 47, -76, 220));
@@ -119,6 +148,7 @@ public class REpiceaClimateManagerTest {
 		} catch (UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
+		Thread.sleep(500);
 		System.out.println("Relax this error was expected!");
 
 		manager.lastDateYrInDataset = 2000;
@@ -276,25 +306,35 @@ public class REpiceaClimateManagerTest {
 		Assert.assertEquals("Testing nb observations in each dataset", 20, manager.annualValueMap.get(BioSimModel.Climatic_Annual).get(plots.get(0)).get(0).getNumberOfObservations());
 	}
 
-
-	@Ignore
+	
 	@Test
-	public void test11ClimateGenerationHappyPath100RealizationOver10YearsOnePlotAfterLastDaily() throws BioSimClientException, BioSimServerException {
+	public void test09ClimateGenerationWithNormals() throws BioSimClientException, BioSimServerException {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
-		plots.add(new Plot("01", 46, -75, 120));
-		Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> oMap = Plot.CLIMATE_INFO;
+		plots.add(new PlotWithNormals("01", 46, -75, 120));
+		Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> oMap = PlotWithNormals.CLIMATE_INFO;
 		List<REpiceaClimateVariableInformation> infos = new ArrayList<REpiceaClimateVariableInformation>();
 		for (Map<Resolution, REpiceaClimateVariableInformation> innerMap : oMap.values()) {
 			infos.addAll(innerMap.values());
 		}
-		REpiceaClimateManager manager = new REpiceaClimateManager(RepresentativeConcentrationPathway.RCP4_5, infos, plots, 100);
+		REpiceaClimateManager manager = new REpiceaClimateManager(RepresentativeConcentrationPathway.RCP4_5, infos, plots, 1);
 		manager.produceClimateVariables(2040);
-		Assert.assertEquals("Testing annualValueMap size", 1, manager.annualValueMap.size());
+		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualValueMap.size());
 		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualValueMap.get(BioSimModel.Climatic_Annual).size());
-		Assert.assertEquals("Testing nb realization in annualValueMap", 100, manager.annualValueMap.get(BioSimModel.Climatic_Annual).get(plots.get(0)).size());
+		Assert.assertEquals("Testing nb realization in annualValueMap", 1, manager.annualValueMap.get(BioSimModel.Climatic_Annual).get(plots.get(0)).size());
+
+		REpiceaClimateVariableInformation normals1971_2000Info = null;
+		for (REpiceaClimateVariableInformation info : infos) {
+			if (info.model == BioSimModel.Normals1971_2000) {
+				normals1971_2000Info = info;
+				break;
+			}
+		}
+		if (normals1971_2000Info == null) {
+			throw new UnsupportedOperationException("Could not find the 1971-2000 normals BioSimModel instance in the infos local variable!");
+		}
 		
-		double value = manager.getValue(2030, 2040, 0, ((PlotIdProvider) plots.get(0)).getId(), infos.get(0));
-		Assert.assertEquals("Testing interval averaged value", 6.909090909090, value, 0.5);
+		double value = manager.getValue(2030, 2040, 0, ((PlotIdProvider) plots.get(0)).getId(), normals1971_2000Info);
+		Assert.assertEquals("Testing 1971-2000 mean annual temperature", 3.9608219178082194, value, 1E-8);
 	}
 
 }
