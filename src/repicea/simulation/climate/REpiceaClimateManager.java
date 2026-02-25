@@ -49,6 +49,35 @@ import repicea.simulation.covariateproviders.plotlevel.PlotIdProvider;
  */
 public final class REpiceaClimateManager {
 
+	@SuppressWarnings("serial")
+	static class UniqueBioSimPlot implements BioSimPlot {
+
+		
+		final double elevationM;
+		final double latitudeDeg;
+		final double longitudeDeg;
+
+		UniqueBioSimPlot(double[] roundedCoordinates) {
+			this.latitudeDeg = roundedCoordinates[0];
+			this.longitudeDeg = roundedCoordinates[1];
+			this.elevationM = roundedCoordinates[2];
+		}
+		
+		@Override
+		public double getElevationM() {return elevationM;}
+
+		@Override
+		public double getLatitudeDeg() {return latitudeDeg;}
+
+		@Override
+		public double getLongitudeDeg() {return longitudeDeg;}
+		
+		String getUniqueId() {
+			return latitudeDeg + "_" + longitudeDeg + "_" + elevationM; 
+		}
+	}
+	
+	
 	private static final HashMap<RepresentativeConcentrationPathway, RCP> RCPLookupMap = new HashMap<RepresentativeConcentrationPathway, RCP>(); 
 	static {
 		RCPLookupMap.put(RepresentativeConcentrationPathway.RCP4_5, RCP.RCP45);
@@ -64,8 +93,8 @@ public final class REpiceaClimateManager {
 	
 	private static List<Resolution> ResolutionNeedingStartDate = Arrays.asList(new Resolution[] {Resolution.Annual, Resolution.IntervalAveraged});
 		
-	private final Map<String, BioSimPlot> plotMap; // to map the plot from its id
-	private final List<BioSimPlot> plotList; // the list of original plot so that we don't need to provide BioSimPlot instance over and over again
+	private final Map<String, BioSimPlot> plotMap; // to map the original plot id to the unique BioSimPlot instances
+	final List<BioSimPlot> uniquePlotList; // the list of unique plot so that we don't need to provide BioSimPlot instance over and over again
 	final Map<String, BioSimModel> annualModels;
 	final Map<String, BioSimModel> fixedNormalModels;
 	private Resolution dominantResolution;
@@ -78,17 +107,43 @@ public final class REpiceaClimateManager {
 	private boolean staticNormalsProduced = false; // a boolean to make sure the fixed normals are retrieved only once
 	private final ClimateModel climModel = ClimateModel.RCM4; // the climate model
 	
+	private final double latitudeResolution;
+	private final double longitudeResolution;
+	private final double elevationResolution;
+	
 	private final ConcurrentHashMap<REpiceaClimateVariableInformation, 
 						ConcurrentHashMap<String, 
 						ConcurrentHashMap<Integer, 
 						ConcurrentHashMap<Integer, 
 						ConcurrentHashMap<Integer, Double>>>>> cache; // id - fromYr - toYr- realization - value
 
+	
+	private UniqueBioSimPlot roundCoordinates(BioSimPlot p) {
+		double[] roundedCoordinates = new double[3];
+		roundedCoordinates[0] = latitudeResolution > 0d ?
+				Math.round(p.getLatitudeDeg() / latitudeResolution) * latitudeResolution :
+					p.getLatitudeDeg(); 
+		roundedCoordinates[1] = longitudeResolution > 0d ? 
+				Math.round(p.getLongitudeDeg() / longitudeResolution) * longitudeResolution :
+					p.getLongitudeDeg();
+		roundedCoordinates[2] = elevationResolution > 0d ?
+				Math.round(p.getElevationM() / elevationResolution) * elevationResolution :
+					p.getElevationM();
+		return new UniqueBioSimPlot(roundedCoordinates);
+	}
+	
+	
 	/**
-	 * Constructor 
+	 * Constructor.<p>
+	 * If the resolutions are set to 0, then the true coordinates are used. Otherwise,
+	 * the coordinates are rounded at the resolution level and used afterwards. Original 
+	 * plot ids are mapped to the rounded coordinates. 
 	 * @param rcp a RepresentativeConcentrationPathway enum
 	 * @param climateInfo a List of REpiceaClimateVariableInformation instances
 	 * @param plots a List of BioSimPlot instances
+	 * @param latitudeResolution the latitude resolution (within range [0,1])
+	 * @param longitudeResolution the longitude resolution (within range [0,1])
+	 * @param elevationResolution the elevation resolution (within range [0,100])
 	 * @param nbRealizations the number of realizations (must be greater than 0)
 	 * @throws BioSimClientException if an error occurs while using BioSIM WebAPI 
 	 * @throws BioSimServerException if an error occurs while using BioSIM WebAPI
@@ -96,7 +151,22 @@ public final class REpiceaClimateManager {
 	public REpiceaClimateManager(RepresentativeConcentrationPathway rcp,
 			List<REpiceaClimateVariableInformation> climateInfo, 
 			List<BioSimPlot> plots,
+			double latitudeResolution,
+			double longitudeResolution,
+			double elevationResolution,
 			int nbRealizations) throws BioSimClientException, BioSimServerException {
+		if (latitudeResolution < 0 || latitudeResolution > 1) {
+			throw new InvalidParameterException("The latitudeResolution argument should be with the range [0,1]!");
+		}
+		this.latitudeResolution = latitudeResolution; 
+		if (longitudeResolution < 0 || longitudeResolution > 1) {
+			throw new InvalidParameterException("The longitudeResolution argument should be with the range [0,1]!");
+		}
+		this.longitudeResolution = longitudeResolution; 
+		if (elevationResolution < 0 || elevationResolution > 100) {
+			throw new InvalidParameterException("The latitudeResolution argument should be with the range [0,100]!");
+		}
+		this.elevationResolution = elevationResolution;
 		if (nbRealizations < 1) {
 			throw new InvalidParameterException("The nbRealizations argument must greater than 0!");
 		}
@@ -114,16 +184,22 @@ public final class REpiceaClimateManager {
 				ConcurrentHashMap<Integer, Double>>>>>();
 		lastBioSIMDailyDateYr = BioSimClient.getLastDailyDateYr();
 		plotMap = new HashMap<String, BioSimPlot>();
+		Map<String, BioSimPlot> uniquePlotMap = new HashMap<String, BioSimPlot>();
 		for (BioSimPlot p : plots) {
 			String id = ((PlotIdProvider) p).getId();
 			if (plotMap.containsKey(id)) {
 				throw new UnsupportedOperationException("It seems the plot list contains several plots with the same id!");
 			} else {
-				plotMap.put(id, p);
+				UniqueBioSimPlot uPlot = roundCoordinates(p);
+				String uniqueId = uPlot.getUniqueId();
+				if (!uniquePlotMap.containsKey(uniqueId)) {
+					uniquePlotMap.put(uniqueId, uPlot);
+				}
+				plotMap.put(id, uniquePlotMap.get(uniqueId));
 			}
 		}
-		plotList = new ArrayList<BioSimPlot>();
-		plotList.addAll(plots);
+		uniquePlotList = new ArrayList<BioSimPlot>();
+		uniquePlotList.addAll(uniquePlotMap.values());
 		
 		annualModels = new LinkedHashMap<String, BioSimModel>();
 		fixedNormalModels = new LinkedHashMap<String, BioSimModel>();
@@ -146,6 +222,24 @@ public final class REpiceaClimateManager {
 		}
 	}
 
+	/**
+	 * Constructor.<p>
+	 * Constructor with original plot coordinates, that is without rounding.
+	 * @param rcp a RepresentativeConcentrationPathway enum
+	 * @param climateInfo a List of REpiceaClimateVariableInformation instances
+	 * @param plots a List of BioSimPlot instances
+	 * @param nbRealizations the number of realizations (must be greater than 0)
+	 * @throws BioSimClientException if an error occurs while using BioSIM WebAPI 
+	 * @throws BioSimServerException if an error occurs while using BioSIM WebAPI
+	 */
+	public REpiceaClimateManager(RepresentativeConcentrationPathway rcp,
+			List<REpiceaClimateVariableInformation> climateInfo, 
+			List<BioSimPlot> plots,
+			int nbRealizations) throws BioSimClientException, BioSimServerException {
+		this(rcp, climateInfo, plots, 0, 0, 0, nbRealizations);
+	}
+	
+	
 	private boolean isFixedNormalsModel(BioSimModel model) {
 		return PeriodLookupMap.containsKey(model);
 	}
@@ -222,7 +316,7 @@ public final class REpiceaClimateManager {
 			List<BioSimParameterMap> parmsMap = getParameterMap();
 			LinkedHashMap<String, Object> result = BioSimClient.generateWeather(fromYr, 
 					toYr, 
-					plotList, 
+					uniquePlotList, 
 					RCPLookupMap.get(rcp), 
 					climModel, 
 					modelList, 
@@ -259,7 +353,7 @@ public final class REpiceaClimateManager {
 			if (!staticNormalsProduced) {
 				for (BioSimModel model : fixedNormalModels.values()) {
 					LinkedHashMap<BioSimPlot, BioSimDataSet> normalResult = BioSimClient.getAnnualNormals(PeriodLookupMap.get(model), 
-							plotList, 
+							uniquePlotList, 
 							RCPLookupMap.get(rcp),
 							climModel);
 					for (BioSimDataSet ds : normalResult.values()) {
