@@ -387,16 +387,16 @@ public final class REpiceaClimateManager {
 			ConcurrentHashMap<Integer, 
 			ConcurrentHashMap<Integer, 
 			ConcurrentHashMap<Integer, Double>>>> innerMap1 = cache.get(info);
-			if (innerMap1.contains(plotId)) {
+			if (innerMap1.containsKey(plotId)) {
 				ConcurrentHashMap<Integer, 
 				ConcurrentHashMap<Integer, 
 				ConcurrentHashMap<Integer, Double>>> innerMap2 = innerMap1.get(plotId);
-				if (innerMap2.contains(fromYr)) {
+				if (innerMap2.containsKey(fromYr)) {
 					ConcurrentHashMap<Integer, 
 					ConcurrentHashMap<Integer, Double>> innerMap3 = innerMap2.get(fromYr);
-					if (innerMap3.contains(toYr)) {
+					if (innerMap3.containsKey(toYr)) {
 						ConcurrentHashMap<Integer, Double> innerMap4 = innerMap3.get(toYr);
-						if (innerMap4.contains(realization)) {
+						if (innerMap4.containsKey(realization)) {
 							return innerMap4.get(realization);
 						}
 					}
@@ -473,14 +473,17 @@ public final class REpiceaClimateManager {
 								ConcurrentHashMap<Integer, Double>>>>());
 		}
 		ConcurrentHashMap<String, ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, Double>>>> innerMap1 = cache.get(info);
+
 		if (!innerMap1.containsKey(plotId)) {
 			innerMap1.put(plotId, new ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, Double>>>());
 		}
 		ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, Double>>> innerMap2 = innerMap1.get(plotId);
+
 		if (!innerMap2.containsKey(fromYr)) {
 			innerMap2.put(fromYr, new ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, Double>>());
 		}
 		ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, Double>> innerMap3 = innerMap2.get(fromYr);
+
 		if (!innerMap3.containsKey(toYr)) {
 			innerMap3.put(toYr, new ConcurrentHashMap<Integer, Double>());
 		}
