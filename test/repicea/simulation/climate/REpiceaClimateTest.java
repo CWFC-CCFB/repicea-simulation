@@ -26,6 +26,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import repicea.simulation.ClimateSensitivePredictor;
+import repicea.simulation.climate.REpiceaClimateVariableInformation.EvaluationDate;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.climate.REpiceaClimateVariableMap.ClimateVariable;
 import repicea.simulation.covariateproviders.plotlevel.climate.MeanAnnualTemperatureCelsiusProvider;
@@ -77,7 +78,7 @@ public class REpiceaClimateTest {
 		
 		static final Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> CLIMATE_INFO = new HashMap<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>>();
 		static {
-			REpiceaClimateVariableInformation.fillClimateInfoMap(CLIMATE_INFO, Plot.class, Resolution.IntervalAveraged);
+			REpiceaClimateVariableInformation.fillClimateInfoMap(CLIMATE_INFO, Plot.class, Resolution.IntervalAveraged, EvaluationDate.EndOfInterval);
 		}
 		
 		@Override

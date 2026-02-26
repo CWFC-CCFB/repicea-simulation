@@ -71,6 +71,17 @@ public class REpiceaClimateVariableInformation {
 		}
 	}
 
+	public static enum EvaluationDate {
+		/**
+		 * Typically for static models.
+		 */
+		Now,
+		/**
+		 * Typically for dynamic models. We evaluate the climate variable until the end of intervals.
+		 */
+		EndOfInterval;
+	}
+	
 	/**
 	 * An enum that refers to the model used in BioSIM
 	 */
@@ -146,8 +157,8 @@ public class REpiceaClimateVariableInformation {
 			return ProviderToVariableMap;
 		}
 				
-		public static REpiceaClimateVariableInformation createVariableInfo(Class<? extends REpiceaClimateVariableProvider> providerClass, Resolution resolution) {
-			return new REpiceaClimateVariableInformation(resolution, getProviderToVariableMap().get(providerClass));
+		public static REpiceaClimateVariableInformation createVariableInfo(Class<? extends REpiceaClimateVariableProvider> providerClass, Resolution resolution, EvaluationDate point) {
+			return new REpiceaClimateVariableInformation(resolution, getProviderToVariableMap().get(providerClass), point);
 		}
 		
 	}
@@ -156,14 +167,16 @@ public class REpiceaClimateVariableInformation {
 	public final Resolution resolution;
 	public final BioSimModel model;
 	public final String fieldName;
+	public final EvaluationDate point;
 	
 	/**
 	 * Constructor.
 	 * @param resolution a Resolution enum
 	 * @param variable a BioSimVariable enum (the variable name in the model output)
+	 * @param point an EvaluationPoint enum
 	 */
-	private REpiceaClimateVariableInformation(Resolution resolution, BioSimClimateVariable variable) {
-		this(resolution, variable.model, variable.fieldName);
+	private REpiceaClimateVariableInformation(Resolution resolution, BioSimClimateVariable variable, EvaluationDate point) {
+		this(resolution, variable.model, variable.fieldName, point);
 	}
 	
 	/**
@@ -171,8 +184,9 @@ public class REpiceaClimateVariableInformation {
 	 * @param resolution a Resolution enum
 	 * @param model a BioSimModel enum
 	 * @param fieldName a string 
+	 * @param point an EvaluationPoint enum
 	 */
-	public REpiceaClimateVariableInformation(Resolution resolution, BioSimModel model, String fieldName) {
+	public REpiceaClimateVariableInformation(Resolution resolution, BioSimModel model, String fieldName, EvaluationDate point) {
 		this.generator = WeatherGenerator.BioSIM;
 		if (resolution == null) {
 			throw new InvalidParameterException("The resolution argument cannot be null!");
@@ -184,9 +198,12 @@ public class REpiceaClimateVariableInformation {
 		this.model = model;
 		if (fieldName == null || fieldName.isEmpty()) {
 			throw new InvalidParameterException("The fieldName argument must be a non empty string!");
-			
 		}
 		this.fieldName = fieldName;
+		if (point == null) {
+			throw new InvalidParameterException("The point argument cannot be null!");
+		}
+		this.point = point;
 	}
 	
 	
@@ -197,10 +214,12 @@ public class REpiceaClimateVariableInformation {
 	 * @param oMap the static map
 	 * @param plotClazz the plot class implementing some REpiceaClimateVariableProvider interfaces
 	 * @param resolution a Resolution enum
+	 * @param point an EvaluationPoint enum
 	 */
 	public static void fillClimateInfoMap(Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> oMap,
 			Class<?> plotClazz,
-			Resolution resolution) {
+			Resolution resolution,
+			EvaluationDate point) {
 		Class<?> clazz = plotClazz;
 		while (clazz != null && clazz != Object.class) {
 			Class<?>[] interfaces = clazz.getInterfaces();
@@ -211,7 +230,7 @@ public class REpiceaClimateVariableInformation {
 					if (!oMap.containsKey(climateInterfaze)) {
 						oMap.put(climateInterfaze, new HashMap<Resolution, REpiceaClimateVariableInformation>());
 					}
-					oMap.get(climateInterfaze).put(resolution, BioSimClimateVariable.createVariableInfo(climateInterfaze, resolution));
+					oMap.get(climateInterfaze).put(resolution, BioSimClimateVariable.createVariableInfo(climateInterfaze, resolution, point));
 				}
 			}
 			clazz = clazz.getSuperclass();

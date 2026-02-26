@@ -14,6 +14,7 @@ import biosimclient.BioSimServerException;
 import repicea.simulation.ClimateSensitivePredictor;
 import repicea.simulation.climate.REpiceaClimateGenerator.RepresentativeConcentrationPathway;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.BioSimModel;
+import repicea.simulation.climate.REpiceaClimateVariableInformation.EvaluationDate;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.covariateproviders.plotlevel.PlotIdProvider;
 import repicea.simulation.covariateproviders.plotlevel.climate.AnnualGrowingDegreeDaysCelsiusProvider;
@@ -29,7 +30,7 @@ public class REpiceaClimateManagerTest {
 
 		private static final Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> CLIMATE_INFO = new HashMap<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>>();
 		static {
-			REpiceaClimateVariableInformation.fillClimateInfoMap(CLIMATE_INFO, Plot.class, Resolution.IntervalAveraged);
+			REpiceaClimateVariableInformation.fillClimateInfoMap(CLIMATE_INFO, Plot.class, Resolution.IntervalAveraged, EvaluationDate.EndOfInterval);
 		}
 		
 		final double latitude;
@@ -75,7 +76,7 @@ public class REpiceaClimateManagerTest {
 
 		private static final Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> CLIMATE_INFO = new HashMap<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>>();
 		static {
-			REpiceaClimateVariableInformation.fillClimateInfoMap(CLIMATE_INFO, ExtendedPlot.class, Resolution.IntervalAveragedStarting20YrsBeforeFinalMeasurement);
+			REpiceaClimateVariableInformation.fillClimateInfoMap(CLIMATE_INFO, ExtendedPlot.class, Resolution.IntervalAveragedStarting20YrsBeforeFinalMeasurement, EvaluationDate.EndOfInterval);
 		}
 		
 		ExtendedPlot(String id, double latitude, double longitude, double altitude) {
@@ -104,9 +105,9 @@ public class REpiceaClimateManagerTest {
 
 		private static final Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> CLIMATE_INFO = new HashMap<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>>();
 		static {
-			REpiceaClimateVariableInformation.fillClimateInfoMap(CLIMATE_INFO, ExtendedPlot.class, Resolution.IntervalAveragedStarting20YrsBeforeFinalMeasurement);
+			REpiceaClimateVariableInformation.fillClimateInfoMap(CLIMATE_INFO, ExtendedPlot.class, Resolution.IntervalAveragedStarting20YrsBeforeFinalMeasurement, EvaluationDate.EndOfInterval);
 			CLIMATE_INFO.get(MeanAnnualTemperatureCelsiusProvider.class).put(Resolution.Normals30Year,  
-					new REpiceaClimateVariableInformation(Resolution.Normals30Year, BioSimModel.Normals1971_2000, "T"));
+					new REpiceaClimateVariableInformation(Resolution.Normals30Year, BioSimModel.Normals1971_2000, "T", EvaluationDate.Now));
 		}
 		
 		PlotWithNormals(String id, double latitude, double longitude, double altitude) {
