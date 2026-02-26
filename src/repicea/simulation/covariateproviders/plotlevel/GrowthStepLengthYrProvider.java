@@ -29,6 +29,6 @@ public interface GrowthStepLengthYrProvider {
 	 * This method returns the growth step length in years.
 	 * @return the step length (yrs)
 	 */
-	public double getGrowthStepLengthYr();
+	public int getGrowthStepLengthYr();
 
 }
