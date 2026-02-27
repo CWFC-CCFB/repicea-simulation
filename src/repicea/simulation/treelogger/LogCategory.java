@@ -65,6 +65,12 @@ public abstract class LogCategory implements Serializable, REpiceaUIObject {
 	public String getName() {return name;}
 	
 	/**
+	 * Provide a group name for aggregation.<p>
+	 * @return a String
+	 */
+	public String getGroupName() {return getName();}
+	
+	/**
 	 * Set the name of this tree log category.
 	 * @param str the name
 	 */
