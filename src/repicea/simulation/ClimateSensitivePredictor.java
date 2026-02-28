@@ -17,38 +17,25 @@
  *
  * Please see the license at http://www.gnu.org/copyleft/lesser.html.
  */
-package repicea.simulation.covariateproviders.plotlevel.climate;
+package repicea.simulation;
 
-import repicea.simulation.ClimateSensitivePredictor;
+import java.util.Map;
+
 import repicea.simulation.climate.REpiceaClimateVariableInformation;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.climate.REpiceaClimateVariableProvider;
 
 /**
- * This interface ensures the plot instance can provide the number of
- * frost free days annually. 
+ * An interface that applies to predictors that are climate sensitive.
  * @author Mathieu Fortin - February 2026
  */
-public interface AnnualFrostFreeDaysProvider extends REpiceaClimateVariableProvider {
+public interface ClimateSensitivePredictor {
 
 	/**
-	 * Provide the annual number of frost free days.
-	 * @param info an REpiceaClimateVariableInformation instance defining the climate variable 
-	 * @return the number of days
+	 * Provide the information on the climate variable so that they can be 
+	 * retrieved using a weather generator.
+	 * @return a Map of REpiceaClimateVariableProvider derived classes as key and REpiceaClimateVariableInformation as value
 	 */
-	public double getAnnualNbFrostFreeDays(REpiceaClimateVariableInformation info);
-
+	public Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> getClimateVariableInformationMap(); 
 	
-	/**
-	 * Default implementation to retrieve the variable from the predictor itself.
-	 * @param predictor a ClimateSensitivePredictor instance
-	 * @param resolution a Resolution enum
-	 * @return the number of days
-	 */
-	public default double getAnnualNbFrostFreeDays(ClimateSensitivePredictor predictor, Resolution resolution) {
-		return getAnnualNbFrostFreeDays(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor, 
-				AnnualFrostFreeDaysProvider.class,
-				resolution));
-	}
-
 }

@@ -19,20 +19,35 @@
  */
 package repicea.simulation.covariateproviders.plotlevel.climate;
 
-import repicea.simulation.climate.REpiceaClimateManager.ClimateVariableTemporalResolution;
+import repicea.simulation.ClimateSensitivePredictor;
+import repicea.simulation.climate.REpiceaClimateVariableInformation;
+import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
+import repicea.simulation.climate.REpiceaClimateVariableProvider;
 
 /**
  * This interface ensures the stand instance can provide its total precipitation 
  * from June to August.
  * @author Mathieu Fortin - February 2026
  */
-public interface TotalPrecipitationFromJuneToAugustMmProvider {
+public interface TotalPrecipitationFromJuneToAugustMmProvider extends REpiceaClimateVariableProvider {
 
 	/**
 	 * Provide the total precipitation from March to May in mm.
-	 * @param resolution the resolution of the climate variable 
+	 * @param info an REpiceaClimateVariableInformation instance defining the climate variable 
 	 * @return a double
 	 */
-	public double getTotalPrecipitationFromJuneToAugustMm(ClimateVariableTemporalResolution resolution);
+	public double getTotalPrecipitationFromJuneToAugustMm(REpiceaClimateVariableInformation info);
+
+	/**
+	 * Default implementation to retrieve the variable from the predictor itself.
+	 * @param predictor a ClimateSensitivePredictor instance
+	 * @param resolution a Resolution enum
+	 * @return the number of days
+	 */
+	public default double getTotalPrecipitationFromJuneToAugustMm(ClimateSensitivePredictor predictor, Resolution resolution) {
+		return getTotalPrecipitationFromJuneToAugustMm(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor, 
+				TotalPrecipitationFromJuneToAugustMmProvider.class,
+				resolution));
+	}
 
 }

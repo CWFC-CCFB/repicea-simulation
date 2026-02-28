@@ -25,29 +25,29 @@ import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.climate.REpiceaClimateVariableProvider;
 
 /**
- * This interface ensures the plot instance can provide its growing
- * degree days (e.g. &gt; 5&deg;C).  
+ * This interface ensures the plot instance can provide the total 
+ * annual radiation. 
  * @author Mathieu Fortin - February 2026
  */
-public interface AnnualGrowingDegreeDaysCelsiusProvider extends REpiceaClimateVariableProvider {
+public interface TotalAnnualRadiationMjM2Provider extends REpiceaClimateVariableProvider {
 
 	/**
-	 * Provide the growing degree-days.
+	 * Provide the total annual radiation.
 	 * @param info an REpiceaClimateVariableInformation instance defining the climate variable 
-	 * @return the growing degree-days (&deg;C)
+	 * @return the total annual radiation (MJ/m2)
 	 */
-	public double getGrowingDegreeDaysCelsius(REpiceaClimateVariableInformation info);
-
+	public double getTotalAnnualRadiationMjM2(REpiceaClimateVariableInformation info);
+	
 	
 	/**
-	 * Default implementation to retrieve the variable from the predictor itself.
+	 * Provide the total annual radiation.
 	 * @param predictor a ClimateSensitivePredictor instance
 	 * @param resolution a Resolution enum
-	 * @return the number of days
+	 * @return the total annual radiation (MJ/m2)
 	 */
-	public default double getGrowingDegreeDaysCelsius(ClimateSensitivePredictor predictor, Resolution resolution) {
-		return getGrowingDegreeDaysCelsius(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor,
-				AnnualGrowingDegreeDaysCelsiusProvider.class,
+	public default double getTotalAnnualRadiationMjM2(ClimateSensitivePredictor predictor, Resolution resolution) {
+		return getTotalAnnualRadiationMjM2(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor,
+				TotalAnnualRadiationMjM2Provider.class,
 				resolution));
 	}
 

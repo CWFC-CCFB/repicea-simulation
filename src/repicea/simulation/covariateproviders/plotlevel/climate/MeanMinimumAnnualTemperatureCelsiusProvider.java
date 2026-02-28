@@ -1,8 +1,7 @@
 /*
- * This file is part of the repicea-simulation library.
+ * This file is part of the repicea library.
  *
- * Copyright (C) 2026 His Majesty the King in right of Canada
- * Author: Mathieu Fortin, Canadian Forest Service
+ * Copyright (C) 2009-2012 Mathieu Fortin for Rouge-Epicea
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,29 +24,28 @@ import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.climate.REpiceaClimateVariableProvider;
 
 /**
- * This interface ensures the plot instance can provide its growing
- * degree days (e.g. &gt; 5&deg;C).  
- * @author Mathieu Fortin - February 2026
+ * This interface ensures the plot instance can provide its mean 
+ * minimum annual temperature.
+ * @author Mathieu Fortin - November 2012
  */
-public interface AnnualGrowingDegreeDaysCelsiusProvider extends REpiceaClimateVariableProvider {
+public interface MeanMinimumAnnualTemperatureCelsiusProvider extends REpiceaClimateVariableProvider {
 
 	/**
-	 * Provide the growing degree-days.
+	 * Provide the mean minimum annual temperature.
 	 * @param info an REpiceaClimateVariableInformation instance defining the climate variable 
-	 * @return the growing degree-days (&deg;C)
+	 * @return the temperature (&deg;C)
 	 */
-	public double getGrowingDegreeDaysCelsius(REpiceaClimateVariableInformation info);
+	public double getMeanMinimumAnnualTemperatureCelsius(REpiceaClimateVariableInformation info);
 
-	
 	/**
 	 * Default implementation to retrieve the variable from the predictor itself.
 	 * @param predictor a ClimateSensitivePredictor instance
 	 * @param resolution a Resolution enum
-	 * @return the number of days
+	 * @return the temperature (&deg;C)
 	 */
-	public default double getGrowingDegreeDaysCelsius(ClimateSensitivePredictor predictor, Resolution resolution) {
-		return getGrowingDegreeDaysCelsius(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor,
-				AnnualGrowingDegreeDaysCelsiusProvider.class,
+	public default double getMeanMinimumAnnualTemperatureCelsius(ClimateSensitivePredictor predictor, Resolution resolution) {
+		return getMeanMinimumAnnualTemperatureCelsius(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor, 
+				MeanMinimumAnnualTemperatureCelsiusProvider.class,
 				resolution));
 	}
 

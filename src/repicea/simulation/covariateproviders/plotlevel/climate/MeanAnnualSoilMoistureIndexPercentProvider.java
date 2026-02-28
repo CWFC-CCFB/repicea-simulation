@@ -25,29 +25,29 @@ import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.climate.REpiceaClimateVariableProvider;
 
 /**
- * This interface ensures the plot instance can provide its growing
- * degree days (e.g. &gt; 5&deg;C).  
+ * This interface ensures the plot instance can provide the mean annual soil
+ * moisture index.  
  * @author Mathieu Fortin - February 2026
  */
-public interface AnnualGrowingDegreeDaysCelsiusProvider extends REpiceaClimateVariableProvider {
+public interface MeanAnnualSoilMoistureIndexPercentProvider extends REpiceaClimateVariableProvider {
 
 	/**
-	 * Provide the growing degree-days.
+	 * Provide the mean annual soil moisture index (SMI).
 	 * @param info an REpiceaClimateVariableInformation instance defining the climate variable 
-	 * @return the growing degree-days (&deg;C)
+	 * @return mean annual SMI (%)
 	 */
-	public double getGrowingDegreeDaysCelsius(REpiceaClimateVariableInformation info);
-
+	public double getMeanAnnualSMIPercent(REpiceaClimateVariableInformation info);
+	
 	
 	/**
 	 * Default implementation to retrieve the variable from the predictor itself.
 	 * @param predictor a ClimateSensitivePredictor instance
 	 * @param resolution a Resolution enum
-	 * @return the number of days
+	 * @return mean annual SMI (%)
 	 */
-	public default double getGrowingDegreeDaysCelsius(ClimateSensitivePredictor predictor, Resolution resolution) {
-		return getGrowingDegreeDaysCelsius(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor,
-				AnnualGrowingDegreeDaysCelsiusProvider.class,
+	public default double getMeanAnnualSMIPercent(ClimateSensitivePredictor predictor, Resolution resolution) {
+		return getMeanAnnualSMIPercent(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor, 
+				MeanAnnualSoilMoistureIndexPercentProvider.class,
 				resolution));
 	}
 

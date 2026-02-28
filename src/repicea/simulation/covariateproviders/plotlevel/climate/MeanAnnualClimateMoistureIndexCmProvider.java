@@ -25,29 +25,28 @@ import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.climate.REpiceaClimateVariableProvider;
 
 /**
- * This interface ensures the plot instance can provide its growing
- * degree days (e.g. &gt; 5&deg;C).  
+ * This interface ensures the plot instance can provide its mean 
+ * annual climate moisture index. 
  * @author Mathieu Fortin - February 2026
  */
-public interface AnnualGrowingDegreeDaysCelsiusProvider extends REpiceaClimateVariableProvider {
+public interface MeanAnnualClimateMoistureIndexCmProvider extends REpiceaClimateVariableProvider {
 
 	/**
-	 * Provide the growing degree-days.
+	 * Provide the mean annual climate moisture index (CMI).
 	 * @param info an REpiceaClimateVariableInformation instance defining the climate variable 
-	 * @return the growing degree-days (&deg;C)
+	 * @return the CMI (cm)
 	 */
-	public double getGrowingDegreeDaysCelsius(REpiceaClimateVariableInformation info);
-
+	public double getMeanAnnualCMICm(REpiceaClimateVariableInformation info);
 	
 	/**
-	 * Default implementation to retrieve the variable from the predictor itself.
+	 * Provide the mean annual climate moisture index (CMI).
 	 * @param predictor a ClimateSensitivePredictor instance
 	 * @param resolution a Resolution enum
-	 * @return the number of days
+	 * @return the CMI (cm)
 	 */
-	public default double getGrowingDegreeDaysCelsius(ClimateSensitivePredictor predictor, Resolution resolution) {
-		return getGrowingDegreeDaysCelsius(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor,
-				AnnualGrowingDegreeDaysCelsiusProvider.class,
+	public default double getMeanAnnualCMICm(ClimateSensitivePredictor predictor, Resolution resolution) {
+		return getMeanAnnualCMICm(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor, 
+				MeanAnnualClimateMoistureIndexCmProvider.class,
 				resolution));
 	}
 

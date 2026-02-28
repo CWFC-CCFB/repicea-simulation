@@ -25,19 +25,19 @@ import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.climate.REpiceaClimateVariableProvider;
 
 /**
- * This interface ensures the plot instance can provide its growing
- * degree days (e.g. &gt; 5&deg;C).  
+ * This interface ensures the plot instance can provide the number of
+ * frost days annually. 
  * @author Mathieu Fortin - February 2026
  */
-public interface AnnualGrowingDegreeDaysCelsiusProvider extends REpiceaClimateVariableProvider {
+public interface AnnualFrostDaysProvider extends REpiceaClimateVariableProvider {
 
 	/**
-	 * Provide the growing degree-days.
+	 * Provide the annual number of frost days.
 	 * @param info an REpiceaClimateVariableInformation instance defining the climate variable 
-	 * @return the growing degree-days (&deg;C)
+	 * @return the number of days
 	 */
-	public double getGrowingDegreeDaysCelsius(REpiceaClimateVariableInformation info);
-
+	public double getAnnualNbFrostDays(REpiceaClimateVariableInformation info);
+	
 	
 	/**
 	 * Default implementation to retrieve the variable from the predictor itself.
@@ -45,9 +45,9 @@ public interface AnnualGrowingDegreeDaysCelsiusProvider extends REpiceaClimateVa
 	 * @param resolution a Resolution enum
 	 * @return the number of days
 	 */
-	public default double getGrowingDegreeDaysCelsius(ClimateSensitivePredictor predictor, Resolution resolution) {
-		return getGrowingDegreeDaysCelsius(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor,
-				AnnualGrowingDegreeDaysCelsiusProvider.class,
+	public default double getAnnualNbFrostDays(ClimateSensitivePredictor predictor, Resolution resolution) {
+		return getAnnualNbFrostDays(REpiceaClimateVariableProvider.getInformationFromPredictor(predictor, 
+				AnnualFrostDaysProvider.class, 
 				resolution));
 	}
 
