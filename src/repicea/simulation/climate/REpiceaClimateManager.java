@@ -44,7 +44,9 @@ import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.covariateproviders.plotlevel.PlotIdProvider;
 
 /**
- * A class handling the production of climate variables.
+ * A class handling the production of climate variables.<p>
+ * This class is thread safe. The unique public method is synchronized.
+ * 
  * @author Mathieu Fortin - February 2026
  */
 public final class REpiceaClimateManager {
@@ -296,7 +298,7 @@ public final class REpiceaClimateManager {
 	 * @throws BioSimServerException if an error occurs while using BioSIM WebAPI
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void produceClimateVariables(final int toYr) throws BioSimClientException, BioSimServerException {
+	void produceClimateVariables(final int toYr) throws BioSimClientException, BioSimServerException {
 		if (toYr <= lastDateYrInDataset) {	// we are up to date
 			return;
 		}
@@ -409,8 +411,11 @@ public final class REpiceaClimateManager {
 
 	/**
 	 * Return a value for a particular climate variable.<p>
-	 * The variable and its resolution are defined through the info argument. IMPORTANT:
-	 * The fromYr argument is not inclusive. If fromYr = 2010 and toYr = 2020, the annual variable
+	 * 
+	 * The method calls produce the climate variables on the fly. The variable and its resolution are defined 
+	 * through the info argument.<p> 
+	 * 
+	 * IMPORTANT: The fromYr argument is not inclusive. If fromYr = 2010 and toYr = 2020, the annual variable
 	 * will be calculated over the period 2011 to 2020.
 	 * 
 	 * @param fromYr the start date (yr, exclusive) 
@@ -419,12 +424,15 @@ public final class REpiceaClimateManager {
 	 * @param plotId the plot id
 	 * @param info an REpiceaClimateVariableInformation instance 
 	 * @return the value of the climate variable (double)
+	 * @throws BioSimClientException if an error occurs on the client side while using BioSIM WebAPI 
+	 * @throws BioSimServerException if an error occurs on the server side while using BioSIM WebAPI
 	 */
-	public double getValue(int fromYr, 
+	public synchronized double getValue(int fromYr, 
 			int toYr, 
 			int realization, 
 			String plotId,
-			REpiceaClimateVariableInformation info) {
+			REpiceaClimateVariableInformation info) throws BioSimClientException, BioSimServerException {
+		produceClimateVariables(toYr);
 		BioSimPlot p = plotMap.get(plotId);
 		if (isFixedNormalsModel(info.model)) {
 			BioSimDataSet ds = fixedNormals.get(info.model).get(p);

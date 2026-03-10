@@ -136,7 +136,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		 * and bark for 156 tree species found in North America. 
 		 * USDA Forest Service, Northern Research Station. Research Note NRS-38.
 		 */
-		NorthAmerica("North America", "Amerique du Nord", IPCC),
+		NorthAmerica("North America", "Am\u00E9rique du Nord", IPCC),
 
 		/**
 		 * Belgium locale.
