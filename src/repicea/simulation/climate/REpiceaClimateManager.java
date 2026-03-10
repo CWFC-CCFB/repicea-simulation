@@ -444,17 +444,46 @@ public final class REpiceaClimateManager {
 //				BioSimPlot p = plotMap.get(plotId);
 				BioSimDataSet dataSet = annualValueMap.get(info.model).get(p).get(realization);
 				int indexField = dataSet.getFieldNames().indexOf(info.fieldName);
-				int indexYear = dataSet.getFieldNames().indexOf("Year");
+				int yearFieldIndex = dataSet.getFieldNames().indexOf("Year");
+				List<Object> yearIndex = dataSet.getFieldValues(yearFieldIndex);
 				double total = 0d;
-				List<Object> yearIndex = dataSet.getFieldValues(indexYear);
-				for (int yr = fromYr + 1; yr <= toYr; yr++) {
-					int indexObs = yearIndex.indexOf(yr);
-					if (indexObs == -1) {
-						throw new UnsupportedOperationException("The date " + yr + " is not in the BioSimDataSet instance!");
+				if (!info.isMonthly()) {
+					for (int yr = fromYr + 1; yr <= toYr; yr++) {
+						int indexObs = yearIndex.indexOf(yr);
+						if (indexObs == -1) {
+							throw new UnsupportedOperationException("The date " + yr + " is not in the BioSimDataSet instance!");
+						}
+						Object[] objectArray = dataSet.getObservations().get(indexObs).toArray();
+//						int currentDateYr = ((Number) objectArray[indexYear]).intValue();
+						total += ((Number) objectArray[indexField]).doubleValue();
 					}
-					Object[] objectArray = dataSet.getObservations().get(indexObs).toArray();
-//					int currentDateYr = ((Number) objectArray[indexYear]).intValue();
-					total += ((Number) objectArray[indexField]).doubleValue();
+				} else {
+					int monthFieldIndex = dataSet.getFieldNames().indexOf("Month");
+					List<Object> monthIndex = dataSet.getFieldValues(monthFieldIndex);
+					List<Integer> selectedMonths = info.monthCompilation.selectedMonths;
+					for (int yr = fromYr + 1; yr <= toYr; yr++) {
+						int startIndex = yearIndex.indexOf(yr);
+						int stopIndex = yearIndex.lastIndexOf(yr);
+						if (startIndex == -1) {
+							throw new UnsupportedOperationException("The date " + yr + " is not in the BioSimDataSet instance!");
+						}
+						double annualValue = 0;
+						int nbValues = 0;
+						for (int pointer = startIndex; pointer <= stopIndex; pointer++) {
+							if (selectedMonths.contains(monthIndex.get(pointer))) {
+								Object[] objectArray = dataSet.getObservations().get(pointer).toArray();
+								annualValue += ((Number) objectArray[indexField]).doubleValue();
+								nbValues++;
+							}
+						}
+						if (nbValues != selectedMonths.size()) {
+							throw new UnsupportedOperationException("It seems that some monthly values are missing!");
+						}
+						if (info.monthCompilation.isAverage && selectedMonths.size() > 1) { // average is required only there are more than one monthly value.
+							annualValue /= nbValues; 
+						}
+						total += annualValue;
+					}					
 				}
 				double mean = total / (toYr - fromYr);
 				storeValueInCache(info, plotId, fromYr, toYr, realization, mean);
