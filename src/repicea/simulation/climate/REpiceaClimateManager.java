@@ -98,7 +98,7 @@ public final class REpiceaClimateManager {
 	final Map<String, BioSimModel> annualModels;
 	final Map<String, BioSimModel> fixedNormalModels;
 	private Resolution dominantResolution;
-	private final int lastBioSIMDailyDateYr; // the last daily date on BioSIM WebAPI
+	private final int lastBioSIMCompleteObservedDailyDateYr; // the last daily date on BioSIM WebAPI
 	private final int nbRealizations; // the number of realizations in the growth simulation
 	private final RepresentativeConcentrationPathway rcp;
 	protected int lastDateYrInDataset; // the last date yr in the annualValueMap
@@ -182,7 +182,7 @@ public final class REpiceaClimateManager {
 				ConcurrentHashMap<Integer, 
 				ConcurrentHashMap<Integer, 
 				ConcurrentHashMap<Integer, Double>>>>>();
-		lastBioSIMDailyDateYr = BioSimClient.getLastDailyDateYr();
+		lastBioSIMCompleteObservedDailyDateYr = BioSimClient.getLastDailyDateYr() - 1;
 		plotMap = new HashMap<String, BioSimPlot>();
 		Map<String, BioSimPlot> uniquePlotMap = new HashMap<String, BioSimPlot>();
 		for (BioSimPlot p : plots) {
@@ -283,13 +283,14 @@ public final class REpiceaClimateManager {
 
 	private static int reajustFromYrDependingOnResolution(Resolution res, int from, int to) {
 		if (res.ordinal() < Resolution.IntervalAveraged.ordinal()) {
-			from = to - res.nbYrBeforeToTarget + 1;
+			from = to - res.nbYrBeforeToTarget;
 		}
 		return from;
 	}
 	
 	/**
-	 * Produce and store the climate variables. 
+	 * Produce and store the climate variables. <p>
+	 * The start date is set in function of the resolution.
 	 * @param toYr the year date at which the climate variables must be produced
 	 * @throws BioSimClientException if an error occurs while using BioSIM WebAPI 
 	 * @throws BioSimServerException if an error occurs while using BioSIM WebAPI
@@ -302,19 +303,19 @@ public final class REpiceaClimateManager {
 		if (lastDateYrInDataset == 0 && ResolutionNeedingStartDate.contains(dominantResolution)) { // Means we haven't started the simulation and we are using allometric relationship. In that case, we do not use an interval-average or annual resolution.
 			throw new UnsupportedOperationException("The dominant resolution " + dominantResolution.name() + " requires an upper range date!");
 		}
-		int fromYr = reajustFromYrDependingOnResolution(dominantResolution, lastDateYrInDataset + 1, toYr);
-		if (fromYr < lastDateYrInDataset + 1) {	// we dont need to go that far if the upper range is already more recent
-			fromYr = lastDateYrInDataset + 1;
+		int fromYr = reajustFromYrDependingOnResolution(dominantResolution, lastDateYrInDataset, toYr);
+		if (fromYr < lastDateYrInDataset) {	// we dont need to go that far if the upper range is already more recent
+			fromYr = lastDateYrInDataset;
 		}
-		if (fromYr < lastBioSIMDailyDateYr && toYr > lastBioSIMDailyDateYr) {
-			lastDateYrInDataset = fromYr - 1;
-			produceClimateVariables(lastBioSIMDailyDateYr);
+		if (fromYr < lastBioSIMCompleteObservedDailyDateYr && toYr > lastBioSIMCompleteObservedDailyDateYr) {
+			lastDateYrInDataset = fromYr;
+			produceClimateVariables(lastBioSIMCompleteObservedDailyDateYr);
 			produceClimateVariables(toYr);
 		} else {
-			boolean isBeyondLastDailyDateYr = fromYr > lastBioSIMDailyDateYr; 
+			boolean isBeyondLastDailyDateYr = fromYr >= lastBioSIMCompleteObservedDailyDateYr; 
 			List<String> modelList = new ArrayList<String>(annualModels.keySet());
 			List<BioSimParameterMap> parmsMap = getParameterMap();
-			LinkedHashMap<String, Object> result = BioSimClient.generateWeather(fromYr, 
+			LinkedHashMap<String, Object> result = BioSimClient.generateWeather(fromYr + 1, 
 					toYr, 
 					uniquePlotList, 
 					RCPLookupMap.get(rcp), 
@@ -408,9 +409,12 @@ public final class REpiceaClimateManager {
 
 	/**
 	 * Return a value for a particular climate variable.<p>
-	 * The variable and its resolution are defined through the info argument.
-	 * @param fromYr the start date (yr)
-	 * @param toYr the end date (yr)
+	 * The variable and its resolution are defined through the info argument. IMPORTANT:
+	 * The fromYr argument is not inclusive. If fromYr = 2010 and toYr = 2020, the annual variable
+	 * will be calculated over the period 2011 to 2020.
+	 * 
+	 * @param fromYr the start date (yr, exclusive) 
+	 * @param toYr the end date (yr, inclusive)
 	 * @param realization the realization id
 	 * @param plotId the plot id
 	 * @param info an REpiceaClimateVariableInformation instance 
@@ -442,16 +446,17 @@ public final class REpiceaClimateManager {
 				int indexField = dataSet.getFieldNames().indexOf(info.fieldName);
 				int indexYear = dataSet.getFieldNames().indexOf("Year");
 				double total = 0d;
-				for (Observation o : dataSet.getObservations()) {
-					Object[] objectArray = o.toArray();
-					int currentDateYr = ((Number) objectArray[indexYear]).intValue();
-					if (currentDateYr >= fromYr && currentDateYr <= toYr) {
-						total += ((Number) objectArray[indexField]).doubleValue();
-					} else if (currentDateYr > toYr) {
-						break;
+				List<Object> yearIndex = dataSet.getFieldValues(indexYear);
+				for (int yr = fromYr + 1; yr <= toYr; yr++) {
+					int indexObs = yearIndex.indexOf(yr);
+					if (indexObs == -1) {
+						throw new UnsupportedOperationException("The date " + yr + " is not in the BioSimDataSet instance!");
 					}
+					Object[] objectArray = dataSet.getObservations().get(indexObs).toArray();
+//					int currentDateYr = ((Number) objectArray[indexYear]).intValue();
+					total += ((Number) objectArray[indexField]).doubleValue();
 				}
-				double mean = total / (toYr - fromYr + 1);
+				double mean = total / (toYr - fromYr);
 				storeValueInCache(info, plotId, fromYr, toYr, realization, mean);
 				return mean;
 			} else {

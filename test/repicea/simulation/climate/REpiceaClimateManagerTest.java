@@ -158,7 +158,7 @@ public class REpiceaClimateManagerTest {
 				get(BioSimModel.Climatic_Annual).
 				get(p).size());
 		double value = manager.getValue(2000, 2010, 0, ((PlotIdProvider) plots.get(0)).getId(), infos.get(0));
-		Assert.assertEquals("Testing interval averaged value", 4.8909090909, value, 1E-8);
+		Assert.assertEquals("Testing interval averaged value", 5.38, value, 1E-8);
 	}
 
 	@Test
@@ -435,8 +435,8 @@ public class REpiceaClimateManagerTest {
 			throw new UnsupportedOperationException("Could not find the Climatic_Annual BioSimModel instance in the infos local variable!");
 		}
 		
-		double value0 = manager.getValue(2030, 2040, 0, ((PlotIdProvider) plots.get(0)).getId(), climateAnnualInfo);
-		double value1 = manager.getValue(2030, 2040, 0, ((PlotIdProvider) plots.get(1)).getId(), climateAnnualInfo);
+		double value0 = manager.getValue(2015, 2030, 0, ((PlotIdProvider) plots.get(0)).getId(), climateAnnualInfo);
+		double value1 = manager.getValue(2015, 2030, 0, ((PlotIdProvider) plots.get(1)).getId(), climateAnnualInfo);
 		Assert.assertEquals("Testing if the values of two plots within the same pixel are the same", 
 				value0,
 				value1,
