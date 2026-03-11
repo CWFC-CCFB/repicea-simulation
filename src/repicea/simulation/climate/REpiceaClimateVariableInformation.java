@@ -177,7 +177,9 @@ public class REpiceaClimateVariableInformation {
 			}
 			return ProviderToVariableMap;
 		}
-				
+		
+		public boolean isMonthlyVariable() {return months != null;}
+		
 		public static REpiceaClimateVariableInformation createVariableInfo(Class<? extends REpiceaClimateVariableProvider> providerClass, Resolution resolution, EvaluationDate point) {
 			return new REpiceaClimateVariableInformation(resolution, getProviderToVariableMap().get(providerClass), point);
 		}

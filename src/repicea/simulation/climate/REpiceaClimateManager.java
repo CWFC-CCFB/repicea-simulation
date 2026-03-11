@@ -39,6 +39,7 @@ import biosimclient.BioSimPlot;
 import biosimclient.BioSimServerException;
 import biosimclient.Observation;
 import repicea.simulation.climate.REpiceaClimateGenerator.RepresentativeConcentrationPathway;
+import repicea.simulation.climate.REpiceaClimateVariableInformation.BioSimClimateVariable;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.BioSimModel;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.covariateproviders.plotlevel.PlotIdProvider;
@@ -110,7 +111,7 @@ public final class REpiceaClimateManager {
 	private final int nbRealizations; // the number of realizations in the growth simulation
 	private final RepresentativeConcentrationPathway rcp;
 	protected int lastDateYrInDataset; // the last date yr in the annualValueMap
-	protected final Map<BioSimModel, Map<BioSimPlot, Map<Integer, BioSimDataSet>>> annualValueMap; 
+	protected final Map<BioSimModel, Map<BioSimPlot, Map<Integer, BioSimDataSet>>> annualOrMonthlyValueMap; 
 	protected final Map<BioSimModel, Map<BioSimPlot, BioSimDataSet>> fixedNormals;
 	private boolean staticNormalsProduced = false; // a boolean to make sure the fixed normals are retrieved only once
 	private final ClimateModel climModel = ClimateModel.RCM4; // the climate model
@@ -183,7 +184,7 @@ public final class REpiceaClimateManager {
 			throw new InvalidParameterException("If not null, the rcp argument should be either RCP4_5 or RCP8_5!");
 		}
 		this.rcp = rcp;
-		annualValueMap = new HashMap<BioSimModel, Map<BioSimPlot, Map<Integer, BioSimDataSet>>>();
+		annualOrMonthlyValueMap = new HashMap<BioSimModel, Map<BioSimPlot, Map<Integer, BioSimDataSet>>>();
 		fixedNormals = new HashMap<BioSimModel, Map<BioSimPlot, BioSimDataSet>>();
 		cache = new ConcurrentHashMap<REpiceaClimateVariableInformation, 
 				ConcurrentHashMap<String, 
@@ -359,10 +360,10 @@ public final class REpiceaClimateManager {
 //			System.out.println("BioSIM request took " + BioSimClient.getLastServerRequestDuration() + " sec.");
 			for (String modelName : result.keySet()) {
 				BioSimModel model = annualOrMonthlyModels.get(modelName);
-				if (!annualValueMap.containsKey(model)) {
-					annualValueMap.put(model, new HashMap<BioSimPlot, Map<Integer, BioSimDataSet>>());
+				if (!annualOrMonthlyValueMap.containsKey(model)) {
+					annualOrMonthlyValueMap.put(model, new HashMap<BioSimPlot, Map<Integer, BioSimDataSet>>());
 				}
-				Map<BioSimPlot, Map<Integer, BioSimDataSet>> innerMap = annualValueMap.get(model);
+				Map<BioSimPlot, Map<Integer, BioSimDataSet>> innerMap = annualOrMonthlyValueMap.get(model);
 				LinkedHashMap<BioSimPlot, BioSimDataSet> innerResultMap = (LinkedHashMap) result.get(modelName);
 				for (BioSimPlot p : innerResultMap.keySet()) {
 					if (!innerMap.containsKey(p)) {
@@ -482,7 +483,7 @@ public final class REpiceaClimateManager {
 			Double cachedValue = getCachedValue(info, plotId, fromYr, toYr, realization);
 			if (cachedValue == null) {
 //				BioSimPlot p = plotMap.get(plotId);
-				BioSimDataSet dataSet = annualValueMap.get(info.model).get(p).get(realization);
+				BioSimDataSet dataSet = annualOrMonthlyValueMap.get(info.model).get(p).get(realization);
 				int indexField = dataSet.getFieldNames().indexOf(info.fieldName);
 				int yearFieldIndex = dataSet.getFieldNames().indexOf(YEAR_DATE_FIELDNAME);
 				List<Object> yearIndex = dataSet.getFieldValues(yearFieldIndex);
@@ -533,6 +534,56 @@ public final class REpiceaClimateManager {
 			}
 		}
 	}
+	
+	/**
+	 * Provide lists of dates and annual values over a time period.<p>
+	 * This method is typically called after the simulation to retrieve some climate variables.
+	 * @param variable a BioSimClimateVariable enum
+	 * @param plotId the id of the plot
+	 * @param realization the realization id
+	 * @param startDate the start date (yr) inclusive
+	 * @param endDate the end date (yr) inclusive
+	 * @return two lists of Double instances, the first of which contains the dates whereas the second contains the annual climate variable
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public List<Double>[] getAnnualValues(BioSimClimateVariable variable, String plotId, int realization, int startDate, int endDate) {
+		if (variable.isMonthlyVariable()) {
+			throw new UnsupportedOperationException("Monthly variables are not supported!");
+		}
+		if (!annualOrMonthlyValueMap.containsKey(variable.model)) {
+			throw new InvalidParameterException("This climate variable have not been produced yet!");
+		}
+		Map<BioSimPlot, Map<Integer, BioSimDataSet>> innerMap = annualOrMonthlyValueMap.get(variable.model);
+		BioSimPlot p = plotMap.get(plotId);
+		if (p == null) {
+			throw new InvalidParameterException("This plot " + plotId + " is not being considered in the climate manager!");
+		}
+		Map<Integer, BioSimDataSet> innerInnerMap = innerMap.get(p);
+		if (!innerInnerMap.containsKey(realization)) {
+			throw new InvalidParameterException("This realization " + realization + " is not being considered in the climate manager!");
+		}
+		BioSimDataSet ds = innerInnerMap.get(realization);
+		List<Object> dates = ds.getFieldValues(ds.getFieldNames().indexOf(YEAR_DATE_FIELDNAME));
+		List<Object> values = ds.getFieldValues(ds.getFieldNames().indexOf(variable.fieldName));
+		int startIndex = dates.indexOf(startDate);
+		int endIndex = dates.lastIndexOf(endDate);
+		if (startIndex == -1) {
+			throw new InvalidParameterException("The start date is not found in the BioSimDataSet instance");
+		}
+		if (endIndex == -1) {
+			throw new InvalidParameterException("The end date is not found in the BioSimDataSet instance");
+		}
+		List<Double>[] output = new List[2];
+		output[0] = new ArrayList<Double>();
+		output[1] = new ArrayList<Double>();
+		for (int index = startIndex; index <= endIndex; index++) {
+			output[0].add(((Number) dates.get(index)).doubleValue());
+			output[1].add(((Number) values.get(index)).doubleValue());
+		}
+		return output;
+ 	}
+	
+	
 
 	private void storeValueInCache(REpiceaClimateVariableInformation info, 
 			String plotId, 

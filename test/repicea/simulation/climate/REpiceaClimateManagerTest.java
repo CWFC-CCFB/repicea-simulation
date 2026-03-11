@@ -32,6 +32,8 @@ import biosimclient.BioSimPlot;
 import biosimclient.BioSimServerException;
 import repicea.simulation.ClimateSensitivePredictor;
 import repicea.simulation.climate.REpiceaClimateGenerator.RepresentativeConcentrationPathway;
+import repicea.simulation.climate.REpiceaClimateManagerTest.ExtendedPlot5;
+import repicea.simulation.climate.REpiceaClimateVariableInformation.BioSimClimateVariable;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.BioSimModel;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.EvaluationDate;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
@@ -225,10 +227,10 @@ public class REpiceaClimateManagerTest {
 
 		manager.lastDateYrInDataset = 2000;
 		manager.produceClimateVariables(2010);
-		Assert.assertEquals("Testing annualValueMap size", 1, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualValueMap.get(BioSimModel.Climatic_Annual).size());
+		Assert.assertEquals("Testing annualValueMap size", 1, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualOrMonthlyValueMap.get(BioSimModel.Climatic_Annual).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", 1, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", 1, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).size());
 		double value = manager.getValue(2000, 2010, 0, ((PlotIdProvider) plots.get(0)).getId(), infos.get(0));
@@ -249,10 +251,10 @@ public class REpiceaClimateManagerTest {
 		REpiceaClimateManager manager = new REpiceaClimateManager(RepresentativeConcentrationPathway.RCP4_5, infos, plots, 5);
 		manager.lastDateYrInDataset = 2000;
 		manager.produceClimateVariables(2010);
-		Assert.assertEquals("Testing annualValueMap size", 1, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualValueMap.get(BioSimModel.Climatic_Annual).size());
+		Assert.assertEquals("Testing annualValueMap size", 1, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualOrMonthlyValueMap.get(BioSimModel.Climatic_Annual).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", 5, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", 5, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).size());
 	}
@@ -271,10 +273,10 @@ public class REpiceaClimateManagerTest {
 		REpiceaClimateManager manager = new REpiceaClimateManager(RepresentativeConcentrationPathway.RCP4_5, infos, plots, 5);
 		manager.lastDateYrInDataset = 2030;
 		manager.produceClimateVariables(2040);
-		Assert.assertEquals("Testing annualValueMap size", 1, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualValueMap.get(BioSimModel.Climatic_Annual).size());
+		Assert.assertEquals("Testing annualValueMap size", 1, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualOrMonthlyValueMap.get(BioSimModel.Climatic_Annual).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", 5, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", 5, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).size());
 	}
@@ -294,13 +296,13 @@ public class REpiceaClimateManagerTest {
 		REpiceaClimateManager manager = new REpiceaClimateManager(RepresentativeConcentrationPathway.RCP4_5, infos, plots, 5);
 		manager.lastDateYrInDataset = 2020;
 		manager.produceClimateVariables(2030);
-		Assert.assertEquals("Testing annualValueMap size", 1, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualValueMap.get(BioSimModel.Climatic_Annual).size());
+		Assert.assertEquals("Testing annualValueMap size", 1, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualOrMonthlyValueMap.get(BioSimModel.Climatic_Annual).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", 5, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", 5, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).size());
-		Assert.assertEquals("Testing nb observations in each dataset", 10, manager.annualValueMap.
+		Assert.assertEquals("Testing nb observations in each dataset", 10, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).get(0).getNumberOfObservations());
 	}
@@ -320,18 +322,18 @@ public class REpiceaClimateManagerTest {
 		}
 		REpiceaClimateManager manager = new REpiceaClimateManager(RepresentativeConcentrationPathway.RCP4_5, infos, plots, 1);
 		manager.produceClimateVariables(2010); // should work because the resolution is not annual nor interval averaged
-		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualValueMap.get(BioSimModel.Climatic_Annual).size());
+		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualOrMonthlyValueMap.get(BioSimModel.Climatic_Annual).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", 1, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", 1, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).size());
-		Assert.assertEquals("Testing nb observations in each dataset", 20, manager.annualValueMap.
+		Assert.assertEquals("Testing nb observations in each dataset", 20, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).get(0).getNumberOfObservations());
 		Assert.assertEquals("Testing last date year in dataset", 2010, manager.lastDateYrInDataset);
 		manager.produceClimateVariables(2020); // should work because the resolution is not annual nor interval averaged
-		Assert.assertEquals("Testing nb observations in each dataset", 30, manager.annualValueMap.
+		Assert.assertEquals("Testing nb observations in each dataset", 30, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).get(0).getNumberOfObservations());
 		Assert.assertEquals("Testing last date year in dataset", 2020, manager.lastDateYrInDataset);
@@ -351,10 +353,10 @@ public class REpiceaClimateManagerTest {
 		}
 		REpiceaClimateManager manager = new REpiceaClimateManager(RepresentativeConcentrationPathway.RCP4_5, infos, plots, 5);
 		manager.produceClimateVariables(2010);
-		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualValueMap.get(BioSimModel.Climatic_Annual).size());
+		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualOrMonthlyValueMap.get(BioSimModel.Climatic_Annual).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", 5, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", 5, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).size());
 	}
@@ -373,10 +375,10 @@ public class REpiceaClimateManagerTest {
 		}
 		REpiceaClimateManager manager = new REpiceaClimateManager(RepresentativeConcentrationPathway.RCP4_5, infos, plots, 5);
 		manager.produceClimateVariables(2040);
-		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualValueMap.get(BioSimModel.Climatic_Annual).size());
+		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualOrMonthlyValueMap.get(BioSimModel.Climatic_Annual).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", 5, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", 5, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).size());
 	}
@@ -394,13 +396,13 @@ public class REpiceaClimateManagerTest {
 		}
 		REpiceaClimateManager manager = new REpiceaClimateManager(RepresentativeConcentrationPathway.RCP4_5, infos, plots, 5);
 		manager.produceClimateVariables(2030);
-		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualValueMap.get(BioSimModel.Climatic_Annual).size());
+		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualOrMonthlyValueMap.get(BioSimModel.Climatic_Annual).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", 5, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", 5, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).size());
-		Assert.assertEquals("Testing nb observations in each dataset", 20, manager.annualValueMap.
+		Assert.assertEquals("Testing nb observations in each dataset", 20, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).get(0).getNumberOfObservations());
 	}
@@ -417,10 +419,10 @@ public class REpiceaClimateManagerTest {
 		}
 		REpiceaClimateManager manager = new REpiceaClimateManager(RepresentativeConcentrationPathway.RCP4_5, infos, plots, 1);
 		manager.produceClimateVariables(2040);
-		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualValueMap.get(BioSimModel.Climatic_Annual).size());
+		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualOrMonthlyValueMap.get(BioSimModel.Climatic_Annual).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", 1, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", 1, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).size());
 
@@ -456,13 +458,13 @@ public class REpiceaClimateManagerTest {
 				plots, 
 				nbRealizations);
 		manager.produceClimateVariables(2030);
-		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualValueMap.get(BioSimModel.Climatic_Annual).size());
+		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", plots.size(), manager.annualOrMonthlyValueMap.get(BioSimModel.Climatic_Annual).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", nbRealizations, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", nbRealizations, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).size());
-		Assert.assertEquals("Testing nb observations in each dataset", 20, manager.annualValueMap.
+		Assert.assertEquals("Testing nb observations in each dataset", 20, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).get(0).getNumberOfObservations());
 	}
@@ -487,13 +489,13 @@ public class REpiceaClimateManagerTest {
 				20,
 				nbRealizations);
 		manager.produceClimateVariables(2030);
-		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", 2, manager.annualValueMap.get(BioSimModel.Climatic_Annual).size());
+		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", 2, manager.annualOrMonthlyValueMap.get(BioSimModel.Climatic_Annual).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", nbRealizations, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", nbRealizations, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).size());
-		Assert.assertEquals("Testing nb observations in each dataset", 20, manager.annualValueMap.
+		Assert.assertEquals("Testing nb observations in each dataset", 20, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Annual).
 				get(p).get(0).getNumberOfObservations());
 		
@@ -537,13 +539,13 @@ public class REpiceaClimateManagerTest {
 				20,
 				nbRealizations);
 		manager.produceClimateVariables(2025);
-		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", 2, manager.annualValueMap.get(BioSimModel.Climatic_Monthly).size());
+		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", 2, manager.annualOrMonthlyValueMap.get(BioSimModel.Climatic_Monthly).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", nbRealizations, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", nbRealizations, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Monthly).
 				get(p).size());
-		Assert.assertEquals("Testing nb observations in each dataset", 20 * 12, manager.annualValueMap.
+		Assert.assertEquals("Testing nb observations in each dataset", 20 * 12, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Monthly).
 				get(p).get(0).getNumberOfObservations());
 		
@@ -592,13 +594,13 @@ public class REpiceaClimateManagerTest {
 				20,
 				nbRealizations);
 		manager.produceClimateVariables(2025);
-		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", 2, manager.annualValueMap.get(BioSimModel.Climatic_Monthly).size());
+		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", 2, manager.annualOrMonthlyValueMap.get(BioSimModel.Climatic_Monthly).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", nbRealizations, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", nbRealizations, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Monthly).
 				get(p).size());
-		Assert.assertEquals("Testing nb observations in each dataset", 20 * 12, manager.annualValueMap.
+		Assert.assertEquals("Testing nb observations in each dataset", 20 * 12, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climatic_Monthly).
 				get(p).get(0).getNumberOfObservations());
 		
@@ -676,13 +678,13 @@ public class REpiceaClimateManagerTest {
 				20,
 				nbRealizations);
 		manager.produceClimateVariables(2030);
-		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", 2, manager.annualValueMap.get(BioSimModel.Climate_Mosture_Index_Annual).size());
+		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", 2, manager.annualOrMonthlyValueMap.get(BioSimModel.Climate_Mosture_Index_Annual).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", nbRealizations, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", nbRealizations, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climate_Mosture_Index_Annual).
 				get(p).size());
-		Assert.assertEquals("Testing nb observations in each dataset", 20, manager.annualValueMap.
+		Assert.assertEquals("Testing nb observations in each dataset", 20, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Climate_Mosture_Index_Annual).
 				get(p).get(0).getNumberOfObservations());
 		
@@ -705,6 +707,57 @@ public class REpiceaClimateManagerTest {
 				1E-8);
 	}
 
+	@Test
+	public void test16RetrievingAnnualValues() throws BioSimClientException, BioSimServerException {
+		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
+		plots.add(new ExtendedPlot5("01", 46.10, -75, 120));
+		plots.add(new ExtendedPlot5("02", 46.12, -75, 125));
+		plots.add(new ExtendedPlot5("03", 52, -80, 300));
+		int nbRealizations = 1;
+		Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> oMap = ExtendedPlot5.CLIMATE_INFO;
+		List<REpiceaClimateVariableInformation> infos = new ArrayList<REpiceaClimateVariableInformation>();
+		for (Map<Resolution, REpiceaClimateVariableInformation> innerMap : oMap.values()) {
+			infos.addAll(innerMap.values());
+		}
+		REpiceaClimateManager manager = new REpiceaClimateManager(RepresentativeConcentrationPathway.RCP4_5, 
+				infos, 
+				plots, 
+				0.1,
+				0.1,
+				20,
+				nbRealizations);
+		manager.produceClimateVariables(2030);
+		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", 2, manager.annualOrMonthlyValueMap.get(BioSimModel.Climate_Mosture_Index_Annual).size());
+		BioSimPlot p = manager.uniquePlotList.get(0);
+		Assert.assertEquals("Testing nb realization in annualValueMap", nbRealizations, manager.annualOrMonthlyValueMap.
+				get(BioSimModel.Climate_Mosture_Index_Annual).
+				get(p).size());
+		Assert.assertEquals("Testing nb observations in each dataset", 20, manager.annualOrMonthlyValueMap.
+				get(BioSimModel.Climate_Mosture_Index_Annual).
+				get(p).get(0).getNumberOfObservations());
+		
+		List<Double>[] annualOutput = manager.getAnnualValues(BioSimClimateVariable.MeanAnnualCMI, 
+				"01",
+				0, 
+				2020, 
+				2030);
+
+		List<Double> dates = annualOutput[0];
+		Assert.assertEquals("Testing size of the list", 
+				dates.size(),
+				11);
+		Assert.assertEquals("Testing size of the list", 
+				((Double) dates.get(0)).intValue(),
+				2020);
+		Assert.assertEquals("Testing size of the list", 
+				((Double) dates.get(dates.size() - 1)).intValue(),
+				2030);
+
+		Assert.assertEquals("Testing size of the list", 
+				annualOutput[1].size(),
+				11);
+	}
 
 	
 }

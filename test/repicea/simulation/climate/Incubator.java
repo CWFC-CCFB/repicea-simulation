@@ -32,7 +32,9 @@ import biosimclient.BioSimClientException;
 import biosimclient.BioSimPlot;
 import biosimclient.BioSimServerException;
 import repicea.simulation.climate.REpiceaClimateGenerator.RepresentativeConcentrationPathway;
+import repicea.simulation.climate.REpiceaClimateManagerTest.ExtendedPlot5;
 import repicea.simulation.climate.REpiceaClimateManagerTest.Plot;
+import repicea.simulation.climate.REpiceaClimateVariableInformation.BioSimClimateVariable;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.BioSimModel;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.EvaluationDate;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
@@ -88,13 +90,13 @@ public class Incubator {
 				20,
 				nbRealizations);
 		manager.produceClimateVariables(2030);
-		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualValueMap.size());
-		Assert.assertEquals("Testing nb plots in annualValueMap", 2, manager.annualValueMap.get(BioSimModel.Soil_Moisture_Index_Annual).size());
+		Assert.assertEquals("Testing annualValueMap size", 2, manager.annualOrMonthlyValueMap.size());
+		Assert.assertEquals("Testing nb plots in annualValueMap", 2, manager.annualOrMonthlyValueMap.get(BioSimModel.Soil_Moisture_Index_Annual).size());
 		BioSimPlot p = manager.uniquePlotList.get(0);
-		Assert.assertEquals("Testing nb realization in annualValueMap", nbRealizations, manager.annualValueMap.
+		Assert.assertEquals("Testing nb realization in annualValueMap", nbRealizations, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Soil_Moisture_Index_Annual).
 				get(p).size());
-		Assert.assertEquals("Testing nb observations in each dataset", 20, manager.annualValueMap.
+		Assert.assertEquals("Testing nb observations in each dataset", 20, manager.annualOrMonthlyValueMap.
 				get(BioSimModel.Soil_Moisture_Index_Annual).
 				get(p).get(0).getNumberOfObservations());
 		
@@ -123,5 +125,5 @@ public class Incubator {
 
 	}
 	
-	
+
 }
