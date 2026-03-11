@@ -51,6 +51,12 @@ import repicea.simulation.covariateproviders.plotlevel.PlotIdProvider;
  */
 public final class REpiceaClimateManager {
 
+	
+	private static final String YEAR_DATE_FIELDNAME = "Year";
+	private static final String MONTH_DATE_FIELDNAME = "Month";
+
+	private static final List<String> ModelsWithMissingInitialYear = Arrays.asList(new String[] {BioSimModel.Climate_Mosture_Index_Annual.modelName});
+	
 	@SuppressWarnings("serial")
 	static class UniqueBioSimPlot implements BioSimPlot {
 
@@ -97,7 +103,7 @@ public final class REpiceaClimateManager {
 		
 	private final Map<String, BioSimPlot> plotMap; // to map the original plot id to the unique BioSimPlot instances
 	final List<BioSimPlot> uniquePlotList; // the list of unique plot so that we don't need to provide BioSimPlot instance over and over again
-	final Map<String, BioSimModel> annualModels;
+	final Map<String, BioSimModel> annualOrMonthlyModels;
 	final Map<String, BioSimModel> fixedNormalModels;
 	private Resolution dominantResolution;
 	private final int lastBioSIMCompleteObservedDailyDateYr; // the last daily date on BioSIM WebAPI
@@ -203,13 +209,13 @@ public final class REpiceaClimateManager {
 		uniquePlotList = new ArrayList<BioSimPlot>();
 		uniquePlotList.addAll(uniquePlotMap.values());
 		
-		annualModels = new LinkedHashMap<String, BioSimModel>();
+		annualOrMonthlyModels = new LinkedHashMap<String, BioSimModel>();
 		fixedNormalModels = new LinkedHashMap<String, BioSimModel>();
 		for (REpiceaClimateVariableInformation info : climateInfo) {
 			BioSimModel model = info.model;
 			Map<String, BioSimModel> currentList = isFixedNormalsModel(model) ?
 					fixedNormalModels :
-						annualModels;
+						annualOrMonthlyModels;
 			Resolution currentResolution = isFixedNormalsModel(model) ?
 					null :
 						info.resolution;
@@ -248,7 +254,7 @@ public final class REpiceaClimateManager {
 	
 	private List<BioSimParameterMap> getParameterMap() {
 		List<BioSimParameterMap> outputList = new ArrayList<BioSimParameterMap>();
-		for (BioSimModel m : annualModels.values()) {
+		for (BioSimModel m : annualOrMonthlyModels.values()) {
 			BioSimParameterMap parmMap = new BioSimParameterMap();
 			if (m.parameters != null && !m.parameters.isEmpty()) {
 				String[] parms = m.parameters.split("\\*");
@@ -290,6 +296,29 @@ public final class REpiceaClimateManager {
 		return from;
 	}
 	
+	private static void trimBioSimDataSet(BioSimDataSet ds, int minimumDateYr) {
+		List<Observation> observationToBeRemoved = new ArrayList<Observation>();
+		int indexYearField = ds.getFieldNames().indexOf(YEAR_DATE_FIELDNAME);
+		List<Object> yearDates = ds.getFieldValues(indexYearField);
+		int firstDateToBeConsidered = yearDates.indexOf(minimumDateYr);
+		if (firstDateToBeConsidered == -1) {
+			throw new UnsupportedOperationException("The date " + minimumDateYr + " cannot be found in the BioSimDataSet instance!");
+		}
+		for (int i = 0; i < firstDateToBeConsidered; i++) {
+			observationToBeRemoved.add(ds.getObservations().get(i));
+		}
+		ds.getObservations().removeAll(observationToBeRemoved);
+	}
+	
+	private static boolean isThereAtLeastOneModelWithMissingInitialYear(List<String> models) {
+		for (String modelName : models) {
+			if (ModelsWithMissingInitialYear.contains(modelName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Produce and store the climate variables. <p>
 	 * The start date is set in function of the resolution.
@@ -315,9 +344,11 @@ public final class REpiceaClimateManager {
 			produceClimateVariables(toYr);
 		} else {
 			boolean isBeyondLastDailyDateYr = fromYr >= lastBioSIMCompleteObservedDailyDateYr; 
-			List<String> modelList = new ArrayList<String>(annualModels.keySet());
+			List<String> modelList = new ArrayList<String>(annualOrMonthlyModels.keySet());
+			boolean oneOfTheModelsIsNotProducingFirstYear = isThereAtLeastOneModelWithMissingInitialYear(modelList);
 			List<BioSimParameterMap> parmsMap = getParameterMap();
-			LinkedHashMap<String, Object> result = BioSimClient.generateWeather(fromYr + 1, 
+			LinkedHashMap<String, Object> result = BioSimClient.generateWeather(
+					oneOfTheModelsIsNotProducingFirstYear ? fromYr : fromYr + 1, // should be fromYr alone because the first year is omitted in the CMI 
 					toYr, 
 					uniquePlotList, 
 					RCPLookupMap.get(rcp), 
@@ -327,7 +358,7 @@ public final class REpiceaClimateManager {
 					parmsMap);
 //			System.out.println("BioSIM request took " + BioSimClient.getLastServerRequestDuration() + " sec.");
 			for (String modelName : result.keySet()) {
-				BioSimModel model = annualModels.get(modelName);
+				BioSimModel model = annualOrMonthlyModels.get(modelName);
 				if (!annualValueMap.containsKey(model)) {
 					annualValueMap.put(model, new HashMap<BioSimPlot, Map<Integer, BioSimDataSet>>());
 				}
@@ -343,10 +374,11 @@ public final class REpiceaClimateManager {
 						BioSimDataSet dataSetForThisRealization = isBeyondLastDailyDateYr ? 
 								getSubDataSet(dataSet, i) :
 									dataSet.clone();
+						trimBioSimDataSet(dataSetForThisRealization, fromYr + 1);	// to remove the extra initial year if it was produced (that would be the case if the annual CMI is part of the model list
 						if (!innerInnerMap.containsKey(i)) {
 							innerInnerMap.put(i, dataSetForThisRealization);
 						} else {
-							innerInnerMap.get(i).addAllObservations(dataSetForThisRealization);
+							innerInnerMap.get(i).addAllObservations(dataSetForThisRealization); 
 						}
 						
 					}
@@ -452,7 +484,7 @@ public final class REpiceaClimateManager {
 //				BioSimPlot p = plotMap.get(plotId);
 				BioSimDataSet dataSet = annualValueMap.get(info.model).get(p).get(realization);
 				int indexField = dataSet.getFieldNames().indexOf(info.fieldName);
-				int yearFieldIndex = dataSet.getFieldNames().indexOf("Year");
+				int yearFieldIndex = dataSet.getFieldNames().indexOf(YEAR_DATE_FIELDNAME);
 				List<Object> yearIndex = dataSet.getFieldValues(yearFieldIndex);
 				double total = 0d;
 				if (!info.isMonthly()) {
@@ -466,7 +498,7 @@ public final class REpiceaClimateManager {
 						total += ((Number) objectArray[indexField]).doubleValue();
 					}
 				} else {
-					int monthFieldIndex = dataSet.getFieldNames().indexOf("Month");
+					int monthFieldIndex = dataSet.getFieldNames().indexOf(MONTH_DATE_FIELDNAME);
 					List<Object> monthIndex = dataSet.getFieldValues(monthFieldIndex);
 					List<Integer> selectedMonths = info.monthCompilation.selectedMonths;
 					for (int yr = fromYr + 1; yr <= toYr; yr++) {
