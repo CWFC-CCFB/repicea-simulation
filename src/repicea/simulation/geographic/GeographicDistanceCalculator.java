@@ -29,8 +29,8 @@ import repicea.math.SymmetricMatrix;
  */
 public class GeographicDistanceCalculator {
 
-	static final double EarthCircumferenceKmEquator = 40075.0167;
-	static final double EarthCircumferenceKmPole = 40007.863;
+	public static final double EarthCircumferenceKmEquator = 40075.0167;
+	public static final double EarthCircumferenceKmPole = 40007.863;
 
 	/**
 	 * Calculate an approximate Earth circumference at a given latitude.
@@ -56,7 +56,7 @@ public class GeographicDistanceCalculator {
 	}
 
 	/**
-	 * Return the ratio degrees:km for the the longitude at a particular latitude.
+	 * Provide the ratio degrees:km for the longitude at a particular latitude.
 	 * @param latitudeDeg the latitude in degrees
 	 * @return the ratio
 	 */
@@ -65,6 +65,14 @@ public class GeographicDistanceCalculator {
 		return 360d / getCircumferenceKmAtThisLatitudeDeg(latitudeDeg);
 	}
 
+	/**
+	 * Provide the ratio degrees:km for the latitude.
+s	 * @return the ratio
+	 */
+	public static double getRatioLatitudeDegKm() {
+		return 360d / EarthCircumferenceKmPole;
+	}
+	
 	/**
 	 * Return the distance from the difference of two latitudes.
 	 * @param latitudeDeg1 latitude (degrees) of the first point
