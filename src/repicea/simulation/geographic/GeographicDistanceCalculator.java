@@ -67,7 +67,7 @@ public class GeographicDistanceCalculator {
 
 	/**
 	 * Provide the ratio degrees:km for the latitude.
-s	 * @return the ratio
+	 * @return the ratio
 	 */
 	public static double getRatioLatitudeDegKm() {
 		return 360d / EarthCircumferenceKmPole;
@@ -128,7 +128,7 @@ s	 * @return the ratio
 	 * Double.NaN.
 	 * @return the distance (km)
 	 */
-	public static double getGeographicalDistanceWithRadiusKm(double latitudeDeg1, 
+	public static double getGeographicalDistanceWithinRadiusKm(double latitudeDeg1, 
 			double longitudeDeg1, 
 			double latitudeDeg2, 
 			double longitudeDeg2, 
@@ -184,4 +184,35 @@ s	 * @return the ratio
 		return outputMatrix;
 	}
 	
+	/**
+	 * Calculate the approximate distances between a set of coordinates.<p>
+	 * If the distance exceeds the radiusKm argument, then the distance is set to Double.NaN.
+	 * @param latitudeDeg the latitudes of the coordinates (a Matrix instance that is a column vector) 
+	 * @param longitudeDeg the longitudes of the coordinates (a Matrix instance that is a column vector)
+	 * @param radiusKm a maximum radius (km) beyond which the distance is set to 
+	 * Double.NaN.
+	 * @return a SymmetricMatrix instance
+	 */
+	public static SymmetricMatrix getDistanceBetweenTheseCoordinates(Matrix latitudeDeg, Matrix longitudeDeg, double radiusKm) {
+		if (!latitudeDeg.isColumnVector() || !latitudeDeg.isTheSameDimension(longitudeDeg)) {
+			throw new InvalidParameterException("The latitudeDeg and longitudeDeg Matrix instances must be column vectors of the same size!");
+		}
+		SymmetricMatrix outputMatrix = new SymmetricMatrix(latitudeDeg.m_iRows);
+		for (int i = 0; i < latitudeDeg.m_iRows; i++) {
+			for (int j = i; j < latitudeDeg.m_iRows; j++) {
+				if (i == j) {
+					outputMatrix.setValueAt(i, j, 0d);
+				} else {
+					double distanceKm = getGeographicalDistanceWithinRadiusKm(latitudeDeg.getValueAt(i, 0),
+																longitudeDeg.getValueAt(i, 0),
+																latitudeDeg.getValueAt(j, 0),
+																longitudeDeg.getValueAt(j, 0),
+																radiusKm);
+					outputMatrix.setValueAt(i, j, distanceKm);
+				}
+			}
+		}
+		return outputMatrix;
+	}
+
 }
