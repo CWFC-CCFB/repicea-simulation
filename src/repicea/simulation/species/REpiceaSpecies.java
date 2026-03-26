@@ -139,21 +139,21 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		NorthAmerica("North America", "Am\u00E9rique du Nord", IPCC),
 
 		/**
-		 * Belgium locale.
+		 * Canada locale.
 		 */
-		Belgium("Belgium", "Belgique", IPCC),
-		
+		Canada("Canada", "Canada", NorthAmerica),
+
 		/**
 		 * France locale.<p>
 		 * Data provided by French national inventory (contact is
 		 * Henri Cuny).
 		 */
 		France("France", "France", IPCC),
-		
+
 		/**
-		 * Canada locale.
+		 * Belgium locale.
 		 */
-		Canada("Canada", "Canada", NorthAmerica),
+		Belgium("Belgium", "Belgique", France),
 
 		/**
 		 * Ontario locale.
@@ -214,7 +214,9 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 	}
 	
 	/**
-	 * An enum variable for the difference species.
+	 * An enum variable for the difference species.<p>
+	 * Each species is given a list of SpeciesLocale instance, the first 
+	 * of which is considered as the default locale.
 	 */
 	public enum Species implements REpiceaSpecies {
 		Abies_spp(SpeciesType.ConiferousSpecies, "Fir", "Sapin", 
@@ -673,7 +675,11 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 //			this.barkProportionOfWoodVolume = barkProportionOfWoodVolume;
 			setText(englishName, frenchName);
 //			localeList = Arrays.asList(locales);
-		};
+		}
+		
+		private SpeciesLocale getDefaultLocale() {
+			return localeList.get(0);
+		}
 
 		@Override
 		public void setText(String englishText, String frenchText) {
@@ -696,11 +702,11 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 
 		@Override
 		public double getBasicWoodDensity(SpeciesLocale locale) {
-			return Species.findLocaleEntryInMap(locale, localeBasicWoodDensity);
+			return Species.findLocaleEntryInMap(locale, localeBasicWoodDensity, getDefaultLocale());
 		}
 
 		
-		private static double findLocaleEntryInMap(SpeciesLocale locale, Map<SpeciesLocale, Double> oMap) {
+		private static double findLocaleEntryInMap(SpeciesLocale locale, Map<SpeciesLocale, Double> oMap, SpeciesLocale defaultLocale) {
 			SpeciesLocale currentLocale = locale;
 			while (currentLocale != null) {
 				if (oMap.containsKey(currentLocale)) {
@@ -709,7 +715,8 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 					currentLocale = currentLocale.nextLevel;
 				}
 			}
-			throw new UnsupportedOperationException("Cannot find any entry with this locale: " + locale.name());
+			// At this point we haven't found the locale in the list. So, we are going to use the default locale
+			return oMap.get(defaultLocale);
 		}
 
 		/**
@@ -734,7 +741,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		
 		@Override
 		public double getBarkProportionOfWoodVolume(SpeciesLocale locale) {
-			return Species.findLocaleEntryInMap(locale, localeBarkProportion);
+			return Species.findLocaleEntryInMap(locale, localeBarkProportion, getDefaultLocale());
 		}		
 		
 		@Override

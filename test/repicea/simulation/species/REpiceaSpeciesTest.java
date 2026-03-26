@@ -118,6 +118,17 @@ public class REpiceaSpeciesTest {
 		REpiceaTranslator.setCurrentLanguage(originalLanguage);
 	}
 
+	/*
+	 * Belgium is not being set as a SpeciesLocale for any species. The test checks
+	 * if we can get a defautl value.
+	 */
+	@Test
+	public void test08BelgiumLocale() {
+		for (Species s : Species.values()) {
+			s.getBarkProportionOfWoodVolume(SpeciesLocale.Belgium);
+		}
+	}
+
 	public static void main(String[] args) {
 		int nbBroadleaved = 0;
 		int nbConiferous = 0;
