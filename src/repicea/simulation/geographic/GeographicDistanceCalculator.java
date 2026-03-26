@@ -110,6 +110,53 @@ s	 * @return the ratio
 		return Math.sqrt(diffY * diffY + diffX * diffX);
 	}
 
+	
+	/**
+	 * Return the approximate distance between two geographical coordinates. <p>
+	 * 
+	 * The distance is the Euclidean distance. So the approximation is good only for small 
+	 * differences in latitude and longitude. <p>
+	 * If the distance exceeds the radiusKm argument, the distance is then set to 
+	 * Double.NaN.
+	 * 
+	 * 
+	 * @param latitudeDeg1 the latitude (degrees) of the first coordinate
+	 * @param longitudeDeg1 the longitude (degrees) of the first coordinate
+	 * @param latitudeDeg2 the latitude (degrees) of the second coordinate
+	 * @param longitudeDeg2 the longitude (degrees) of the second coordinate
+	 * @param radiusKm a maximum radius (km) beyond which the distance is set to 
+	 * Double.NaN.
+	 * @return the distance (km)
+	 */
+	public static double getGeographicalDistanceWithRadiusKm(double latitudeDeg1, 
+			double longitudeDeg1, 
+			double latitudeDeg2, 
+			double longitudeDeg2, 
+			double radiusKm) {
+		
+		if (radiusKm <= 0) {
+			throw new InvalidParameterException("The radiusKm argument must be positive!");
+		}
+		
+		checkLongitudeDeg(longitudeDeg1);
+		checkLongitudeDeg(longitudeDeg2);
+		
+		double diffY = getKmFromLatitudeDifferences(latitudeDeg1, latitudeDeg2);
+		if (diffY > radiusKm) {
+			return Double.NaN;
+		}
+		double meanLat = (latitudeDeg2 + latitudeDeg1) * .5;
+		double longitudeRatio = getRatioLongitudeDegKmAtThisLatitude(meanLat);
+		double diffX = (longitudeDeg2 - longitudeDeg1) / longitudeRatio;
+		
+		if (diffX > radiusKm) {
+			return Double.NaN;
+		} 
+		double distance = Math.sqrt(diffY * diffY + diffX * diffX);
+		return distance <= radiusKm ? distance : Double.NaN;
+	}
+
+	
 	/**
 	 * Calculate the approximate distances between a set of coordinates.
 	 * @param latitudeDeg the latitudes of the coordinates (a Matrix instance that is a column vector) 
