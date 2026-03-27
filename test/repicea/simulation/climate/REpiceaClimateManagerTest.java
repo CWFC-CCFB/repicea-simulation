@@ -29,10 +29,11 @@ import org.junit.Test;
 
 import biosimclient.BioSimClientException;
 import biosimclient.BioSimPlot;
+import biosimclient.BioSimPlotImpl;
 import biosimclient.BioSimServerException;
 import repicea.simulation.ClimateSensitivePredictor;
 import repicea.simulation.climate.REpiceaClimateGenerator.RepresentativeConcentrationPathway;
-import repicea.simulation.climate.REpiceaClimateManagerTest.ExtendedPlot5;
+import repicea.simulation.climate.REpiceaClimateManager.UniqueBioSimPlot;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.BioSimClimateVariable;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.BioSimModel;
 import repicea.simulation.climate.REpiceaClimateVariableInformation.EvaluationDate;
@@ -758,5 +759,12 @@ public class REpiceaClimateManagerTest {
 				11);
 	}
 
+	@Test
+	public void test17CheckingCoordinates() {
+		BioSimPlot p = new BioSimPlotImpl(45,70, Double.NaN);
+		UniqueBioSimPlot uniquePlot = REpiceaClimateManager.roundCoordinates(p, 0.5, 0.5, 20);
+		Assert.assertTrue("Making sure that the elevation set at NaN remains NaN in the UniqueBioSimPlot instance",
+				Double.isNaN(uniquePlot.elevationM));
+	}
 	
 }

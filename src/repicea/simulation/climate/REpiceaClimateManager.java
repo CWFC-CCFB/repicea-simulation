@@ -68,7 +68,13 @@ public final class REpiceaClimateManager {
 
 		UniqueBioSimPlot(double[] roundedCoordinates) {
 			this.latitudeDeg = roundedCoordinates[0];
+			if (Double.isNaN(latitudeDeg)) {
+				throw new InvalidParameterException("The latitude cannot be a NaN!");
+			}
 			this.longitudeDeg = roundedCoordinates[1];
+			if (Double.isNaN(longitudeDeg)) {
+				throw new InvalidParameterException("The latitude cannot be a NaN!");
+			}
 			this.elevationM = roundedCoordinates[2];
 		}
 		
@@ -127,7 +133,7 @@ public final class REpiceaClimateManager {
 						ConcurrentHashMap<Integer, Double>>>>> cache; // id - fromYr - toYr- realization - value
 
 	
-	private UniqueBioSimPlot roundCoordinates(BioSimPlot p) {
+	static UniqueBioSimPlot roundCoordinates(BioSimPlot p, double latitudeResolution, double longitudeResolution, double elevationResolution) {
 		double[] roundedCoordinates = new double[3];
 		roundedCoordinates[0] = latitudeResolution > 0d ?
 				Math.round(p.getLatitudeDeg() / latitudeResolution) * latitudeResolution :
@@ -135,9 +141,14 @@ public final class REpiceaClimateManager {
 		roundedCoordinates[1] = longitudeResolution > 0d ? 
 				Math.round(p.getLongitudeDeg() / longitudeResolution) * longitudeResolution :
 					p.getLongitudeDeg();
-		roundedCoordinates[2] = elevationResolution > 0d ?
-				Math.round(p.getElevationM() / elevationResolution) * elevationResolution :
-					p.getElevationM();
+		double plotElevationM = p.getElevationM();
+		if (Double.isNaN(plotElevationM)) {
+			roundedCoordinates[2] = Double.NaN;	// make sure we keep the Double.NaN.
+		} else {
+			roundedCoordinates[2] = elevationResolution > 0d ?
+	 				Math.round(p.getElevationM() / elevationResolution) * elevationResolution :
+						p.getElevationM();
+		}
 		return new UniqueBioSimPlot(roundedCoordinates);
 	}
 	
@@ -199,7 +210,10 @@ public final class REpiceaClimateManager {
 			if (plotMap.containsKey(id)) {
 				throw new UnsupportedOperationException("It seems the plot list contains several plots with the same id!");
 			} else {
-				UniqueBioSimPlot uPlot = roundCoordinates(p);
+				UniqueBioSimPlot uPlot = roundCoordinates(p, 
+						this.latitudeResolution, 
+						this.longitudeResolution, 
+						this.elevationResolution);
 				String uniqueId = uPlot.getUniqueId();
 				if (!uniquePlotMap.containsKey(uniqueId)) {
 					uniquePlotMap.put(uniqueId, uPlot);
@@ -616,5 +630,8 @@ public final class REpiceaClimateManager {
 		innerMap4.put(realization, mean);
 	}
 
+	public static void main(String[] args) {
+		System.out.println(Double.NaN > 0d);
+	}
 	
 }
