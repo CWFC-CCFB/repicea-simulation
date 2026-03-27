@@ -152,8 +152,10 @@ public class GeographicDistanceCalculator {
 		if (diffX > radiusKm) {
 			return Double.NaN;
 		} 
-		double distance = Math.sqrt(diffY * diffY + diffX * diffX);
-		return distance <= radiusKm ? distance : Double.NaN;
+		double rightHandside = diffY * diffY + diffX * diffX;
+		return rightHandside > radiusKm * radiusKm ? 
+				Double.NaN :
+					Math.sqrt(rightHandside);
 	}
 
 	
