@@ -20,9 +20,16 @@
 package repicea.simulation.io;
 
 import repicea.io.tools.LevelProviderEnum;
+import repicea.serial.SerializerChangeMonitor;
 
 public class FieldUtilities {
 
+	static {
+		SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.io.FieldUtilities$FieldID", "SLOPE_CLASS", "SLOPE");
+		SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.io.FieldUtilities$FieldID", "CRUISE_LINE", "CLUSTER");
+	}
+	
+	
 	public enum Level {
 		stratumLevel,
 		plotLevel, 
@@ -35,7 +42,7 @@ public class FieldUtilities {
 		PLOT(Level.plotLevel),
 		PLOT_AREA(Level.plotLevel),
 		PLOT_MEASUREMENTID(Level.plotLevel),
-		CRUISE_LINE(Level.plotLevel),
+		CLUSTER(Level.plotLevel),
 		
 		LATITUDE(Level.plotLevel),
 		LONGITUDE(Level.plotLevel),
@@ -44,7 +51,7 @@ public class FieldUtilities {
 		ECOREGION(Level.plotLevel),
 		TYPEECO(Level.plotLevel),
 		DRAINAGE_CLASS(Level.plotLevel),
-		SLOPE_CLASS(Level.plotLevel),
+		SLOPE(Level.plotLevel),
 		LAND_USE(Level.plotLevel),
 		
 		ORIGIN(Level.plotLevel),
