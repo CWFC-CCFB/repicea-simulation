@@ -29,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import repicea.math.Matrix;
 import repicea.math.SymmetricMatrix;
 import repicea.simulation.REpiceaPredictorEvent.ModelBasedSimulatorEventProperty;
+import repicea.simulation.covariateproviders.plotlevel.ClusterIdProvider;
 import repicea.stats.distributions.GaussianErrorTerm;
 import repicea.stats.distributions.GaussianErrorTermList;
 import repicea.stats.distributions.GaussianErrorTermList.IndexableErrorTerm;
@@ -63,28 +64,51 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 			subjectID = getSubjectID(stand, date);
 		}
 		
-		
 		@Override
-		public String getSubjectId() {
-			return subjectID;
-		}
+		public String getSubjectId() {return subjectID;}
 
 		@Override
-		public HierarchicalLevel getHierarchicalLevel() {
-			return HierarchicalLevel.INTERVAL_NESTED_IN_PLOT;
-		}
-
+		public HierarchicalLevel getHierarchicalLevel() {return HierarchicalLevel.INTERVAL_NESTED_IN_PLOT;}
 
 		@Override
-		public int getMonteCarloRealizationId() {
-			return monteCarloRealizationID;
-		}
+		public int getMonteCarloRealizationId() {return monteCarloRealizationID;}
 		
 		private static String getSubjectID(MonteCarloSimulationCompliantObject stand, int date) {
 			return stand.getSubjectId() + "_" + date;
 		}
 	}
 
+	
+	
+	/**
+	 * This class creates a fake subject for interval random effects nested in the clusters. 
+	 * @author Mathieu Fortin - April 2026
+	 */
+	protected static class IntervalNestedInClusterDefinition implements MonteCarloSimulationCompliantObject, Serializable {
+
+		private final int monteCarloRealizationID;
+		private final String subjectID;
+		
+		protected IntervalNestedInClusterDefinition(ClusterIdProvider plot, int date) {
+			monteCarloRealizationID = ((MonteCarloSimulationCompliantObject) plot).getMonteCarloRealizationId();
+			subjectID = getSubjectID(plot, date);
+		}
+		
+		@Override
+		public String getSubjectId() {return subjectID;}
+
+		@Override
+		public HierarchicalLevel getHierarchicalLevel() {return HierarchicalLevel.INTERVAL_NESTED_IN_CLUSTER;}
+
+		@Override
+		public int getMonteCarloRealizationId() {return monteCarloRealizationID;}
+		
+		private static String getSubjectID(ClusterIdProvider stand, int date) {
+			return stand.getClusterId() + "_" + date;
+		}
+	}
+
+	
 	/**
 	 * This class creates a fake subject for cruise line random effects.
 	 * @author Mathieu Fortin - April 2017
@@ -114,10 +138,9 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 	
 	protected final CopyOnWriteArrayList<REpiceaPredictorListener> listeners;
 	
-//	private boolean areBlupsEstimated;
-	
 	private final Map<String, CruiseLine> cruiseLineMap;
-	private final Map<String, IntervalNestedInPlotDefinition> intervalLists;
+	private final Map<String, IntervalNestedInPlotDefinition> intervalNestedInPlotsList;
+	private final Map<String, IntervalNestedInClusterDefinition> intervalNestedInClustersList;
 
 
 	// set by the constructor
@@ -134,8 +157,6 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 
 	private final Map<Enum<?>, GaussianErrorTermEstimate> defaultResidualError;
 	final Map<String, GaussianErrorTermList> simulatedResidualError;		// refers to the subject + realization ids
-	
-//	protected REpiceaRandom random = new REpiceaRandom();
 	
 	
 	/**
@@ -158,7 +179,8 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 		simulatedRandomEffects = new HashMap<String, Map<String, Matrix>>();
 		simulatedResidualError = new HashMap<String, GaussianErrorTermList>();
 		
-		intervalLists = new HashMap<String, IntervalNestedInPlotDefinition>();
+		intervalNestedInPlotsList = new HashMap<String, IntervalNestedInPlotDefinition>();
+		intervalNestedInClustersList = new HashMap<String, IntervalNestedInClusterDefinition>();
 		cruiseLineMap = new HashMap<String, CruiseLine>();
 
 		defaultResidualError = new HashMap<Enum<?>, GaussianErrorTermEstimate>();
@@ -178,16 +200,10 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 
 	@Override
 	protected void setParameterEstimates(ModelParameterEstimates gaussianEstimate) {
-//		super.setParameterEstimates(new ModelParameterEstimates(gaussianEstimate, this));
 		super.setParameterEstimates(gaussianEstimate);
 		fireModelBasedSimulatorEvent(new REpiceaPredictorEvent(ModelBasedSimulatorEventProperty.DEFAULT_BETA_JUST_SET, null, getParameterEstimates(), this));
 	}
 	
-//	@Override
-//	protected ModelParameterEstimates getParameterEstimates() {
-//		return (ModelParameterEstimates) super.getParameterEstimates();
-//	}
-
 	protected void setDefaultRandomEffects(HierarchicalLevel level, Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution> newEstimate) {
 		Estimate<Matrix, SymmetricMatrix, ? extends StandardGaussianDistribution> formerEstimate = defaultRandomEffects.get(level.getName());
 		defaultRandomEffects.put(level.getName(), newEstimate);
@@ -205,33 +221,46 @@ public abstract class REpiceaPredictor extends SensitivityAnalysisParameter<Mode
 		return defaultResidualError.get(enumVar);
 	}
 	
-	
-//	/**
-//	 * This method generates a stand-specific vector of model parameters using matrix Omega.
-//	 * @param subject a MonteCarloSimulationCompliantObject object
-//	 */
-//	private void setSpecificParametersDeviateForThisRealization(MonteCarloSimulationCompliantObject subject) {
-////		getParameterEstimates().simulateBlups(subject);
-//	}
 
 	/**
-	 * This method checks if the interval definition is available for the stand at that date. If it is, it returns the
+	 * Check if the interval definition is available for the stand at that date. If it is, it returns the
 	 * instance. Otherwise, it creates a new interval definition.
-	 * @param stand A MonteCarloSimulationCompliantObject that designates the stand
+	 * @param plot MonteCarloSimulationCompliantObject representing the plot
 	 * @param date an Integer
-	 * @return an IntervalDefinition instance
+	 * @return an IntervalNestedInPlotDefinition instance
 	 */
-	protected synchronized IntervalNestedInPlotDefinition getIntervalNestedInPlotDefinition(MonteCarloSimulationCompliantObject stand, int date) {
-		String subjectID = IntervalNestedInPlotDefinition.getSubjectID(stand, date);
-		String intervalID = getSubjectPlusMonteCarloSpecificId(subjectID, stand.getMonteCarloRealizationId());
-		IntervalNestedInPlotDefinition intDef = intervalLists.get(intervalID);
+	protected synchronized IntervalNestedInPlotDefinition getIntervalNestedInPlotDefinition(MonteCarloSimulationCompliantObject plot, int date) {
+		String subjectID = IntervalNestedInPlotDefinition.getSubjectID(plot, date);
+		String intervalID = getSubjectPlusMonteCarloSpecificId(subjectID, plot.getMonteCarloRealizationId());
+		IntervalNestedInPlotDefinition intDef = intervalNestedInPlotsList.get(intervalID);
 		if (intDef == null) {
-			intDef = new IntervalNestedInPlotDefinition(stand, date);
-			intervalLists.put(getSubjectPlusMonteCarloSpecificId(intDef), intDef);
+			intDef = new IntervalNestedInPlotDefinition(plot, date);
+			intervalNestedInPlotsList.put(getSubjectPlusMonteCarloSpecificId(intDef), intDef);
 		}
 		return intDef;
 	}
 
+	
+	/**
+	 * Check if the interval definition is available for the stand at that date. If it is, it returns the
+	 * instance. Otherwise, it creates a new interval definition.
+	 * @param plot A MonteCarloSimulationCompliantObject representing the plot
+	 * @param date an Integer
+	 * @return an IntervalNestedInClusterDefinition instance
+	 */
+	protected synchronized IntervalNestedInClusterDefinition getIntervalNestedInClusterDefinition(ClusterIdProvider plot, int date) {
+		String subjectID = IntervalNestedInClusterDefinition.getSubjectID(plot, date);
+		String intervalID = getSubjectPlusMonteCarloSpecificId(subjectID, ((MonteCarloSimulationCompliantObject) plot).getMonteCarloRealizationId());
+		IntervalNestedInClusterDefinition intDef = intervalNestedInClustersList.get(intervalID);
+		if (intDef == null) {
+			intDef = new IntervalNestedInClusterDefinition(plot, date);
+			intervalNestedInClustersList.put(getSubjectPlusMonteCarloSpecificId(intDef), intDef);
+		}
+		return intDef;
+	}
+
+	
+	
 	/**
 	 * This method checks if a cruise line exists for this plot
 	 * @param cruiseLineID the id of the cruise line

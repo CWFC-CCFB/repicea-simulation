@@ -20,16 +20,9 @@
 package repicea.simulation.io;
 
 import repicea.io.tools.LevelProviderEnum;
-import repicea.serial.SerializerChangeMonitor;
 
 public class FieldUtilities {
 
-	static {
-		SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.io.FieldUtilities$FieldID", "SLOPE_CLASS", "SLOPE");
-		SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.io.FieldUtilities$FieldID", "CRUISE_LINE", "CLUSTER");
-	}
-	
-	
 	public enum Level {
 		stratumLevel,
 		plotLevel, 

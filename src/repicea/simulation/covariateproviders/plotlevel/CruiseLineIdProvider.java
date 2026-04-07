@@ -23,7 +23,7 @@ package repicea.simulation.covariateproviders.plotlevel;
  * @author Mathieu Fortin - June 2017
  *
  */
-public interface CruiseLineProvider {
+public interface CruiseLineIdProvider {
 
 	/**
 	 * This method returns the cruise line ID.  

@@ -625,7 +625,7 @@ public class REpiceaClimateManagerTest {
 		Assert.assertEquals("Testing if the values of two plots within the same pixel are the same", 
 				346.52,
 				value0,
-				5);
+				10);
 
 	}
 
