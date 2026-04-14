@@ -56,8 +56,6 @@ public final class REpiceaClimateManager {
 	private static final String YEAR_DATE_FIELDNAME = "Year";
 	private static final String MONTH_DATE_FIELDNAME = "Month";
 
-	private static final List<String> ModelsWithMissingInitialYear = Arrays.asList(new String[] {BioSimModel.Climate_Mosture_Index_Annual.modelName});
-	
 	@SuppressWarnings("serial")
 	static class UniqueBioSimPlot implements BioSimPlot {
 
@@ -95,6 +93,7 @@ public final class REpiceaClimateManager {
 	
 	private static final HashMap<RepresentativeConcentrationPathway, RCP> RCPLookupMap = new HashMap<RepresentativeConcentrationPathway, RCP>(); 
 	static {
+		RCPLookupMap.put(RepresentativeConcentrationPathway.NO_CHANGE, RCP.CONSTANT_CLIMATE);
 		RCPLookupMap.put(RepresentativeConcentrationPathway.RCP4_5, RCP.RCP45);
 		RCPLookupMap.put(RepresentativeConcentrationPathway.RCP8_5, RCP.RCP85);
 	}
@@ -311,28 +310,6 @@ public final class REpiceaClimateManager {
 		return from;
 	}
 	
-	private static void trimBioSimDataSet(BioSimDataSet ds, int minimumDateYr) {
-		List<Observation> observationToBeRemoved = new ArrayList<Observation>();
-		int indexYearField = ds.getFieldNames().indexOf(YEAR_DATE_FIELDNAME);
-		List<Object> yearDates = ds.getFieldValues(indexYearField);
-		int firstDateToBeConsidered = yearDates.indexOf(minimumDateYr);
-		if (firstDateToBeConsidered == -1) {
-			throw new UnsupportedOperationException("The date " + minimumDateYr + " cannot be found in the BioSimDataSet instance!");
-		}
-		for (int i = 0; i < firstDateToBeConsidered; i++) {
-			observationToBeRemoved.add(ds.getObservations().get(i));
-		}
-		ds.getObservations().removeAll(observationToBeRemoved);
-	}
-	
-	private static boolean isThereAtLeastOneModelWithMissingInitialYear(List<String> models) {
-		for (String modelName : models) {
-			if (ModelsWithMissingInitialYear.contains(modelName)) {
-				return true;
-			}
-		}
-		return false;
-	}
 	
 	/**
 	 * Produce and store the climate variables. <p>
@@ -360,10 +337,9 @@ public final class REpiceaClimateManager {
 		} else {
 			boolean isBeyondLastDailyDateYr = fromYr >= lastBioSIMCompleteObservedDailyDateYr; 
 			List<String> modelList = new ArrayList<String>(annualOrMonthlyModels.keySet());
-			boolean oneOfTheModelsIsNotProducingFirstYear = isThereAtLeastOneModelWithMissingInitialYear(modelList);
 			List<BioSimParameterMap> parmsMap = getParameterMap();
 			LinkedHashMap<String, Object> result = BioSimClient.generateWeather(
-					oneOfTheModelsIsNotProducingFirstYear ? fromYr : fromYr + 1, // should be fromYr alone because the first year is omitted in the CMI 
+					fromYr + 1,
 					toYr, 
 					uniquePlotList, 
 					RCPLookupMap.get(rcp), 
@@ -389,7 +365,6 @@ public final class REpiceaClimateManager {
 						BioSimDataSet dataSetForThisRealization = isBeyondLastDailyDateYr ? 
 								getSubDataSet(dataSet, i) :
 									dataSet.clone();
-						trimBioSimDataSet(dataSetForThisRealization, fromYr + 1);	// to remove the extra initial year if it was produced (that would be the case if the annual CMI is part of the model list
 						if (!innerInnerMap.containsKey(i)) {
 							innerInnerMap.put(i, dataSetForThisRealization);
 						} else {
@@ -630,8 +605,4 @@ public final class REpiceaClimateManager {
 		innerMap4.put(realization, mean);
 	}
 
-	public static void main(String[] args) {
-		System.out.println(Double.NaN > 0d);
-	}
-	
 }
