@@ -234,7 +234,8 @@ public abstract class TreeLogger<Parameter extends TreeLoggerParameters<? extend
 	
 	/**
 	 * This method sets the parameters in script mode.
-	 * @param params a TreeLoggerParameters instance
+	 * @param params a TreeLoggerParameters instance. If null, then the
+	 * the TreeLogger instance uses the default parameters.
 	 */
 	public void setTreeLoggerParameters(Parameter params) {
 		if (params != null) {
@@ -242,7 +243,8 @@ public abstract class TreeLogger<Parameter extends TreeLoggerParameters<? extend
 				throw new InvalidParameterException("The treelogger parameters are incorrect. Please check.");
 			}
 			this.params = params;
-			params.treeLogger = this;
+		} else {
+			this.params = createDefaultTreeLoggerParameters();
 		}
 	}
 	
