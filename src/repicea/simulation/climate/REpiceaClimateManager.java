@@ -338,15 +338,32 @@ public final class REpiceaClimateManager {
 			boolean isBeyondLastDailyDateYr = fromYr >= lastBioSIMCompleteObservedDailyDateYr; 
 			List<String> modelList = new ArrayList<String>(annualOrMonthlyModels.keySet());
 			List<BioSimParameterMap> parmsMap = getParameterMap();
-			LinkedHashMap<String, Object> result = BioSimClient.generateWeather(
-					fromYr + 1,
-					toYr, 
-					uniquePlotList, 
-					RCPLookupMap.get(rcp), 
-					climModel, 
-					modelList, 
-					isBeyondLastDailyDateYr ? nbRealizations : 1, 
-					parmsMap);
+			int nbAttempts = 0;
+			LinkedHashMap<String, Object> result = null;
+			boolean isResultValid;
+			do {
+				result = BioSimClient.generateWeather(
+						fromYr + 1,
+						toYr, 
+						uniquePlotList, 
+						RCPLookupMap.get(rcp), 
+						climModel, 
+						modelList, 
+						isBeyondLastDailyDateYr ? nbRealizations : 1, 
+								parmsMap);
+				nbAttempts++;
+				isResultValid = true;
+				for (Object o : result.values()) {
+					if (!(o instanceof LinkedHashMap)) {
+						isResultValid = false;
+						break;
+					}
+				}
+				if (!isResultValid && nbAttempts < 3) {
+					System.out.println("Something went wrong with climate generation!" + System.lineSeparator() + 
+							"This might be due to the internet connection. Will try once more...");
+				}
+			} while (!isResultValid && nbAttempts < 3);
 //			System.out.println("BioSIM request took " + BioSimClient.getLastServerRequestDuration() + " sec.");
 			for (String modelName : result.keySet()) {
 				BioSimModel model = annualOrMonthlyModels.get(modelName);
