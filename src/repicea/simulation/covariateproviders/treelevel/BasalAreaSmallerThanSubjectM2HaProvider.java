@@ -1,7 +1,8 @@
 /*
- * This file is part of the repicea library.
+ * This file is part of the repicea-simulation library.
  *
- * Copyright (C) 2009-2012 Mathieu Fortin for Rouge-Epicea
+ * Copyright (C) 2026 His Majesty the King in right of Canada
+ * Author: Mathieu Fortin, Canadian Forest Service
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,15 +21,17 @@ package repicea.simulation.covariateproviders.treelevel;
 
 /**
  * This interface ensures the tree instance can provide the basal
- * area of the trees with larger diameter than its own dbh.
- * @author Mathieu Fortin - November 2012
+ * area of the trees with smaller diameter than its own dbh.
+ * @author Mathieu Fortin - May 2026
  */
-public interface BasalAreaLargerThanSubjectM2Provider {
+public interface BasalAreaSmallerThanSubjectM2HaProvider {
 
 	/**
-	 * This method returns the basal area of all the trees with dbh larger than this tree instance.
+	 * This method returns the basal area of all the trees with dbh smaller than this tree instance.<p>
+	 * A typical implementation is plot basal area (m2/ha) minus basal area of larger trees (m2/ha) 
+	 * minus tree basal area (m2/ha).
 	 * @return basal area in m2/ha
 	 */
-	public double getBasalAreaLargerThanSubjectM2Ha();
+	public double getBasalAreaSmallerThanSubjectM2Ha();
 
 }
