@@ -27,9 +27,7 @@ import java.util.Map;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import biosimclient.BioSimClientException;
 import biosimclient.BioSimPlot;
-import biosimclient.BioSimServerException;
 import repicea.serial.xml.XmlDeserializer;
 import repicea.serial.xml.XmlSerializer;
 import repicea.simulation.climate.REpiceaClimateGenerator.RepresentativeConcentrationPathway;
@@ -121,7 +119,7 @@ public class Incubator {
 	 */
 	@Ignore
 	@Test
-	public void test01ClimateManagementPerformance() throws BioSimClientException, BioSimServerException {
+	public void test01ClimateManagementPerformance() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new ExtendedPlot5("01", 46.10, -75, 120));
 		int nbRealizations = 100;

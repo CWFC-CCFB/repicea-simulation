@@ -319,7 +319,7 @@ public final class REpiceaClimateManager {
 	 * @throws BioSimServerException if an error occurs while using BioSIM WebAPI
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	void produceClimateVariables(final int toYr) throws BioSimClientException, BioSimServerException {
+	void produceClimateVariables(final int toYr) throws Exception {
 		if (toYr <= lastDateYrInDataset) {	// we are up to date
 			return;
 		}
@@ -371,7 +371,11 @@ public final class REpiceaClimateManager {
 					annualOrMonthlyValueMap.put(model, new HashMap<BioSimPlot, Map<Integer, BioSimDataSet>>());
 				}
 				Map<BioSimPlot, Map<Integer, BioSimDataSet>> innerMap = annualOrMonthlyValueMap.get(model);
-				LinkedHashMap<BioSimPlot, BioSimDataSet> innerResultMap = (LinkedHashMap) result.get(modelName);
+				Object resultForThisModel = result.get(modelName);
+				if (resultForThisModel instanceof Exception) {
+					throw (Exception) resultForThisModel;
+				}
+				LinkedHashMap<BioSimPlot, BioSimDataSet> innerResultMap = (LinkedHashMap) resultForThisModel;
 				for (BioSimPlot p : innerResultMap.keySet()) {
 					if (!innerMap.containsKey(p)) {
 						innerMap.put(p, new HashMap<Integer, BioSimDataSet>());
@@ -463,14 +467,13 @@ public final class REpiceaClimateManager {
 	 * @param plotId the plot id
 	 * @param info an REpiceaClimateVariableInformation instance 
 	 * @return the value of the climate variable (double)
-	 * @throws BioSimClientException if an error occurs on the client side while using BioSIM WebAPI 
-	 * @throws BioSimServerException if an error occurs on the server side while using BioSIM WebAPI
+	 * @throws Exception if an error occurs on the client or server side while using BioSIM WebAPI 
 	 */
 	public synchronized double getValue(int fromYr, 
 			int toYr, 
 			int realization, 
 			String plotId,
-			REpiceaClimateVariableInformation info) throws BioSimClientException, BioSimServerException {
+			REpiceaClimateVariableInformation info) throws Exception {
 		produceClimateVariables(toYr);
 		BioSimPlot p = plotMap.get(plotId);
 		if (isFixedNormalsModel(info.model)) {

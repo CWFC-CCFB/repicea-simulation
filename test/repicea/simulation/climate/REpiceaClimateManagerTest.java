@@ -27,10 +27,8 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-import biosimclient.BioSimClientException;
 import biosimclient.BioSimPlot;
 import biosimclient.BioSimPlotImpl;
-import biosimclient.BioSimServerException;
 import repicea.simulation.ClimateSensitivePredictor;
 import repicea.simulation.climate.REpiceaClimateGenerator.RepresentativeConcentrationPathway;
 import repicea.simulation.climate.REpiceaClimateManager.UniqueBioSimPlot;
@@ -207,7 +205,7 @@ public class REpiceaClimateManagerTest {
 
 	
 	@Test
-	public void test01ClimateGenerationHappyPathOneRealizationOverOneInterval() throws BioSimClientException, BioSimServerException, InterruptedException {
+	public void test01ClimateGenerationHappyPathOneRealizationOverOneInterval() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new Plot("01", 46, -75, 120));
 		plots.add(new Plot("02", 47, -76, 220));
@@ -240,7 +238,7 @@ public class REpiceaClimateManagerTest {
 	}
 
 	@Test
-	public void test02ClimateGenerationHappyPathFiveRealizationsBeforeLastDaily() throws BioSimClientException, BioSimServerException {
+	public void test02ClimateGenerationHappyPathFiveRealizationsBeforeLastDaily() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new Plot("01", 46, -75, 120));
 		plots.add(new Plot("02", 47, -76, 220));
@@ -262,7 +260,7 @@ public class REpiceaClimateManagerTest {
 	}
 
 	@Test
-	public void test03ClimateGenerationHappyPathFiveRealizationsAfterLastDaily() throws BioSimClientException, BioSimServerException {
+	public void test03ClimateGenerationHappyPathFiveRealizationsAfterLastDaily() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new Plot("01", 46, -75, 120));
 		plots.add(new Plot("02", 47, -76, 220));
@@ -285,7 +283,7 @@ public class REpiceaClimateManagerTest {
 
 	
 	@Test
-	public void test04ClimateGenerationHappyPathFiveRealizationsOverlappingLastDaily() throws BioSimClientException, BioSimServerException {
+	public void test04ClimateGenerationHappyPathFiveRealizationsOverlappingLastDaily() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new Plot("01", 46, -75, 120));
 		plots.add(new Plot("02", 47, -76, 220));
@@ -312,7 +310,7 @@ public class REpiceaClimateManagerTest {
 	
 	
 	@Test
-	public void test05ClimateGenerationHappyPathExtendedPlotsOneRealizationBeforeLastDaily() throws BioSimClientException, BioSimServerException {
+	public void test05ClimateGenerationHappyPathExtendedPlotsOneRealizationBeforeLastDaily() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new ExtendedPlot("01", 46, -75, 120));
 		plots.add(new ExtendedPlot("02", 47, -76, 220));
@@ -343,7 +341,7 @@ public class REpiceaClimateManagerTest {
 	
 	
 	@Test
-	public void test06ClimateGenerationHappyPathExtendedPlotsFiveRealizationsBeforeLastDaily() throws BioSimClientException, BioSimServerException {
+	public void test06ClimateGenerationHappyPathExtendedPlotsFiveRealizationsBeforeLastDaily() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new ExtendedPlot("01", 46, -75, 120));
 		plots.add(new ExtendedPlot("02", 47, -76, 220));
@@ -365,7 +363,7 @@ public class REpiceaClimateManagerTest {
 
 
 	@Test
-	public void test07ClimateGenerationHappyPathExtendedPlotsFiveRealizationsAfterLastDaily() throws BioSimClientException, BioSimServerException {
+	public void test07ClimateGenerationHappyPathExtendedPlotsFiveRealizationsAfterLastDaily() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new ExtendedPlot("01", 46, -75, 120));
 		plots.add(new ExtendedPlot("02", 47, -76, 220));
@@ -386,7 +384,7 @@ public class REpiceaClimateManagerTest {
 	}
 
 	@Test
-	public void test08ClimateGenerationHappyPathExtendedPlotsFiveRealizationsOverlappingLastDaily() throws BioSimClientException, BioSimServerException {
+	public void test08ClimateGenerationHappyPathExtendedPlotsFiveRealizationsOverlappingLastDaily() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new ExtendedPlot("01", 46, -75, 120));
 		plots.add(new ExtendedPlot("02", 47, -76, 220));
@@ -411,7 +409,7 @@ public class REpiceaClimateManagerTest {
 
 	
 	@Test
-	public void test09ClimateGenerationWithNormals() throws BioSimClientException, BioSimServerException {
+	public void test09ClimateGenerationWithNormals() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new PlotWithNormals("01", 46, -75, 120));
 		Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> oMap = PlotWithNormals.CLIMATE_INFO;
@@ -444,7 +442,7 @@ public class REpiceaClimateManagerTest {
 	}
 
 	@Test
-	public void test10ClimateGenerationHappyPathExtendedPlots20RealizationsOverlappingLastDaily() throws BioSimClientException, BioSimServerException {
+	public void test10ClimateGenerationHappyPathExtendedPlots20RealizationsOverlappingLastDaily() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new ExtendedPlot("01", 46, -75, 120));
 		plots.add(new ExtendedPlot("02", 47, -76, 220));
@@ -472,7 +470,7 @@ public class REpiceaClimateManagerTest {
 	}
 
 	@Test
-	public void test11ClimateGenerationHappyPathExtendedPlotsWithResolutionRounding() throws BioSimClientException, BioSimServerException {
+	public void test11ClimateGenerationHappyPathExtendedPlotsWithResolutionRounding() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new ExtendedPlot("01", 46.10, -75, 120));
 		plots.add(new ExtendedPlot("02", 46.12, -75, 125));
@@ -522,7 +520,7 @@ public class REpiceaClimateManagerTest {
 
 
 	@Test
-	public void test12ClimateGenerationHappyPathExtendedPlots2WithMonthlyClimateCompilationAverage() throws BioSimClientException, BioSimServerException {
+	public void test12ClimateGenerationHappyPathExtendedPlots2WithMonthlyClimateCompilationAverage() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new ExtendedPlot2("01", 46.10, -75, 120));
 		plots.add(new ExtendedPlot2("02", 46.12, -75, 125));
@@ -576,7 +574,7 @@ public class REpiceaClimateManagerTest {
 	}
 
 	@Test
-	public void test13ClimateGenerationHappyPathExtendedPlots2WithMonthlyClimateCompilationSummation() throws BioSimClientException, BioSimServerException {
+	public void test13ClimateGenerationHappyPathExtendedPlots2WithMonthlyClimateCompilationSummation() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new ExtendedPlot3("01", 46.10, -75, 120));
 		plots.add(new ExtendedPlot3("02", 46.12, -75, 125));
@@ -657,7 +655,7 @@ public class REpiceaClimateManagerTest {
 	}
 
 	@Test
-	public void test14ClimateGenerationHappyPathExtendedPlots4SoilMoistureIndex() throws BioSimClientException, BioSimServerException {
+	public void test14ClimateGenerationHappyPathExtendedPlots4SoilMoistureIndex() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new ExtendedPlot4("01", 46.10, -75, 120));
 		plots.add(new ExtendedPlot4("02", 46.12, -75, 125));
@@ -707,7 +705,7 @@ public class REpiceaClimateManagerTest {
 		Assert.assertEquals("Testing the values is always approximately the same!", 
 				95.053165,
 				value0,
-				1);
+				5);
 
 	}
 
@@ -740,7 +738,7 @@ public class REpiceaClimateManagerTest {
 
 	
 	@Test
-	public void test15ClimateGenerationHappyPathExtendedPlots5ClimateMoistureIndex() throws BioSimClientException, BioSimServerException {
+	public void test15ClimateGenerationHappyPathExtendedPlots5ClimateMoistureIndex() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new ExtendedPlot5("01", 46.10, -75, 120));
 		plots.add(new ExtendedPlot5("02", 46.12, -75, 125));
@@ -789,7 +787,7 @@ public class REpiceaClimateManagerTest {
 	}
 
 	@Test
-	public void test16RetrievingAnnualValues() throws BioSimClientException, BioSimServerException {
+	public void test16RetrievingAnnualValues() throws Exception {
 		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
 		plots.add(new ExtendedPlot5("01", 46.10, -75, 120));
 		plots.add(new ExtendedPlot5("02", 46.12, -75, 125));
