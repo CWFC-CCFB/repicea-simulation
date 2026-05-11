@@ -342,15 +342,15 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.570, null)),
 		
-		Fraxinus_pensylvanica(SpeciesType.BroadleavedSpecies, "Red ash", "Fr\u00EAne de Pensylvanie", 
-				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.530, 0.16),
-				new LocaleEntry(SpeciesLocale.Ontario, null, null),
-				new LocaleEntry(SpeciesLocale.Quebec, 0.486, null)),
-		
 		Fraxinus_nigra(SpeciesType.BroadleavedSpecies, "Black ash", "Fr\u00EAne noir", 
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.450, 0.16),
 				new LocaleEntry(SpeciesLocale.Ontario, null, null),
 				new LocaleEntry(SpeciesLocale.Quebec, 0.468, null)),
+		
+		Fraxinus_pennsylvanica(SpeciesType.BroadleavedSpecies, "Red ash", "Fr\u00EAne de Pensylvanie", 
+				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.530, 0.16),
+				new LocaleEntry(SpeciesLocale.Ontario, null, null),
+				new LocaleEntry(SpeciesLocale.Quebec, 0.486, null)),
 
 		Juglans_spp(SpeciesType.BroadleavedSpecies, "Wallnut", "Noyer", 
 				new LocaleEntry(SpeciesLocale.IPCC, 0.53, 0.150), 		// this one is from IPCC guidelines 2003
