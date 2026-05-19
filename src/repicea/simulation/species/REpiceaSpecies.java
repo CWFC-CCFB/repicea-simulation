@@ -92,7 +92,8 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Carya_ovata_QC","Carya_ovata");
 			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Fagus_grandifolia_QC","Fagus_grandifolia");
 			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Fraxinus_americana_QC","Fraxinus_americana");
-			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Fraxinus_pensylvanica_QC","Fraxinus_pensylvanica");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Fraxinus_pensylvanica_QC","Fraxinus_pennsylvanica");
+			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Fraxinus_pensylvanica","Fraxinus_pennsylvanica");
 			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Fraxinus_nigra_QC","Fraxinus_nigra"); 
 			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Juglans_cinerea_QC","Juglans_cinerea");
 			SerializerChangeMonitor.registerEnumNameChange("repicea.simulation.species.REpiceaSpecies$Species", "Juglans_nigra_QC","Juglans_nigra");
