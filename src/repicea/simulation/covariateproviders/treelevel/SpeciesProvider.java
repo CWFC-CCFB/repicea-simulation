@@ -29,10 +29,10 @@ public interface SpeciesProvider {
 	/**
 	 * Provide the species of this tree. <p>
 	 * The argument caller allows for different implementation depending on who is calling.
-	 * @param caller the instance that needs the tree species. 
+	 * @param caller the class of the instance who needs the tree species. 
 	 * @return a Species enum
 	 */
-	public Species getSpecies(Object caller);
+	public Species getSpecies(Class<?> caller);
 
 	
 	
