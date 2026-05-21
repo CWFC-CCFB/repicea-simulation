@@ -27,18 +27,9 @@ import repicea.simulation.species.REpiceaSpecies.Species;
 public interface SpeciesProvider {
 
 	/**
-	 * Provide the species of this tree.
-	 * @return a Species enum
-	 */
-	public default Species getSpecies() {
-		return getSpecies(null);
-	}
-	
-	/**
 	 * Provide the species of this tree. <p>
 	 * The argument caller allows for different implementation depending on who is calling.
-	 * @param caller the instance that needs the tree species. Can be null. In that case, it should
-	 * be the default implementation.
+	 * @param caller the instance that needs the tree species. 
 	 * @return a Species enum
 	 */
 	public Species getSpecies(Object caller);
