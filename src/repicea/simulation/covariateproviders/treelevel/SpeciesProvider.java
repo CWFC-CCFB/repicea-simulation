@@ -19,6 +19,7 @@
 package repicea.simulation.covariateproviders.treelevel;
 
 import repicea.simulation.species.REpiceaSpecies.Species;
+import repicea.simulation.species.REpiceaSpeciesCompliantObject;
 
 /**
  * This interface ensures the tree can provide its own species name.
@@ -29,10 +30,10 @@ public interface SpeciesProvider {
 	/**
 	 * Provide the species of this tree. <p>
 	 * The argument caller allows for different implementation depending on who is calling.
-	 * @param caller the class of the instance who needs the tree species. 
+	 * @param caller an REpiceaSpeciesCompliantObject instance, namely the object that needs the tree species. 
 	 * @return a Species enum
 	 */
-	public Species getSpecies(Class<?> caller);
+	public Species getSpecies(REpiceaSpeciesCompliantObject caller);
 
 	
 	
