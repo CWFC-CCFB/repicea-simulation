@@ -21,6 +21,7 @@
 package repicea.simulation.species;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import repicea.simulation.species.REpiceaSpecies.Species;
 import repicea.simulation.species.REpiceaSpecies.SpeciesLocale;
@@ -43,4 +44,50 @@ public interface REpiceaSpeciesCompliantObject {
 	 */
 	public SpeciesLocale getScope();
 	
+	/**
+	 * Provide the surrogate map for the predictor or tool.<p>
+	 * The surrogate map can be cleared and filled with specific
+	 * surrogates.
+	 * @return a ConcurrentHashMap instance
+	 */
+	public ConcurrentHashMap<Species, Species> getSurrogateMap();
+
+	/**
+	 * Reset the surrogate map to its default value.
+	 */
+	public void setSurrogateMapToDefaultValue();
+	
+	
+	/**
+	 * Convert the Species instance into an eligible species if possible.<p>
+	 * If the species is among the eligible species it is simply returned. If
+	 * the species isn't, then we use its surrogate and see if it is eligible or
+	 * in the surrogate map already. If it isn't, we then try with the surrogate of
+	 * the surrogate and so on.
+	 * @param sp a Species enum 
+	 * @return a Species enum
+	 * @throws UnsupportedOperationException if the species is not eligible and there are no
+	 * valid surrogates.
+	 */
+	public default Species convertToEligibleSpecies(Species sp) {
+		if (getEligibleSpecies().contains(sp)) {
+			return sp;
+		} else if (getSurrogateMap().containsKey(sp)) {
+			return getSurrogateMap().get(sp);
+		} else {
+			Species tmpSp = REpiceaSpecies.getSurrogate(sp);
+			while (tmpSp != null) {
+				if (getEligibleSpecies().contains(tmpSp)) {
+					getSurrogateMap().put(sp, tmpSp);
+					return tmpSp;
+				} else if (getSurrogateMap().containsKey(tmpSp)) {
+					Species outputSp = getSurrogateMap().get(tmpSp);
+					getSurrogateMap().put(sp, outputSp);
+					return outputSp;
+				}
+				tmpSp = REpiceaSpecies.getSurrogate(tmpSp);
+			}
+			throw new UnsupportedOperationException("Species " + sp.getLatinName() + " and its surrogates are not eligible for this class " + getClass().getSimpleName());
+		}
+	}
 }

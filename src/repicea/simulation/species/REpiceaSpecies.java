@@ -757,4 +757,35 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 	public String getLatinName();
 	
 	
+	/**
+	 * A static method for automatically finding surrogate species.
+	 * @param species a Species enum
+	 * @return a Species enum or null if no surrogate can be found
+	 */
+	public static Species getSurrogate(Species species) {
+		if (species == Species.Other || species == Species.Broadleaved_shrubs) {
+			return null;
+		}
+		if (species == Species.Other_coniferous || species == Species.Other_broadleaved) {
+			return Species.Other;
+		}
+		
+		if (species.name().endsWith("spp")) {
+			return species.speciesType == SpeciesType.BroadleavedSpecies ?
+					Species.Other_broadleaved :
+						Species.Other_coniferous;
+		} else {
+			int indexSpace = species.name().indexOf("_");
+			if (indexSpace != -1) {
+				String genera = species.name().substring(0, indexSpace);
+				String completeString = genera + "_spp";
+				try {
+					return Species.valueOf(completeString);
+				} catch(IllegalArgumentException e) {}
+			} 
+			return species.speciesType == SpeciesType.BroadleavedSpecies ?
+						Species.Other_broadleaved :
+							Species.Other_coniferous;
+		}
+	}
 }

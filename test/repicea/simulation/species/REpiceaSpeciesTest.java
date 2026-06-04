@@ -129,6 +129,15 @@ public class REpiceaSpeciesTest {
 		}
 	}
 
+	@Test
+	public void test09Surrogates() {
+		for (Species sp : Species.values()) {
+			Species surrogate = REpiceaSpecies.getSurrogate(sp);
+			System.out.println("Original species is " + sp.getLatinName() + "; its surrogate is " + (surrogate == null ? "null" : surrogate.getLatinName()));
+		}
+	}
+	
+	
 	public static void main(String[] args) {
 		int nbBroadleaved = 0;
 		int nbConiferous = 0;
