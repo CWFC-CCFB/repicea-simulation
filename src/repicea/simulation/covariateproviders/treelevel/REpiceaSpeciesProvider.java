@@ -24,7 +24,7 @@ import repicea.simulation.species.REpiceaSpecies.Species;
  * This interface ensures the tree can provide its own species name.
  * @author Mathieu Fortin - March 2013
  */
-public interface SpeciesProvider {
+public interface REpiceaSpeciesProvider {
 
 //	/**
 //	 * Provide the species of this tree. <p>
@@ -39,7 +39,7 @@ public interface SpeciesProvider {
 	 * The argument caller allows for different implementation depending on who is calling.
 	 * @return a Species enum
 	 */
-	public Species getSpecies();
+	public Species getREpiceaSpecies();
 	
 	
 }
