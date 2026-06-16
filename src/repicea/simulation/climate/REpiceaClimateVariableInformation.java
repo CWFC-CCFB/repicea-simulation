@@ -31,6 +31,7 @@ import repicea.simulation.covariateproviders.plotlevel.climate.LowestAnnualTempe
 import repicea.simulation.covariateproviders.plotlevel.climate.MeanAnnualClimateMoistureIndexCmProvider;
 import repicea.simulation.covariateproviders.plotlevel.climate.MeanAnnualSoilMoistureIndexPercentProvider;
 import repicea.simulation.covariateproviders.plotlevel.climate.MeanAnnualTemperatureCelsiusProvider;
+import repicea.simulation.covariateproviders.plotlevel.climate.MeanJulyTemperatureCelsiusProvider;
 import repicea.simulation.covariateproviders.plotlevel.climate.MeanMaximumAnnualTemperatureCelsiusProvider;
 import repicea.simulation.covariateproviders.plotlevel.climate.MeanMaximumJulyTemperatureCelsiusProvider;
 import repicea.simulation.covariateproviders.plotlevel.climate.MeanMinimumAnnualTemperatureCelsiusProvider;
@@ -121,6 +122,8 @@ public class REpiceaClimateVariableInformation {
 		TotalAnnualPrecipitation(TotalAnnualPrecipitationMmProvider.class, BioSimModel.Climatic_Annual, "TotalPrcp"),
 		TotalAnnualRadiation(TotalAnnualRadiationMjM2Provider.class, BioSimModel.Climatic_Annual, "TotalRadiation"),
 		
+		MeanJulyTemperature(MeanJulyTemperatureCelsiusProvider.class, BioSimModel.Climatic_Monthly, "MeanTair", 
+				new Integer[] {7}, true),	
 		MeanMaximumJulyTemperature(MeanMaximumJulyTemperatureCelsiusProvider.class, BioSimModel.Climatic_Monthly, "MeanTmax", 
 				new Integer[] {7}, true),	
 		MeanMinimumJanuaryTemperature(MeanMinimumJanuaryTemperatureCelsiusProvider.class, BioSimModel.Climatic_Monthly, "MeanTmin", 
