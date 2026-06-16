@@ -172,7 +172,12 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		 * The other coniferous and other broadleaved groups were calculated
 		 * as the mean of the species in each species type.
 		 */
-		Quebec("Quebec", "Qu\u00E9bec", Canada);
+		Quebec("Quebec", "Qu\u00E9bec", Canada),
+		
+		/**
+		 * Alberta locale.
+		 */
+		Alberta("Alberta", "Alberta", Canada);
 
 		final SpeciesLocale nextLevel;
 		
