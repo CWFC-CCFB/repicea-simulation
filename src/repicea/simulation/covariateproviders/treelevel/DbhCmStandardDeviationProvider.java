@@ -18,16 +18,16 @@
  */
 package repicea.simulation.covariateproviders.treelevel;
 
-/**
- * This interface ensures that the tree instance can provide the standard deviation of its dbh. 
- * This interface is useful if the tree instance represents many trees.
- * @author Mathieu Fortin - October 2018
- */
-public interface DbhCmStandardDeviationProvider {
-
-	/**
-	 * This method returns the standard deviation of the DBH (cm)
-	 * @return a double
-	 */
-	public double getDbhCmStandardDeviation();
-}
+///**
+// * This interface ensures that the tree instance can provide the standard deviation of its dbh. 
+// * This interface is useful if the tree instance represents many trees.
+// * @author Mathieu Fortin - October 2018
+// */
+//public interface DbhCmStandardDeviationProvider {
+//
+//	/**
+//	 * This method returns the standard deviation of the DBH (cm)
+//	 * @return a double
+//	 */
+//	public double getDbhCmStandardDeviation();
+//}

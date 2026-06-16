@@ -23,13 +23,13 @@ package repicea.simulation.covariateproviders.treelevel;
  * of its own dbh + 1.
  * @author Mathieu Fortin - November 2012
  */
-public interface LnDbhCmPlus1Provider {
-
-	
-	/**
-	 * This method returns ln(dbh + 1) with the dbh in cm.
-	 * @return a double
-	 */
-	public double getLnDbhCmPlus1();
-
-}
+//public interface LnDbhCmPlus1Provider {
+//
+//	
+//	/**
+//	 * This method returns ln(dbh + 1) with the dbh in cm.
+//	 * @return a double
+//	 */
+//	public double getLnDbhCmPlus1();
+//
+//}

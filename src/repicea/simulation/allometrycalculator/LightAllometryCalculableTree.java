@@ -21,7 +21,6 @@ package repicea.simulation.allometrycalculator;
 import repicea.simulation.covariateproviders.treelevel.BasalAreaM2Provider;
 import repicea.simulation.covariateproviders.treelevel.DbhCmProvider;
 import repicea.simulation.covariateproviders.treelevel.ExpansionFactorProvider;
-import repicea.simulation.covariateproviders.treelevel.SquaredDbhCmProvider;
 
 /**
  * The LightAllometryCalculableTree interface implements the basic methods for calculating the number of stems per hectare,
@@ -29,8 +28,16 @@ import repicea.simulation.covariateproviders.treelevel.SquaredDbhCmProvider;
  * @author Mathieu Fortin - July 2014
  */
 public interface LightAllometryCalculableTree extends DbhCmProvider,
-														SquaredDbhCmProvider,
 														ExpansionFactorProvider,
 														BasalAreaM2Provider {
+
+	/**
+	 * This method returns the square of dbh. 
+	 * @return the square of dbh in cm2 (double)
+	 */
+	public default double getSquaredDbhCm() {
+		double dbhCm = getDbhCm();
+		return dbhCm * dbhCm;
+	}
 
 }

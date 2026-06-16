@@ -18,16 +18,16 @@
  */
 package repicea.simulation.covariateproviders.treelevel;
 
-/**
- * This interface ensures the tree instance can provide its squared dbh.
- * @author Mathieu Fortin - November 2012
- */
-public interface SquaredDbhCmProvider {
-
-	/**
-	 * This method returns the square of dbh. 
-	 * @return the square of dbh in cm2 (double)
-	 */
-	public double getSquaredDbhCm();
-
-}
+///**
+// * This interface ensures the tree instance can provide its squared dbh.
+// * @author Mathieu Fortin - November 2012
+// */
+//public interface SquaredDbhCmProvider {
+//
+//	/**
+//	 * This method returns the square of dbh. 
+//	 * @return the square of dbh in cm2 (double)
+//	 */
+//	public double getSquaredDbhCm();
+//
+//}

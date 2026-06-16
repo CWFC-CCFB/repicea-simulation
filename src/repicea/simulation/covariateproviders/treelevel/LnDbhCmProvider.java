@@ -18,17 +18,17 @@
  */
 package repicea.simulation.covariateproviders.treelevel;
 
-/**
- * This interface ensures the tree instance can provide the natural log
- * of its own dbh.
- * @author Mathieu Fortin - July 2013
- */
-public interface LnDbhCmProvider {
-
-	/**
-	 * This method returns ln(dbh) with the dbh in cm.
-	 * @return a double
-	 */
-	public double getLnDbhCm();
-
-}
+///**
+// * This interface ensures the tree instance can provide the natural log
+// * of its own dbh.
+// * @author Mathieu Fortin - July 2013
+// */
+//public interface LnDbhCmProvider {
+//
+//	/**
+//	 * This method returns ln(dbh) with the dbh in cm.
+//	 * @return a double
+//	 */
+//	public double getLnDbhCm();
+//
+//}
