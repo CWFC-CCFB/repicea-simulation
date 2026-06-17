@@ -17,7 +17,7 @@
  *
  * Please see the license at http://www.gnu.org/copyleft/lesser.html.
  */
-package repicea.simulation.climate;
+package repicea.simulation.climatemanagement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,16 +31,17 @@ import biosimclient.BioSimPlot;
 import biosimclient.BioSimPlotImpl;
 import repicea.simulation.ClimateSensitivePredictor;
 import repicea.simulation.climate.REpiceaClimateGenerator.RepresentativeConcentrationPathway;
-import repicea.simulation.climate.REpiceaClimateManager.UniqueBioSimPlot;
-import repicea.simulation.climate.REpiceaClimateVariableInformation.BioSimClimateVariable;
-import repicea.simulation.climate.REpiceaClimateVariableInformation.BioSimModel;
-import repicea.simulation.climate.REpiceaClimateVariableInformation.EvaluationDate;
-import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
+import repicea.simulation.climatemanagement.REpiceaClimateManager.UniqueBioSimPlot;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableInformation.BioSimClimateVariable;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableInformation.BioSimModel;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableInformation.EvaluationDate;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.covariateproviders.plotlevel.PlotIdProvider;
 import repicea.simulation.covariateproviders.plotlevel.climate.AnnualGrowingDegreeDaysCelsiusProvider;
 import repicea.simulation.covariateproviders.plotlevel.climate.MeanAnnualClimateMoistureIndexCmProvider;
 import repicea.simulation.covariateproviders.plotlevel.climate.MeanAnnualSoilMoistureIndexPercentProvider;
 import repicea.simulation.covariateproviders.plotlevel.climate.MeanAnnualTemperatureCelsiusProvider;
+import repicea.simulation.covariateproviders.plotlevel.climate.MeanJulyTemperatureCelsiusProvider;
 import repicea.simulation.covariateproviders.plotlevel.climate.MeanTemperatureFromJuneToAugustCelsiusProvider;
 import repicea.simulation.covariateproviders.plotlevel.climate.TotalPrecipitationFromJuneToAugustMmProvider;
 
@@ -93,6 +94,11 @@ public class REpiceaClimateManagerTest {
 		}
 		
 	}
+	
+	
+	
+	
+	
 	
 	
 	@SuppressWarnings("serial")
@@ -216,15 +222,14 @@ public class REpiceaClimateManagerTest {
 			infos.addAll(innerMap.values());
 		}
 		REpiceaClimateManager manager = new REpiceaClimateManager(RepresentativeConcentrationPathway.RCP4_5, infos, plots, 1);
-		try {
-			manager.produceClimateVariables(2010);
-			Assert.fail("Should have thrown an exception!");
-		} catch (UnsupportedOperationException e) {
-			e.printStackTrace();
-		}
-		Thread.sleep(500);
-		System.out.println("Relax this error was expected!");
-
+//		try {
+//			manager.produceClimateVariables(2010);
+//			Assert.fail("Should have thrown an exception!");
+//		} catch (UnsupportedOperationException e) {
+//			e.printStackTrace();
+//		}
+//		Thread.sleep(500);
+//		System.out.println("Relax this error was expected!");
 		manager.lastDateYrInDataset = 2000;
 		manager.produceClimateVariables(2010);
 		Assert.assertEquals("Testing annualValueMap size", 1, manager.annualOrMonthlyValueMap.size());
@@ -847,6 +852,84 @@ public class REpiceaClimateManagerTest {
 	}
 	
 	
+	@Test
+	public void test18ClimateInformationProvided() {
+		Plot p = new Plot("0", 45, 58, 120);
+		Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> oMap = p.getClimateVariableInformationMap();
+		Assert.assertEquals("Testing map size", 1, oMap.size());
+		for (Map<Resolution, REpiceaClimateVariableInformation> innerMap : oMap.values()) {
+			Assert.assertEquals("Testing innermap size", 1, innerMap.size());
+		}
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void test19ClimateGenerationWithErrorOneRealizationOverOneInterval() throws Exception {
+		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
+		plots.add(new Plot("01", 46, -75, 120));
+		plots.add(new Plot("02", 47, -76, 220));
+		plots.add(new Plot("03", 52, -80, 300));
+		Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> oMap = Plot.CLIMATE_INFO;
+		List<REpiceaClimateVariableInformation> infos = new ArrayList<REpiceaClimateVariableInformation>();
+		for (Map<Resolution, REpiceaClimateVariableInformation> innerMap : oMap.values()) {
+			infos.addAll(innerMap.values());
+		}
+		REpiceaClimateManager manager = new REpiceaClimateManager(RepresentativeConcentrationPathway.RCP4_5, infos, plots, 1);
+		manager.produceClimateVariables(2010);
+	}
+
 	
+	@SuppressWarnings("serial")
+	static class ExtendedPlot6 extends Plot implements MeanJulyTemperatureCelsiusProvider {
+
+		static final Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> CLIMATE_INFO = new HashMap<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>>();
+		static {
+			CLIMATE_INFO.put(MeanJulyTemperatureCelsiusProvider.class, new HashMap<Resolution, REpiceaClimateVariableInformation>());
+			CLIMATE_INFO.get(MeanJulyTemperatureCelsiusProvider.class).put(Resolution.Normals30Year, 
+					new REpiceaClimateVariableInformation(Resolution.Normals30Year, BioSimModel.Normals1961_1990, "T", EvaluationDate.Now, new REpiceaMonthlyClimateCompilationInformation(new Integer[] {7}, false))); 
+		}
+		
+		ExtendedPlot6(String id, double latitude, double longitude, double altitude) {
+			super(id, latitude, longitude, altitude);
+		}
+		
+		
+		@Override
+		public Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> getClimateVariableInformationMap() {
+			return CLIMATE_INFO;
+		}
+
+
+		@Override
+		public double getMeanAnnualTemperatureCelsius(REpiceaClimateVariableInformation info) {
+			return 0;
+		}
+
+		@Override
+		public double getMeanJulyTemperatureCelsius(REpiceaClimateVariableInformation info) {
+			return 0;
+		}
+
+	}
+
+	@Test
+	public void test20ClimateGenerationHappyPathOnlyMonthlyNormals() throws Exception {
+		List<BioSimPlot> plots = new ArrayList<BioSimPlot>();
+		plots.add(new ExtendedPlot6("01", 46, -75, 120));
+		plots.add(new ExtendedPlot6("02", 47, -76, 220));
+		plots.add(new ExtendedPlot6("03", 52, -80, 300));
+		Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> oMap = ExtendedPlot6.CLIMATE_INFO;
+		List<REpiceaClimateVariableInformation> infos = new ArrayList<REpiceaClimateVariableInformation>();
+		for (Map<Resolution, REpiceaClimateVariableInformation> innerMap : oMap.values()) {
+			infos.addAll(innerMap.values());
+		}
+		REpiceaClimateManager manager = new REpiceaClimateManager(RepresentativeConcentrationPathway.RCP4_5, infos, plots, 1);
+		manager.produceClimateVariables(2010);
+
+		manager.lastDateYrInDataset = 2000;
+		manager.produceClimateVariables(2010);
+		Assert.assertEquals("Testing fixedNormals size", 1, manager.fixedNormals.size());
+		double value = manager.getValue(2000, 2010, 0, ((PlotIdProvider) plots.get(0)).getId(), infos.get(0));
+		Assert.assertEquals("Testing 1961-1990 July mean temperature normal", 18.55, value, 1E-8);
+	}
 
 }

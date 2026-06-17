@@ -21,9 +21,9 @@ package repicea.simulation;
 
 import java.util.Map;
 
-import repicea.simulation.climate.REpiceaClimateVariableInformation;
-import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
-import repicea.simulation.climate.REpiceaClimateVariableProvider;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableInformation;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableProvider;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableInformation.Resolution;
 
 /**
  * An interface that applies to predictors that are climate sensitive.

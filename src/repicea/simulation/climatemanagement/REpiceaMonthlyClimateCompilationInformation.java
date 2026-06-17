@@ -17,7 +17,7 @@
  *
  * Please see the license at http://www.gnu.org/copyleft/lesser.html.
  */
-package repicea.simulation.climate;
+package repicea.simulation.climatemanagement;
 
 import java.security.InvalidParameterException;
 import java.util.Arrays;

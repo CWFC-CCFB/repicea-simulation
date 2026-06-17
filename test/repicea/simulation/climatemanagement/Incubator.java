@@ -17,7 +17,7 @@
  *
  * Please see the license at http://www.gnu.org/copyleft/lesser.html.
  */
-package repicea.simulation.climate;
+package repicea.simulation.climatemanagement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,9 +31,9 @@ import biosimclient.BioSimPlot;
 import repicea.serial.xml.XmlDeserializer;
 import repicea.serial.xml.XmlSerializer;
 import repicea.simulation.climate.REpiceaClimateGenerator.RepresentativeConcentrationPathway;
-import repicea.simulation.climate.REpiceaClimateManagerTest.Plot;
-import repicea.simulation.climate.REpiceaClimateVariableInformation.EvaluationDate;
-import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
+import repicea.simulation.climatemanagement.REpiceaClimateManagerTest.Plot;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableInformation.EvaluationDate;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.covariateproviders.plotlevel.climate.AnnualGrowingDegreeDaysCelsiusProvider;
 import repicea.simulation.covariateproviders.plotlevel.climate.MeanAnnualClimateMoistureIndexCmProvider;
 import repicea.simulation.covariateproviders.plotlevel.climate.MeanAnnualSoilMoistureIndexPercentProvider;
@@ -114,6 +114,10 @@ public class Incubator {
 
 	}
 
+	
+	
+	
+	
 	/*
 	 * Performance test
 	 */
@@ -252,5 +256,9 @@ public class Incubator {
 //				5);
 		
 	}
+
+	
+
+	
 
 }

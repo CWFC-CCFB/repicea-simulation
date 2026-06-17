@@ -17,12 +17,12 @@
  *
  * Please see the license at http://www.gnu.org/copyleft/lesser.html.
  */
-package repicea.simulation.climate;
+package repicea.simulation.climatemanagement;
 
 import java.util.Map;
 
 import repicea.simulation.ClimateSensitivePredictor;
-import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.covariateproviders.plotlevel.PlotIdProvider;
 
 /**

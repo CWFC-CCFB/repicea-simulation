@@ -19,18 +19,10 @@
  */
 package repicea.simulation.climate;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Assert;
 import org.junit.Test;
 
-import repicea.simulation.ClimateSensitivePredictor;
-import repicea.simulation.climate.REpiceaClimateVariableInformation.EvaluationDate;
-import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.climate.REpiceaClimateVariableMap.ClimateVariable;
-import repicea.simulation.covariateproviders.plotlevel.climate.MeanAnnualTemperatureCelsiusProvider;
-import repicea.simulation.covariateproviders.plotlevel.climate.MeanMinimumAnnualTemperatureCelsiusProvider;
 
 public class REpiceaClimateTest {
 
@@ -70,73 +62,6 @@ public class REpiceaClimateTest {
 				averageChange, 
 				1E-8);
 	}
-	
-	
-	static class Plot implements MeanAnnualTemperatureCelsiusProvider,
-								MeanMinimumAnnualTemperatureCelsiusProvider,
-								ClimateSensitivePredictor {
-		
-		static final Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> CLIMATE_INFO = new HashMap<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>>();
-		static {
-			REpiceaClimateVariableInformation.fillClimateInfoMap(CLIMATE_INFO, Plot.class, Resolution.IntervalAveraged, EvaluationDate.EndOfInterval);
-		}
-		
-		@Override
-		public double getMeanAnnualTemperatureCelsius(REpiceaClimateVariableInformation info) {
-			return 0;
-		}
-
-		@Override
-		public double getMeanMinimumAnnualTemperatureCelsius(REpiceaClimateVariableInformation info) {
-			return 0;
-		}
-
-		@Override
-		public Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> getClimateVariableInformationMap() {
-			return CLIMATE_INFO;
-		}
-
-		@Override
-		public String getId() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-	}
-
-
-	@Test
-	public void test02ClimateInformationProvided() {
-		Plot p = new Plot();
-		Map<Class<? extends REpiceaClimateVariableProvider>, Map<Resolution, REpiceaClimateVariableInformation>> oMap = p.getClimateVariableInformationMap();
-		Assert.assertEquals("Testing map size", 2, oMap.size());
-		for (Map<Resolution, REpiceaClimateVariableInformation> innerMap : oMap.values()) {
-			Assert.assertEquals("Testing innermap size", 1, innerMap.size());
-		}
-	}
-	
-//	@Test
-//	public void test03ClimateVariableResolutionsAnnotation() {
-//		MeanTemp temp = new MeanTemp();
-//		try {
-//			temp.getMeanAnnualTemperatureCelsius(ClimateVariableTemporalResolution.Normals30Year);
-//			Assert.fail("Should have failed");
-//		} catch (UnsupportedOperationException e) {
-//			// Should end up here
-//		}
-//	}
-//
-//	@Test
-//	public void test04ClimateVariableResolutionsAnnotationInSuperClass() {
-//		MeanTempDerived temp = new MeanTempDerived();
-//		try {
-//			temp.getMeanAnnualTemperatureCelsius(ClimateVariableTemporalResolution.Normals30Year);
-//			Assert.fail("Should have failed");
-//		} catch (UnsupportedOperationException e) {
-//			// Should end up here
-//		}
-//	}
-
 	
 	
 }

@@ -17,7 +17,7 @@
  *
  * Please see the license at http://www.gnu.org/copyleft/lesser.html.
  */
-package repicea.simulation.climate;
+package repicea.simulation.climatemanagement;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -39,9 +39,9 @@ import biosimclient.BioSimPlot;
 import biosimclient.BioSimServerException;
 import biosimclient.Observation;
 import repicea.simulation.climate.REpiceaClimateGenerator.RepresentativeConcentrationPathway;
-import repicea.simulation.climate.REpiceaClimateVariableInformation.BioSimClimateVariable;
-import repicea.simulation.climate.REpiceaClimateVariableInformation.BioSimModel;
-import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableInformation.BioSimClimateVariable;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableInformation.BioSimModel;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableInformation.Resolution;
 import repicea.simulation.covariateproviders.plotlevel.PlotIdProvider;
 
 /**
@@ -105,22 +105,45 @@ public final class REpiceaClimateManager {
 		PeriodLookupMap.put(BioSimModel.Normals1991_2020, Period.FromNormals1991_2020);
 	}
 	
+	static class NormalWrapper {
+		final BioSimModel model;
+		final boolean isMonthly;
+		NormalWrapper(BioSimModel model, boolean isMonthly) {
+			if (model == null) {
+				throw new InvalidParameterException("The model argument cannot be null!");
+			}
+			this.model = model;
+			this.isMonthly = isMonthly;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (o != null && o instanceof NormalWrapper) {
+				NormalWrapper thatWrapper = (NormalWrapper) o;
+				return thatWrapper.model == model && thatWrapper.isMonthly == isMonthly;
+			} else {
+				return false;
+			}
+		}
+	}
+	
+	
 	private static List<Resolution> ResolutionNeedingStartDate = Arrays.asList(new Resolution[] {Resolution.Annual, Resolution.IntervalAveraged});
 		
 	private final Map<String, BioSimPlot> plotMap; // to map the original plot id to the unique BioSimPlot instances
 	final List<BioSimPlot> uniquePlotList; // the list of unique plot so that we don't need to provide BioSimPlot instance over and over again
 	final Map<String, BioSimModel> annualOrMonthlyModels;
-	final Map<String, BioSimModel> fixedNormalModels;
+	final Map<String, NormalWrapper> fixedNormalModels;
 	private Resolution dominantResolution;
 	private final int lastBioSIMCompleteObservedDailyDateYr; // the last daily date on BioSIM WebAPI
 	private final int nbRealizations; // the number of realizations in the growth simulation
 	private final RepresentativeConcentrationPathway rcp;
 	protected int lastDateYrInDataset; // the last date yr in the annualValueMap
 	protected final Map<BioSimModel, Map<BioSimPlot, Map<Integer, BioSimDataSet>>> annualOrMonthlyValueMap; 
-	protected final Map<BioSimModel, Map<BioSimPlot, BioSimDataSet>> fixedNormals;
+	protected final Map<NormalWrapper, Map<BioSimPlot, BioSimDataSet>> fixedNormals;
 	private boolean staticNormalsProduced = false; // a boolean to make sure the fixed normals are retrieved only once
 	private final ClimateModel climModel = ClimateModel.RCM4; // the climate model
-	
+	private final Map<BioSimModel, Map<Boolean, NormalWrapper>> normalWrapperRegistry;
 	private final double latitudeResolution;
 	private final double longitudeResolution;
 	private final double elevationResolution;
@@ -193,9 +216,13 @@ public final class REpiceaClimateManager {
 		if (rcp != null && !RCPLookupMap.containsKey(rcp)) {
 			throw new InvalidParameterException("If not null, the rcp argument should be either RCP4_5 or RCP8_5!");
 		}
+		if (climateInfo == null || climateInfo.isEmpty()) {
+			throw new InvalidParameterException("The climateInfo list cannot be null or empty!");
+		}
 		this.rcp = rcp;
+		this.normalWrapperRegistry = new HashMap<BioSimModel, Map<Boolean, NormalWrapper>>();
 		annualOrMonthlyValueMap = new HashMap<BioSimModel, Map<BioSimPlot, Map<Integer, BioSimDataSet>>>();
-		fixedNormals = new HashMap<BioSimModel, Map<BioSimPlot, BioSimDataSet>>();
+		fixedNormals = new HashMap<NormalWrapper, Map<BioSimPlot, BioSimDataSet>>();
 		cache = new ConcurrentHashMap<REpiceaClimateVariableInformation, 
 				ConcurrentHashMap<String, 
 				ConcurrentHashMap<Integer, 
@@ -224,26 +251,41 @@ public final class REpiceaClimateManager {
 		uniquePlotList.addAll(uniquePlotMap.values());
 		
 		annualOrMonthlyModels = new LinkedHashMap<String, BioSimModel>();
-		fixedNormalModels = new LinkedHashMap<String, BioSimModel>();
+		fixedNormalModels = new LinkedHashMap<String, NormalWrapper>();
 		for (REpiceaClimateVariableInformation info : climateInfo) {
 			BioSimModel model = info.model;
-			Map<String, BioSimModel> currentList = isFixedNormalsModel(model) ?
-					fixedNormalModels :
-						annualOrMonthlyModels;
-			Resolution currentResolution = isFixedNormalsModel(model) ?
-					null :
-						info.resolution;
-			if (currentResolution != null) {
-				if (dominantResolution == null || currentResolution.ordinal() < dominantResolution.ordinal()) {
-					dominantResolution = currentResolution;
+			
+			if (isFixedNormalsModel(model)) {
+				NormalWrapper normWrapper = getWrapper(info);
+				if (!fixedNormalModels.containsValue(normWrapper)) {
+					fixedNormalModels.put(model.modelName, normWrapper);
+				}
+			} else {
+				if (dominantResolution == null || info.resolution.ordinal() < dominantResolution.ordinal()) {
+					dominantResolution = info.resolution;
 				} 
+				if (!annualOrMonthlyModels.containsValue(model)) {
+					annualOrMonthlyModels.put(model.modelName, model);
+				}
+				
 			}
-			if (!currentList.containsValue(model)) {
-				currentList.put(model.modelName, model);
-			}
+			
 		}
 	}
 
+	
+	private NormalWrapper getWrapper(REpiceaClimateVariableInformation info) {
+		if (!normalWrapperRegistry.containsKey(info.model)) {
+			normalWrapperRegistry.put(info.model, new HashMap<Boolean, NormalWrapper>());
+		}
+		Map<Boolean, NormalWrapper> innerMap = normalWrapperRegistry.get(info.model);
+		if (!innerMap.containsKey(info.isMonthly())) {
+			innerMap.put(info.isMonthly(), new NormalWrapper(info.model, info.isMonthly()));
+		}
+		return innerMap.get(info.isMonthly());
+	}
+	
+	
 	/**
 	 * Constructor.<p>
 	 * Constructor with original plot coordinates, that is without rounding.
@@ -320,102 +362,106 @@ public final class REpiceaClimateManager {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void produceClimateVariables(final int toYr) throws Exception {
-		if (toYr <= lastDateYrInDataset) {	// we are up to date
-			return;
-		}
-		if (lastDateYrInDataset == 0 && ResolutionNeedingStartDate.contains(dominantResolution)) { // Means we haven't started the simulation and we are using allometric relationship. In that case, we do not use an interval-average or annual resolution.
-			throw new UnsupportedOperationException("The dominant resolution " + dominantResolution.name() + " requires an upper range date!");
-		}
-		int fromYr = reajustFromYrDependingOnResolution(dominantResolution, lastDateYrInDataset, toYr);
-		if (fromYr < lastDateYrInDataset) {	// we dont need to go that far if the upper range is already more recent
-			fromYr = lastDateYrInDataset;
-		}
-		if (fromYr < lastBioSIMCompleteObservedDailyDateYr && toYr > lastBioSIMCompleteObservedDailyDateYr) {
-			lastDateYrInDataset = fromYr;
-			produceClimateVariables(lastBioSIMCompleteObservedDailyDateYr);
-			produceClimateVariables(toYr);
-		} else {
-			boolean isBeyondLastDailyDateYr = fromYr >= lastBioSIMCompleteObservedDailyDateYr; 
-			List<String> modelList = new ArrayList<String>(annualOrMonthlyModels.keySet());
-			List<BioSimParameterMap> parmsMap = getParameterMap();
-			int nbAttempts = 0;
-			LinkedHashMap<String, Object> result = null;
-			boolean isResultValid;
-			do {
-				result = BioSimClient.generateWeather(
-						fromYr + 1,
-						toYr, 
-						uniquePlotList, 
-						RCPLookupMap.get(rcp), 
-						climModel, 
-						modelList, 
-						isBeyondLastDailyDateYr ? nbRealizations : 1, 
-								parmsMap);
-				nbAttempts++;
-				isResultValid = true;
-				for (Object o : result.values()) {
-					if (!(o instanceof LinkedHashMap)) {
-						isResultValid = false;
-						break;
-					}
-				}
-				if (!isResultValid && nbAttempts < 3) {
-					System.out.println("Something went wrong with climate generation!" + System.lineSeparator() + 
-							"This might be due to the internet connection. Will try once more...");
-				}
-			} while (!isResultValid && nbAttempts < 3);
-//			System.out.println("BioSIM request took " + BioSimClient.getLastServerRequestDuration() + " sec.");
-			for (String modelName : result.keySet()) {
-				BioSimModel model = annualOrMonthlyModels.get(modelName);
-				if (!annualOrMonthlyValueMap.containsKey(model)) {
-					annualOrMonthlyValueMap.put(model, new HashMap<BioSimPlot, Map<Integer, BioSimDataSet>>());
-				}
-				Map<BioSimPlot, Map<Integer, BioSimDataSet>> innerMap = annualOrMonthlyValueMap.get(model);
-				Object resultForThisModel = result.get(modelName);
-				if (resultForThisModel instanceof Exception) {
-					throw (Exception) resultForThisModel;
-				}
-				LinkedHashMap<BioSimPlot, BioSimDataSet> innerResultMap = (LinkedHashMap) resultForThisModel;
-				for (BioSimPlot p : innerResultMap.keySet()) {
-					if (!innerMap.containsKey(p)) {
-						innerMap.put(p, new HashMap<Integer, BioSimDataSet>());
-					} 
-					Map<Integer, BioSimDataSet> innerInnerMap = innerMap.get(p);
-					BioSimDataSet dataSet = innerResultMap.get(p);
-					for (int i = 0; i < nbRealizations; i++) {
-						BioSimDataSet dataSetForThisRealization = isBeyondLastDailyDateYr ? 
-								getSubDataSet(dataSet, i) :
-									dataSet.clone();
-						if (!innerInnerMap.containsKey(i)) {
-							innerInnerMap.put(i, dataSetForThisRealization);
-						} else {
-							innerInnerMap.get(i).addAllObservations(dataSetForThisRealization); 
-						}
-						
-					}
-				}
+		if (!annualOrMonthlyModels.isEmpty()) {
+			if (toYr <= lastDateYrInDataset) {	// we are up to date
+				return;
 			}
-			lastDateYrInDataset = toYr;
-			if (!staticNormalsProduced) {
-				for (BioSimModel model : fixedNormalModels.values()) {
-					LinkedHashMap<BioSimPlot, BioSimDataSet> normalResult = BioSimClient.getAnnualNormals(PeriodLookupMap.get(model), 
+			if (lastDateYrInDataset == 0 && ResolutionNeedingStartDate.contains(dominantResolution)) { // Means we haven't started the simulation and we are using allometric relationship. In that case, we do not use an interval-average or annual resolution.
+				throw new UnsupportedOperationException("The dominant resolution " + dominantResolution.name() + " requires an upper range date!");
+			}
+			int fromYr = reajustFromYrDependingOnResolution(dominantResolution, lastDateYrInDataset, toYr);
+			if (fromYr < lastDateYrInDataset) {	// we dont need to go that far if the upper range is already more recent
+				fromYr = lastDateYrInDataset;
+			}
+			if (fromYr < lastBioSIMCompleteObservedDailyDateYr && toYr > lastBioSIMCompleteObservedDailyDateYr) {
+				lastDateYrInDataset = fromYr;
+				produceClimateVariables(lastBioSIMCompleteObservedDailyDateYr);
+				produceClimateVariables(toYr);
+			} else {
+				boolean isBeyondLastDailyDateYr = fromYr >= lastBioSIMCompleteObservedDailyDateYr; 
+				List<String> modelList = new ArrayList<String>(annualOrMonthlyModels.keySet());
+				List<BioSimParameterMap> parmsMap = getParameterMap();
+				int nbAttempts = 0;
+				LinkedHashMap<String, Object> result = null;
+				boolean isResultValid;
+				do {
+					result = BioSimClient.generateWeather(
+							fromYr + 1,
+							toYr, 
 							uniquePlotList, 
-							RCPLookupMap.get(rcp),
-							climModel);
-					for (BioSimDataSet ds : normalResult.values()) {
-						computeMeanTairInNormals(ds);
+							RCPLookupMap.get(rcp), 
+							climModel, 
+							modelList, 
+							isBeyondLastDailyDateYr ? nbRealizations : 1, 
+									parmsMap);
+					nbAttempts++;
+					isResultValid = true;
+					for (Object o : result.values()) {
+						if (!(o instanceof LinkedHashMap)) {
+							isResultValid = false;
+							break;
+						}
 					}
-					fixedNormals.put(model, normalResult); 
+					if (!isResultValid && nbAttempts < 3) {
+						System.out.println("Something went wrong with climate generation!" + System.lineSeparator() + 
+								"This might be due to the internet connection. Will try once more...");
+					}
+				} while (!isResultValid && nbAttempts < 3);
+//				System.out.println("BioSIM request took " + BioSimClient.getLastServerRequestDuration() + " sec.");
+				for (String modelName : result.keySet()) {
+					BioSimModel model = annualOrMonthlyModels.get(modelName);
+					if (!annualOrMonthlyValueMap.containsKey(model)) {
+						annualOrMonthlyValueMap.put(model, new HashMap<BioSimPlot, Map<Integer, BioSimDataSet>>());
+					}
+					Map<BioSimPlot, Map<Integer, BioSimDataSet>> innerMap = annualOrMonthlyValueMap.get(model);
+					Object resultForThisModel = result.get(modelName);
+					if (resultForThisModel instanceof Exception) {
+						throw (Exception) resultForThisModel;
+					}
+					LinkedHashMap<BioSimPlot, BioSimDataSet> innerResultMap = (LinkedHashMap) resultForThisModel;
+					for (BioSimPlot p : innerResultMap.keySet()) {
+						if (!innerMap.containsKey(p)) {
+							innerMap.put(p, new HashMap<Integer, BioSimDataSet>());
+						} 
+						Map<Integer, BioSimDataSet> innerInnerMap = innerMap.get(p);
+						BioSimDataSet dataSet = innerResultMap.get(p);
+						for (int i = 0; i < nbRealizations; i++) {
+							BioSimDataSet dataSetForThisRealization = isBeyondLastDailyDateYr ? 
+									getSubDataSet(dataSet, i) :
+										dataSet.clone();
+							if (!innerInnerMap.containsKey(i)) {
+								innerInnerMap.put(i, dataSetForThisRealization);
+							} else {
+								innerInnerMap.get(i).addAllObservations(dataSetForThisRealization); 
+							}
+							
+						}
+					}
 				}
-				staticNormalsProduced = true;
+				lastDateYrInDataset = toYr;
 			}
+		}
+		if (!staticNormalsProduced) {
+			for (NormalWrapper wrapper : fixedNormalModels.values()) {
+				LinkedHashMap<BioSimPlot, BioSimDataSet> normalResult = wrapper.isMonthly ?
+						BioSimClient.getMonthlyNormals(PeriodLookupMap.get(wrapper.model), uniquePlotList, RCPLookupMap.get(rcp), climModel) :
+							BioSimClient.getAnnualNormals(PeriodLookupMap.get(wrapper.model), uniquePlotList, RCPLookupMap.get(rcp), climModel);
+				for (BioSimDataSet ds : normalResult.values()) {
+					computeMeanTairInNormals(ds, wrapper.isMonthly);
+				}
+				fixedNormals.put(wrapper, normalResult); 
+			}
+			staticNormalsProduced = true;
 		}
 	}
 	
-	private void computeMeanTairInNormals(BioSimDataSet dataset) {
-		if (!dataset.getFieldNames().contains("T") && dataset.getFieldNames().contains("TN") && dataset.getFieldNames().contains("TX")) {
-			int indexTn = dataset.getFieldNames().indexOf("TN");
-			int indexTx = dataset.getFieldNames().indexOf("TX");
+	private void computeMeanTairInNormals(BioSimDataSet dataset, boolean isMonthly) {
+		String meanTemp = "T";
+		String maxTemp = isMonthly ? "TMAX_MN" : "TX";
+		String minTemp = isMonthly ? "TMIN_MN" : "TN";
+		if (!dataset.getFieldNames().contains(meanTemp) && dataset.getFieldNames().contains(minTemp) && dataset.getFieldNames().contains(maxTemp)) {
+			int indexTn = dataset.getFieldNames().indexOf(minTemp);
+			int indexTx = dataset.getFieldNames().indexOf(maxTemp);
 			List<Object> TN = dataset.getFieldValues(indexTn);
 			List<Object> TX = dataset.getFieldValues(indexTx);
 			Object[] T = new Object[TX.size()];
@@ -477,16 +523,35 @@ public final class REpiceaClimateManager {
 		produceClimateVariables(toYr);
 		BioSimPlot p = plotMap.get(plotId);
 		if (isFixedNormalsModel(info.model)) {
-			BioSimDataSet ds = fixedNormals.get(info.model).get(p);
+			NormalWrapper wrapper = getWrapper(info);
+			BioSimDataSet ds = fixedNormals.get(wrapper).get(p);
 			int fieldIndex = ds.getFieldNames().indexOf(info.fieldName);
 			if (fieldIndex == -1) {
 				throw new UnsupportedOperationException("The field " + info.fieldName + " cannot be found in the BioSimDataSet instance!");
 			}
 			List<Object> values = ds.getFieldValues(fieldIndex);
-			if (values.size() != 1) {
-				throw new UnsupportedOperationException("There should be only one value in this field " + info.fieldName + "!");
+			if (wrapper.isMonthly) {
+				if (values.size() != 12) {
+					throw new UnsupportedOperationException("There should be 12 values (one per month) in this field " + info.fieldName + "!");
+				}
+				double value = 0d;
+				for (Integer i : info.monthCompilation.selectedMonths) {
+					Object o = values.get(i - 1);
+					if (!(o instanceof Number)) {
+						throw new UnsupportedOperationException("The vector of values seems to contain non numeric types!");
+					}
+					value += ((Number) o).doubleValue(); 
+				}
+				if (info.monthCompilation.isAverage) {
+					value /= info.monthCompilation.selectedMonths.size();
+				}
+				return value;
+			} else {
+				if (values.size() != 1) {
+					throw new UnsupportedOperationException("There should be only one value in this field " + info.fieldName + "!");
+				}
+				return (Double) values.get(0);
 			}
-			return (Double) values.get(0);
 		} else {
 			fromYr = reajustFromYrDependingOnResolution(info.resolution, fromYr, toYr);
 			Double cachedValue = getCachedValue(info, plotId, fromYr, toYr, realization);

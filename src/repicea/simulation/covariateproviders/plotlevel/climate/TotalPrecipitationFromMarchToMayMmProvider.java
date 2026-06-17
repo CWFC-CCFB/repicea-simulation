@@ -20,9 +20,9 @@
 package repicea.simulation.covariateproviders.plotlevel.climate;
 
 import repicea.simulation.ClimateSensitivePredictor;
-import repicea.simulation.climate.REpiceaClimateVariableInformation;
-import repicea.simulation.climate.REpiceaClimateVariableInformation.Resolution;
-import repicea.simulation.climate.REpiceaClimateVariableProvider;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableInformation;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableProvider;
+import repicea.simulation.climatemanagement.REpiceaClimateVariableInformation.Resolution;
 
 /**
  * This interface ensures the plot instance can provide its total precipitation
