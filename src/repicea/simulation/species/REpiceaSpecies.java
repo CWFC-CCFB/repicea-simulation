@@ -768,7 +768,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 	 * @return a Species enum or null if no surrogate can be found
 	 */
 	public static Species getSurrogate(Species species) {
-		if (species == Species.Other || species == Species.Broadleaved_shrubs) {
+		if (species == Species.Other) {
 			return null;
 		}
 		if (species == Species.Other_coniferous || species == Species.Other_broadleaved) {
