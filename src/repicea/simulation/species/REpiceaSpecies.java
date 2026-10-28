@@ -325,7 +325,7 @@ public interface REpiceaSpecies extends TextableEnum, SpeciesTypeProvider, BarkP
 		Celtis_occidentalis(SpeciesType.BroadleavedSpecies, "Hackberry", "Micocoulier occidental",
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.49, 0.15)),
 		
-		Crategus_spp(SpeciesType.BroadleavedSpecies, "Hawthorn", "Aub\u00E9pine",
+		Crataegus_spp(SpeciesType.BroadleavedSpecies, "Hawthorn", "Aub\u00E9pine",
 				new LocaleEntry(SpeciesLocale.NorthAmerica, 0.52, 0.152)),
 		
 		Fagus_sylvatica(SpeciesType.BroadleavedSpecies, 
